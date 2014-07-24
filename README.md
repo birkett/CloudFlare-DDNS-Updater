@@ -35,5 +35,5 @@ On first launch, enter your details in Tools->Options.
 You will need your CloudFlare API key, available on your CloudFlare Account page. 
 
 ## External Resources
-This application makes use of the [![FamFamFam Icons](FamFamFam Icon Pack)](http://www.famfamfam.com/lab/icons/silk/)
+This application makes use of the [(FamFamFam Icon Pack)](http://www.famfamfam.com/lab/icons/silk/)
 Icon pack is available under the Creative Commons Attributions 2.5 license. 
