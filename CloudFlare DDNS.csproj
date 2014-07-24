@@ -47,24 +47,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DNSStructs.cs" />
-    <Compile Include="frmMain.cs">
+    <Compile Include="Forms\frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmMain.Designer.cs">
+    <Compile Include="Forms\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmSettings.cs">
+    <Compile Include="Forms\frmSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmSettings.Designer.cs">
+    <Compile Include="Forms\frmSettings.Designer.cs">
       <DependentUpon>frmSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="frmMain.resx">
+    <EmbeddedResource Include="Forms\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmSettings.resx">
+    <EmbeddedResource Include="Forms\frmSettings.resx">
       <DependentUpon>frmSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
