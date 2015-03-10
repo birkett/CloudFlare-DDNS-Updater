@@ -128,7 +128,8 @@ namespace CloudFlare_DDNS
                     {
                         for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
                         {
-                            ListViewItem row = listViewRecords.Items.Add(FetchedRecords.response.recs.objs[i].type);
+                            ListViewItem row = listViewRecords.Items.Add("");
+                            row.SubItems.Add(FetchedRecords.response.recs.objs[i].type);
                             row.SubItems.Add(FetchedRecords.response.recs.objs[i].display_name);
                             row.SubItems.Add(FetchedRecords.response.recs.objs[i].display_content);
                         }
@@ -163,6 +164,13 @@ namespace CloudFlare_DDNS
                 {
                     //Log("Skipping " + FetchedRecords.response.recs.objs[i].name + " - no update needed", 0);
                     up_to_date++;
+                    continue;
+                }
+
+                //Skip over anything that is not checked
+                if (listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[i].display_name).Checked == false)
+                {
+                    skipped++;
                     continue;
                 }
 
