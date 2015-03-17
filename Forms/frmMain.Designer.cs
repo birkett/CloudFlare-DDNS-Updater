@@ -51,8 +51,8 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.autoupdateTimer = new System.Windows.Forms.Timer(this.components);
+            this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,9 +64,9 @@
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3});
-            this.listViewRecords.Location = new System.Drawing.Point(14, 76);
+            this.listViewRecords.Location = new System.Drawing.Point(12, 82);
             this.listViewRecords.Name = "listViewRecords";
-            this.listViewRecords.Size = new System.Drawing.Size(612, 180);
+            this.listViewRecords.Size = new System.Drawing.Size(525, 195);
             this.listViewRecords.TabIndex = 0;
             this.listViewRecords.UseCompatibleStateImageBehavior = false;
             this.listViewRecords.View = System.Windows.Forms.View.Details;
@@ -96,9 +96,9 @@
             this.listViewLog.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader4,
             this.columnHeader5});
-            this.listViewLog.Location = new System.Drawing.Point(14, 269);
+            this.listViewLog.Location = new System.Drawing.Point(12, 291);
             this.listViewLog.Name = "listViewLog";
-            this.listViewLog.Size = new System.Drawing.Size(612, 177);
+            this.listViewLog.Size = new System.Drawing.Size(525, 191);
             this.listViewLog.SmallImageList = this.imageList1;
             this.listViewLog.TabIndex = 1;
             this.listViewLog.UseCompatibleStateImageBehavior = false;
@@ -125,17 +125,17 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 47);
+            this.label1.Location = new System.Drawing.Point(12, 51);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(166, 12);
+            this.label1.Size = new System.Drawing.Size(139, 13);
             this.label1.TabIndex = 5;
             this.label1.Text = "Current External IP Address:";
             // 
             // txtExternalAddress
             // 
-            this.txtExternalAddress.Location = new System.Drawing.Point(183, 44);
+            this.txtExternalAddress.Location = new System.Drawing.Point(157, 48);
             this.txtExternalAddress.Name = "txtExternalAddress";
-            this.txtExternalAddress.Size = new System.Drawing.Size(443, 21);
+            this.txtExternalAddress.Size = new System.Drawing.Size(380, 20);
             this.txtExternalAddress.TabIndex = 6;
             // 
             // menuStrip1
@@ -146,8 +146,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(640, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(549, 24);
             this.menuStrip1.TabIndex = 7;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -164,7 +163,7 @@
             // 
             this.minimiseToTrayToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.application_double;
             this.minimiseToTrayToolStripMenuItem.Name = "minimiseToTrayToolStripMenuItem";
-            this.minimiseToTrayToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.minimiseToTrayToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.minimiseToTrayToolStripMenuItem.Text = "Minimise to tray";
             this.minimiseToTrayToolStripMenuItem.Click += new System.EventHandler(this.minimiseToTrayToolStripMenuItem_Click);
             // 
@@ -172,7 +171,7 @@
             // 
             this.exitToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.exit;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -183,14 +182,14 @@
             this.updateRecordsToolStripMenuItem,
             this.settingsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // fetchRecordsToolStripMenuItem
             // 
             this.fetchRecordsToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.arrow_down;
             this.fetchRecordsToolStripMenuItem.Name = "fetchRecordsToolStripMenuItem";
-            this.fetchRecordsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.fetchRecordsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.fetchRecordsToolStripMenuItem.Text = "Fetch Records";
             this.fetchRecordsToolStripMenuItem.Click += new System.EventHandler(this.fetchDataToolStripMenuItem_Click);
             // 
@@ -198,7 +197,7 @@
             // 
             this.updateRecordsToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.arrow_up;
             this.updateRecordsToolStripMenuItem.Name = "updateRecordsToolStripMenuItem";
-            this.updateRecordsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.updateRecordsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.updateRecordsToolStripMenuItem.Text = "Update Records";
             this.updateRecordsToolStripMenuItem.Click += new System.EventHandler(this.updateRecordsToolStripMenuItem_Click);
             // 
@@ -206,7 +205,7 @@
             // 
             this.settingsToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.cog;
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -225,22 +224,24 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
             // 
-            // timer1
+            // autoupdateTimer
             // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.autoupdateTimer.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // notifyIcon1
+            // trayIcon
             // 
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
-            this.notifyIcon1.Text = "notifyIcon1";
-            this.notifyIcon1.Visible = true;
-            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            this.trayIcon.BalloonTipText = "Updates will continue in the background";
+            this.trayIcon.BalloonTipTitle = "CloudFlare DNS Updater";
+            this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
+            this.trayIcon.Text = "trayIcon";
+            this.trayIcon.Visible = true;
+            this.trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
             // frmMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(640, 456);
+            this.ClientSize = new System.Drawing.Size(549, 494);
             this.Controls.Add(this.txtExternalAddress);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listViewLog);
@@ -249,6 +250,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmMain";
             this.Text = "CloudFlare DDNS Updater";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_Closing);
             this.Resize += new System.EventHandler(this.frmMain_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -279,8 +281,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.ImageList imageList1;
-        private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.Timer autoupdateTimer;
+        private System.Windows.Forms.NotifyIcon trayIcon;
         private System.Windows.Forms.ColumnHeader columnHeader6;
     }
 }

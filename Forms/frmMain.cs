@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
 using System.IO;
-using System.Runtime.Serialization.Json;
-using System.Diagnostics;
+using System.Web.Helpers;
 
 namespace CloudFlare_DDNS
 {
@@ -22,81 +21,7 @@ namespace CloudFlare_DDNS
         /// <summary>
         /// Stores the fetched records in an accessible place
         /// </summary>
-        public JSONResponse FetchedRecords = null;
-
-        /// <summary>
-        /// Return the current external network address, using the default gateway
-        /// </summary>
-        /// <returns>IP address as a string, null on error</returns>
-        private string GetExternalAddress()
-        {
-            WebRequest webrequest = WebRequest.Create("http://checkip.dyndns.org");
-            string strResponse;
-
-            try
-            {
-                using (WebResponse webresponse = webrequest.GetResponse())
-                {
-                    using (StreamReader readStream = new StreamReader(webresponse.GetResponseStream(), System.Text.Encoding.GetEncoding("utf-8")))
-                    {
-                        strResponse = readStream.ReadToEnd();
-                    }
-                }
-            }
-            catch (Exception e) 
-            { 
-                Log(e.ToString(), 2); 
-                return null; 
-            }
-
-            string[] strResponse2 = strResponse.Split(':');
-            string strResponse3 = strResponse2[1].Substring(1);
-            string[] strResponse4 = strResponse3.Split('<');
-
-            return strResponse4[0];
-        }
-
-        /// <summary>
-        /// Get the listed records from Cloudflare using their API
-        /// </summary>
-        /// <returns>JSON stream of records, null on error</returns>
-        private string GetCloudflareRecords()
-        {
-            WebRequest webrequest = WebRequest.Create("https://www.cloudflare.com/api_json.html");
-            string postData = "a=rec_load_all";
-            postData += "&tkn=" + SettingsManager.getSetting("APIKey");
-            postData += "&email=" + SettingsManager.getSetting("EmailAddress");
-            postData += "&z=" + SettingsManager.getSetting("Domain");
-            byte[] data = Encoding.ASCII.GetBytes(postData);
-
-            webrequest.Method = "POST";
-            webrequest.ContentType = "application/x-www-form-urlencoded";
-            webrequest.ContentLength = data.Length;
-
-            string retval;
-            try
-            {
-                using (Stream stream = webrequest.GetRequestStream())
-                {
-                    stream.Write(data, 0, data.Length);
-                }
-
-                using (WebResponse webresponse = webrequest.GetResponse())
-                {
-                    using (StreamReader readStream = new StreamReader(webresponse.GetResponseStream(), System.Text.Encoding.GetEncoding("utf-8")))
-                    {
-                        retval = readStream.ReadToEnd();
-                    }
-                }
-            }
-            catch (Exception e) 
-            { 
-                Log(e.ToString(), 2); 
-                return null; 
-            }
-
-            return retval;
-        }
+        public dynamic FetchedRecords = null;
 
         /// <summary>
         /// Logic to get the external address and CloudFlare records
@@ -104,64 +29,60 @@ namespace CloudFlare_DDNS
         private void FetchRecords()
         {
             FetchedRecords = null;
+            string new_external_address = CloudFlareAPI.GetExternalAddress();
 
-            string new_external_address = GetExternalAddress();
+            if (new_external_address == null)
+                return;
 
-            if (new_external_address != null)
+            SettingsManager.setSetting("ExternalAddress", new_external_address);
+            txtExternalAddress.Text = new_external_address;
+
+            string records = CloudFlareAPI.GetCloudflareRecords();
+            if (records == null)
+                return;
+
+            FetchedRecords = Json.Decode(records);
+
+            if (FetchedRecords.result != "success")
             {
-                SettingsManager.setSetting("ExternalAddress", new_external_address);
-                txtExternalAddress.Text = new_external_address;
+                Logger.log(FetchedRecords.msg, Logger.Level.Error);
+                return;
+            }
 
-                string records = GetCloudflareRecords();
-                if (records != null)
+            //Itterate through the current list, saving checked items.
+            for(int j = 0; j < listViewRecords.Items.Count; j++)
+            {
+                //Add checked items to a list to be saved
+                if (listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[j].display_name).Checked == true)
                 {
-                    DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(JSONResponse));
-                    MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(records));
-                    FetchedRecords = (JSONResponse)ser.ReadObject(stream);
+                    //Item has been selected by the user, store it for later
+                    SettingsManager.setSetting("SelectedHosts", SettingsManager.getSetting("SelectedHosts") + FetchedRecords.response.recs.objs[j].display_name + ";");
+                }
+                else 
+                {
+                    //Make sure to clean up any old entries in the settings
+                    string new_selected = SettingsManager.getSetting("SelectedHosts").Replace(FetchedRecords.response.recs.objs[j].display_name + ';', "");
+                    SettingsManager.setSetting("SelectedHosts", new_selected);
+                }
+            }
 
-                    if (FetchedRecords.result != "success")
+            SettingsManager.saveSettings(); //Save the selected host list accross sessions
+            listViewRecords.Items.Clear();
+
+            string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
+
+            for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
+            {
+                ListViewItem row = listViewRecords.Items.Add("");
+                row.SubItems.Add(FetchedRecords.response.recs.objs[i].type);
+                row.SubItems.Add(FetchedRecords.response.recs.objs[i].display_name);
+                row.SubItems.Add(FetchedRecords.response.recs.objs[i].display_content);
+
+                foreach(string host in selectedHosts)
+                {
+                    if(host == FetchedRecords.response.recs.objs[i].display_name)
                     {
-                        Log(FetchedRecords.msg, 2);
-                    }
-                    else
-                    {
-                        //Itterate through the current list, saving checked items.
-                        for(int j = 0; j < listViewRecords.Items.Count; j++)
-                        {
-                            //Add checked items to a list to be saved
-                            if (listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[j].display_name).Checked == true)
-                            {
-                                //Item has been selected by the user, store it for later
-                                SettingsManager.setSetting("SelectedHosts", SettingsManager.getSetting("SelectedHosts") + FetchedRecords.response.recs.objs[j].display_name + ";");
-                            }
-                            else 
-                            {
-                                //Make sure to clean up any old entries in the settings
-                                string new_selected = SettingsManager.getSetting("SelectedHosts").Replace(FetchedRecords.response.recs.objs[j].display_name + ';', "");
-                                SettingsManager.setSetting("SelectedHosts", new_selected);
-                            }
-                        }
-
-                        SettingsManager.saveSettings(); //Save the selected host list accross sessions
-                        listViewRecords.Items.Clear();
-
-                        string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
-
-                        for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
-                        {
-                            ListViewItem row = listViewRecords.Items.Add("");
-                            row.SubItems.Add(FetchedRecords.response.recs.objs[i].type);
-                            row.SubItems.Add(FetchedRecords.response.recs.objs[i].display_name);
-                            row.SubItems.Add(FetchedRecords.response.recs.objs[i].display_content);
-
-                            foreach(string host in selectedHosts)
-                            {
-                                if(host == FetchedRecords.response.recs.objs[i].display_name)
-                                {
-                                    listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[i].display_name).Checked = true;
-                                }
-                            }
-                        }
+                        listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[i].display_name).Checked = true;
                     }
                 }
             }
@@ -204,83 +125,21 @@ namespace CloudFlare_DDNS
                     continue;
                 }
 
-                WebRequest webrequest = WebRequest.Create("https://www.cloudflare.com/api_json.html");
-                string postData = "a=rec_edit";
-                postData += "&tkn="          + SettingsManager.getSetting("APIKey");
-                postData += "&id="           + FetchedRecords.response.recs.objs[i].rec_id;
-                postData += "&email="        + SettingsManager.getSetting("EmailAddress");
-                postData += "&z="            + SettingsManager.getSetting("Domain");
-                postData += "&type="         + FetchedRecords.response.recs.objs[i].type;
-                postData += "&name="         + FetchedRecords.response.recs.objs[i].name;
-                postData += "&content="      + SettingsManager.getSetting("ExternalAddress");
-                postData += "&service_mode=" + FetchedRecords.response.recs.objs[i].service_mode;
-                postData += "&ttl="          + FetchedRecords.response.recs.objs[i].ttl;
+                string strResponse = CloudFlareAPI.UpdateCloudflareRecords(FetchedRecords.response.recs.objs[i]);
+                dynamic resp = System.Web.Helpers.Json.Decode(strResponse);
 
-                byte[] data = Encoding.ASCII.GetBytes(postData);
-
-                webrequest.Method = "POST";
-                webrequest.ContentType = "application/x-www-form-urlencoded";
-                webrequest.ContentLength = data.Length;
-
-                try
+                if (resp.result != "success")
                 {
-                    using (Stream stream = webrequest.GetRequestStream())
-                    {
-                        stream.Write(data, 0, data.Length);
-                    }
-
-                    using (WebResponse webresponse = webrequest.GetResponse())
-                    {
-                        using (StreamReader readStream = new StreamReader(webresponse.GetResponseStream(), System.Text.Encoding.GetEncoding("utf-8")))
-                        {
-                            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(JSONResponse));
-                            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(readStream.ReadToEnd()));
-                            JSONResponse resp = (JSONResponse)ser.ReadObject(stream);
-
-                            if (resp.result != "success")
-                            {
-                                failed++;
-                                Log("Failed to update " + FetchedRecords.response.recs.objs[i].name + " " + resp.msg);
-                            }
-                            else
-                            {
-                                updated++;
-                            }
-                        }
-                    }
+                    failed++;
+                    Logger.log("Failed to update " + FetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
                 }
-                catch (Exception ex)
+                else
                 {
-                    Log(ex.ToString(), 2);
+                    updated++;
                 }
             }
 
-            if(FetchedRecords != null) //Dont log the summary if we did nothing
-                Log("Update at " + DateTime.Now + " - " + updated.ToString() + " updated, " + up_to_date.ToString() + " up to date, " + skipped.ToString() + " skipped, " + ignored.ToString() + " ignored, " + failed.ToString() + " failed");
-        }
-
-        /// <summary>
-        /// Add messages to the log view
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="level"></param>
-        public void Log(string message, int level = 0)
-        {
-            string sSource = "CloudFlare DDNS Updater";
-            string sLog = "Application";
-
-            if (!EventLog.SourceExists(sSource))
-                EventLog.CreateEventSource(sSource, sLog);
-
-            ListViewItem row = listViewLog.Items.Add("");
-            switch (level)
-            {
-                case 0: row.ImageIndex = 0; EventLog.WriteEntry(sSource, message, EventLogEntryType.Information); break;
-                case 1: row.ImageIndex = 1; EventLog.WriteEntry(sSource, message, EventLogEntryType.Warning); break;
-                case 2: row.ImageIndex = 2; EventLog.WriteEntry(sSource, message, EventLogEntryType.Error); break;
-                default: row.ImageIndex = 0; EventLog.WriteEntry(sSource, message, EventLogEntryType.Information); break;
-            }
-            row.SubItems.Add(message);
+            Logger.log("Update at " + DateTime.Now + " - " + updated.ToString() + " updated, " + up_to_date.ToString() + " up to date, " + skipped.ToString() + " skipped, " + ignored.ToString() + " ignored, " + failed.ToString() + " failed", Logger.Level.Info);
         }
 
         /// <summary>
@@ -289,11 +148,21 @@ namespace CloudFlare_DDNS
         public frmMain()
         {
             InitializeComponent();
-            notifyIcon1.BalloonTipText = "Updates will continue in the background";
-            notifyIcon1.BalloonTipTitle = "CloudFlare DNS Updater";
-            timer1.Interval = Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000; //Minutes to milliseconds
-            timer1.Start();
-            Log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"));
+            autoupdateTimer.Interval = Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000; //Minutes to milliseconds
+            autoupdateTimer.Start();
+            Logger.setTargetControl(ref this.listViewLog);
+            Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"), Logger.Level.Info);
+        }
+
+        /// <summary>
+        /// Clean up the tray icon when closing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void frmMain_Closing(object sender, FormClosingEventArgs e)
+        {
+            autoupdateTimer.Dispose();
+            trayIcon.Dispose();
         }
 
         /// <summary>
@@ -306,8 +175,8 @@ namespace CloudFlare_DDNS
             if (WindowState == FormWindowState.Minimized)
             {
                 ShowInTaskbar = false;
-                notifyIcon1.Visible = true;
-                notifyIcon1.ShowBalloonTip(1000);
+                trayIcon.Visible = true;
+                trayIcon.ShowBalloonTip(1000);
             }
         }
 
@@ -358,7 +227,8 @@ namespace CloudFlare_DDNS
         /// <param name="e"></param>
         private void timer1_Tick(object sender, EventArgs e)
         {
-            FetchRecords(); UpdateRecords();
+            FetchRecords();
+            UpdateRecords();
         }
 
         /// <summary>
@@ -379,7 +249,6 @@ namespace CloudFlare_DDNS
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             ShowInTaskbar = true;
-            notifyIcon1.Visible = false;
             WindowState = FormWindowState.Normal;
         }
     }
