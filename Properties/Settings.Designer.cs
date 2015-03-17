@@ -82,5 +82,17 @@ namespace CloudFlare_DDNS.Properties {
                 this["FetchTime"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SelectedHosts {
+            get {
+                return ((string)(this["SelectedHosts"]));
+            }
+            set {
+                this["SelectedHosts"] = value;
+            }
+        }
     }
 }

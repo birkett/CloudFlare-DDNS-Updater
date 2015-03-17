@@ -103,7 +103,6 @@ namespace CloudFlare_DDNS
         /// </summary>
         private void FetchRecords()
         {
-            listViewRecords.Items.Clear();
             FetchedRecords = null;
 
             string new_external_address = GetExternalAddress();
@@ -126,12 +125,42 @@ namespace CloudFlare_DDNS
                     }
                     else
                     {
+                        //Itterate through the current list, saving checked items.
+                        for(int j = 0; j < listViewRecords.Items.Count; j++)
+                        {
+                            //Add checked items to a list to be saved
+                            if (listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[j].display_name).Checked == true)
+                            {
+                                //Item has been selected by the user, store it for later
+                                SettingsManager.setSetting("SelectedHosts", SettingsManager.getSetting("SelectedHosts") + FetchedRecords.response.recs.objs[j].display_name + ";");
+                            }
+                            else 
+                            {
+                                //Make sure to clean up any old entries in the settings
+                                string new_selected = SettingsManager.getSetting("SelectedHosts").Replace(FetchedRecords.response.recs.objs[j].display_name + ';', "");
+                                SettingsManager.setSetting("SelectedHosts", new_selected);
+                            }
+                        }
+
+                        SettingsManager.saveSettings(); //Save the selected host list accross sessions
+                        listViewRecords.Items.Clear();
+
+                        string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
+
                         for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
                         {
                             ListViewItem row = listViewRecords.Items.Add("");
                             row.SubItems.Add(FetchedRecords.response.recs.objs[i].type);
                             row.SubItems.Add(FetchedRecords.response.recs.objs[i].display_name);
                             row.SubItems.Add(FetchedRecords.response.recs.objs[i].display_content);
+
+                            foreach(string host in selectedHosts)
+                            {
+                                if(host == FetchedRecords.response.recs.objs[i].display_name)
+                                {
+                                    listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[i].display_name).Checked = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -146,10 +175,18 @@ namespace CloudFlare_DDNS
             if (FetchedRecords == null) //Dont attempt updates if the fetch failed
                 return;
        
-            int up_to_date = 0, skipped = 0, failed = 0, updated = 0;
+            int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
 
             for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
             {
+                //Skip over anything that is not checked
+                if (listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[i].display_name).Checked == false)
+                {
+                    //Log("Ignoring " + FetchedRecords.response.recs.objs[i].name + " - not checked by user", 1);
+                    ignored++;
+                    continue;
+                }
+
                 //Skip over MX and CNAME records
                 //TODO: Dont skip them :)
                 if (FetchedRecords.response.recs.objs[i].type != "A")
@@ -164,13 +201,6 @@ namespace CloudFlare_DDNS
                 {
                     //Log("Skipping " + FetchedRecords.response.recs.objs[i].name + " - no update needed", 0);
                     up_to_date++;
-                    continue;
-                }
-
-                //Skip over anything that is not checked
-                if (listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[i].display_name).Checked == false)
-                {
-                    skipped++;
                     continue;
                 }
 
@@ -226,7 +256,7 @@ namespace CloudFlare_DDNS
             }
 
             if(FetchedRecords != null) //Dont log the summary if we did nothing
-                Log("Update at " + DateTime.Now + " - " + updated.ToString() + " updated, " + up_to_date.ToString() + " up to date, " + skipped.ToString() + " skipped, " + failed.ToString() + " failed");
+                Log("Update at " + DateTime.Now + " - " + updated.ToString() + " updated, " + up_to_date.ToString() + " up to date, " + skipped.ToString() + " skipped, " + ignored.ToString() + " ignored, " + failed.ToString() + " failed");
         }
 
         /// <summary>
