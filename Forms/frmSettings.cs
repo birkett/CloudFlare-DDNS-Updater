@@ -30,10 +30,10 @@ namespace CloudFlare_DDNS
         /// <param name="e"></param>
         private void frmSettings_Load(object sender, EventArgs e)
         {
-            txtDomainName.Text = Properties.Settings.Default.Domain;
-            txtEmailAddress.Text = Properties.Settings.Default.EmailAddress;
-            txtAPIKey.Text = Properties.Settings.Default.APIKey;
-            txtFetchTime.Text = Properties.Settings.Default.AutoFetchTime;
+            txtDomainName.Text = SettingsManager.getSetting("Domain");
+            txtEmailAddress.Text = SettingsManager.getSetting("EmailAddress");
+            txtAPIKey.Text = SettingsManager.getSetting("APIKey");
+            txtFetchTime.Text = SettingsManager.getSetting("FetchTime");
         }
 
         /// <summary>
@@ -43,11 +43,11 @@ namespace CloudFlare_DDNS
         /// <param name="e"></param>
         private void btnApply_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.Domain = txtDomainName.Text;
-            Properties.Settings.Default.EmailAddress = txtEmailAddress.Text;
-            Properties.Settings.Default.APIKey = txtAPIKey.Text;
-            Properties.Settings.Default.AutoFetchTime = txtFetchTime.Text;
-            Properties.Settings.Default.Save();
+            SettingsManager.setSetting("Domain", txtDomainName.Text);
+            SettingsManager.setSetting("EmailAddress", txtEmailAddress.Text);
+            SettingsManager.setSetting("APIKey", txtAPIKey.Text);
+            SettingsManager.setSetting("FetchTime", txtFetchTime.Text);
+            SettingsManager.saveSettings();
         }
 
         /// <summary>

@@ -14,7 +14,7 @@
     <Setting Name="Domain" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="AutoFetchTime" Type="System.String" Scope="User">
+    <Setting Name="FetchTime" Type="System.String" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
   </Settings>

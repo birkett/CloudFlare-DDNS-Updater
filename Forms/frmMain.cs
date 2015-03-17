@@ -64,9 +64,9 @@ namespace CloudFlare_DDNS
         {
             WebRequest webrequest = WebRequest.Create("https://www.cloudflare.com/api_json.html");
             string postData = "a=rec_load_all";
-            postData += "&tkn=" + Properties.Settings.Default.APIKey;
-            postData += "&email=" + Properties.Settings.Default.EmailAddress;
-            postData += "&z=" + Properties.Settings.Default.Domain;
+            postData += "&tkn=" + SettingsManager.getSetting("APIKey");
+            postData += "&email=" + SettingsManager.getSetting("EmailAddress");
+            postData += "&z=" + SettingsManager.getSetting("Domain");
             byte[] data = Encoding.ASCII.GetBytes(postData);
 
             webrequest.Method = "POST";
@@ -110,8 +110,8 @@ namespace CloudFlare_DDNS
 
             if (new_external_address != null)
             {
-                Properties.Settings.Default.ExternalAddress = new_external_address;
-                txtExternalAddress.Text = Properties.Settings.Default.ExternalAddress;
+                SettingsManager.setSetting("ExternalAddress", new_external_address);
+                txtExternalAddress.Text = new_external_address;
 
                 string records = GetCloudflareRecords();
                 if (records != null)
@@ -160,7 +160,7 @@ namespace CloudFlare_DDNS
                 }
 
                 //Skip over anything that doesnt need an update
-                if (FetchedRecords.response.recs.objs[i].content == Properties.Settings.Default.ExternalAddress)
+                if (FetchedRecords.response.recs.objs[i].content == SettingsManager.getSetting("ExternalAddress"))
                 {
                     //Log("Skipping " + FetchedRecords.response.recs.objs[i].name + " - no update needed", 0);
                     up_to_date++;
@@ -176,15 +176,15 @@ namespace CloudFlare_DDNS
 
                 WebRequest webrequest = WebRequest.Create("https://www.cloudflare.com/api_json.html");
                 string postData = "a=rec_edit";
-                postData += "&tkn=" + Properties.Settings.Default.APIKey;
-                postData += "&id=" + FetchedRecords.response.recs.objs[i].rec_id;
-                postData += "&email=" + Properties.Settings.Default.EmailAddress;
-                postData += "&z=" + Properties.Settings.Default.Domain;
-                postData += "&type=" + FetchedRecords.response.recs.objs[i].type;
-                postData += "&name=" + FetchedRecords.response.recs.objs[i].name;
-                postData += "&content=" + Properties.Settings.Default.ExternalAddress;
+                postData += "&tkn="          + SettingsManager.getSetting("APIKey");
+                postData += "&id="           + FetchedRecords.response.recs.objs[i].rec_id;
+                postData += "&email="        + SettingsManager.getSetting("EmailAddress");
+                postData += "&z="            + SettingsManager.getSetting("Domain");
+                postData += "&type="         + FetchedRecords.response.recs.objs[i].type;
+                postData += "&name="         + FetchedRecords.response.recs.objs[i].name;
+                postData += "&content="      + SettingsManager.getSetting("ExternalAddress");
                 postData += "&service_mode=" + FetchedRecords.response.recs.objs[i].service_mode;
-                postData += "&ttl=" + FetchedRecords.response.recs.objs[i].ttl;
+                postData += "&ttl="          + FetchedRecords.response.recs.objs[i].ttl;
 
                 byte[] data = Encoding.ASCII.GetBytes(postData);
 
@@ -261,9 +261,9 @@ namespace CloudFlare_DDNS
             InitializeComponent();
             notifyIcon1.BalloonTipText = "Updates will continue in the background";
             notifyIcon1.BalloonTipTitle = "CloudFlare DNS Updater";
-            timer1.Interval = Convert.ToInt32(Properties.Settings.Default.AutoFetchTime) * 60000; //Minutes to milliseconds
+            timer1.Interval = Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000; //Minutes to milliseconds
             timer1.Start();
-            Log("Starting auto updates every " + Properties.Settings.Default.AutoFetchTime + " minutes for domain " + Properties.Settings.Default.Domain);
+            Log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"));
         }
 
         /// <summary>
