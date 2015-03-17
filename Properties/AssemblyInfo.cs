@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("CloudFlare DDNS")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("CloudFlare Dynamic DNS client for Windows")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Anthony Birkett")]
 [assembly: AssemblyProduct("CloudFlare DDNS")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]

@@ -71,7 +71,10 @@ namespace CloudFlare_DDNS
         private static string webRequest(Method MethodType, string szUrl, string szData)
         {
             WebRequest webrequest = WebRequest.Create(szUrl);
-            byte[] data = Encoding.ASCII.GetBytes(szData);
+            byte[] data = null;
+
+            if(szData != null)
+                data = Encoding.ASCII.GetBytes(szData);
 
             if(MethodType == Method.Post)
             {

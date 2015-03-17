@@ -47,8 +47,8 @@ namespace CloudFlare_DDNS
         /// <summary>
         /// Add messages to the log view
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="level"></param>
+        /// <param name="szMessage"></param>
+        /// <param name="logLevel"></param>
         private static void writeFormControl(string szMessage, Level logLevel = 0)
         {
             if(m_ListView == null)
@@ -83,23 +83,27 @@ namespace CloudFlare_DDNS
             string sSource = "CloudFlare DDNS Updater";
             string sLog = "Application";
 
-            if (!EventLog.SourceExists(sSource))
-                EventLog.CreateEventSource(sSource, sLog);
-
-            switch (logLevel)
+            try
             {
-                case Level.Warning:
-                    EventLog.WriteEntry(sSource, szMessage, EventLogEntryType.Warning);
-                    break;
+                if (!EventLog.SourceExists(sSource))
+                    EventLog.CreateEventSource(sSource, sLog);
 
-                case Level.Error:
-                    EventLog.WriteEntry(sSource, szMessage, EventLogEntryType.Error);
-                    break;
+                switch (logLevel)
+                {
+                    case Level.Warning:
+                        EventLog.WriteEntry(sSource, szMessage, EventLogEntryType.Warning);
+                        break;
 
-                default: //Level.Info
-                    EventLog.WriteEntry(sSource, szMessage, EventLogEntryType.Information);
-                    break;
+                    case Level.Error:
+                        EventLog.WriteEntry(sSource, szMessage, EventLogEntryType.Error);
+                        break;
+
+                    default: //Level.Info
+                        EventLog.WriteEntry(sSource, szMessage, EventLogEntryType.Information);
+                        break;
+                }
             }
+            catch {}
         }
     }
 }

@@ -251,5 +251,16 @@ namespace CloudFlare_DDNS
             ShowInTaskbar = true;
             WindowState = FormWindowState.Normal;
         }
+
+        /// <summary>
+        /// Show the about form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmAbout about = new frmAbout();
+            about.Show();
+        }
     }
 }

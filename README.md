@@ -2,7 +2,7 @@ CloudFlare DDNS Updater
 =============
 
 Dynamic DNS client for use with CloudFlare.
-Written in C#, using Windows Forms. 
+Written in C#, using Windows Forms.
 
 
 ## Support Me
@@ -16,24 +16,15 @@ Windows XP/Vista/7/8/8.1 or Windows Server 2008R2/2012/2012R2
 Solution is known to build with VS2013.
 
 ## Installing
-The executable can be run from anywhere, no install required. 
+The executable can be run from anywhere, no install required.
 Settings will be saved in %userprofile%\AppData\Local\CloudFlare_DDNS
 
-The application makes use of the Windows Event Log to save messages. 
-Add the following key and string value to your registry:
+The application makes use of the Windows Event Log to save messages.
+Run the application as an Administrator at least once (Right Click->Run as Administrator), this will automatically create the required registry keys for Event Log access.
 
-```
-Windows Registry Editor Version 5.00
-
-[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Application\CloudFlare DDNS Updater]
-"EventMessageFile"="C:\\windows\\microsoft.net\\framework\\v4.0.30319\\EventLogMessages.dll"
-```
-
-This is required so the program does not require elevation at any point.
-
-On first launch, enter your details in Tools->Options. 
-You will need your CloudFlare API key, available on your CloudFlare Account page. 
+On first launch, enter your details in Tools->Options.
+You will need your CloudFlare API key, available on your CloudFlare Account page.
 
 ## External Resources
-This application makes use of the [FamFamFam Icon Pack](http://www.famfamfam.com/lab/icons/silk/) 
-,available under the Creative Commons Attributions 2.5 license. 
+This application makes use of the [FamFamFam Icon Pack](http://www.famfamfam.com/lab/icons/silk/)
+,available under the Creative Commons Attributions 2.5 license.
