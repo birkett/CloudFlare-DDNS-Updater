@@ -18,7 +18,7 @@ namespace CloudFlare_DDNS
         /// <summary>
         /// Stores the fetched records in an accessible place
         /// </summary>
-        public dynamic FetchedRecords = null;
+        public JSONResponse FetchedRecords = null;
 
 
         /// <summary>
@@ -61,12 +61,13 @@ namespace CloudFlare_DDNS
         /// Called from another thread, adds an entry to the list control
         /// </summary>
         /// <param name="entry"></param>
-        private void addHostEntry(dynamic entry)
+        private void addHostEntry(DNSRecord entry)
         {
-            ListViewItem row = listViewRecords.Items.Add("");
+            ListViewItem row = new ListViewItem();
             row.SubItems.Add(entry.type);
             row.SubItems.Add(entry.display_name);
             row.SubItems.Add(entry.display_content);
+            listViewRecords.Items.Add(row);
         }
 
 
@@ -74,7 +75,7 @@ namespace CloudFlare_DDNS
         /// Delegate for addHostEntry()
         /// </summary>
         /// <param name="entry"></param>
-        delegate void addHostEntryInvoker(dynamic entry);
+        delegate void addHostEntryInvoker(DNSRecord entry);
 
 
         /// <summary>
@@ -113,7 +114,7 @@ namespace CloudFlare_DDNS
             if (records == null)
                 return;
 
-            FetchedRecords = Json.Decode(records);
+            FetchedRecords = Json.Decode<JSONResponse>(records);
 
             if (FetchedRecords.result != "success")
             {
@@ -171,7 +172,7 @@ namespace CloudFlare_DDNS
             for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
             {
                 //Skip over anything that is not checked
-                if (this.Invoke(new isEntryCheckedInvoker(isEntryChecked), FetchedRecords.response.recs.objs[i].display_name) == false)
+                if (Convert.ToBoolean(this.Invoke(new isEntryCheckedInvoker(isEntryChecked), FetchedRecords.response.recs.objs[i].display_name)) == false)
                 {
                     //Log("Ignoring " + FetchedRecords.response.recs.objs[i].name + " - not checked by user", 1);
                     ignored++;
@@ -196,7 +197,7 @@ namespace CloudFlare_DDNS
                 }
 
                 string strResponse = CloudFlareAPI.UpdateCloudflareRecords(FetchedRecords.response.recs.objs[i]);
-                dynamic resp = System.Web.Helpers.Json.Decode(strResponse);
+                JSONResponse resp = (JSONResponse)System.Web.Helpers.Json.Decode(strResponse);
 
                 if (resp.result != "success")
                 {
@@ -305,7 +306,7 @@ namespace CloudFlare_DDNS
         /// </summary>
         private void timerUpdateThread()
         {
-            FetchedRecords();
+            FetchRecords();
             UpdateRecords();
         }
 
