@@ -34,6 +34,7 @@ namespace CloudFlare_DDNS
             txtEmailAddress.Text = SettingsManager.getSetting("EmailAddress");
             txtAPIKey.Text = SettingsManager.getSetting("APIKey");
             txtFetchTime.Text = SettingsManager.getSetting("FetchTime");
+            cbEventLog.Checked = Convert.ToBoolean(SettingsManager.getSetting("UseEventLog"));
         }
 
         /// <summary>
@@ -47,6 +48,7 @@ namespace CloudFlare_DDNS
             SettingsManager.setSetting("EmailAddress", txtEmailAddress.Text);
             SettingsManager.setSetting("APIKey", txtAPIKey.Text);
             SettingsManager.setSetting("FetchTime", txtFetchTime.Text);
+            SettingsManager.setSetting("UseEventLog", cbEventLog.Checked.ToString());
             SettingsManager.saveSettings();
         }
 
@@ -59,5 +61,7 @@ namespace CloudFlare_DDNS
         {
             this.Close();
         }
+
+
     }
 }

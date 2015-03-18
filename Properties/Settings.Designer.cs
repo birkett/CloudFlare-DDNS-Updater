@@ -94,5 +94,17 @@ namespace CloudFlare_DDNS.Properties {
                 this["SelectedHosts"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public string UseEventLog {
+            get {
+                return ((string)(this["UseEventLog"]));
+            }
+            set {
+                this["UseEventLog"] = value;
+            }
+        }
     }
 }

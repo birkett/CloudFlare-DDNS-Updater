@@ -35,7 +35,9 @@ namespace CloudFlare_DDNS
         public static void log(string szMessage, Level logLevel = 0)
         {
             writeFormControl(szMessage, logLevel);
-            writeEventLog(szMessage, logLevel);
+
+            if(SettingsManager.getSetting("UseEventLog") == "True")
+                writeEventLog(szMessage, logLevel);
         }
 
 

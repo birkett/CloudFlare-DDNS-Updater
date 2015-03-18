@@ -38,11 +38,13 @@
             this.lblAPIKey = new System.Windows.Forms.Label();
             this.txtFetchTime = new System.Windows.Forms.TextBox();
             this.lblFetchTime = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cbEventLog = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(285, 124);
+            this.btnClose.Location = new System.Drawing.Point(285, 156);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 0;
@@ -52,7 +54,7 @@
             // 
             // btnApply
             // 
-            this.btnApply.Location = new System.Drawing.Point(12, 124);
+            this.btnApply.Location = new System.Drawing.Point(12, 156);
             this.btnApply.Name = "btnApply";
             this.btnApply.Size = new System.Drawing.Size(75, 23);
             this.btnApply.TabIndex = 1;
@@ -124,11 +126,31 @@
             this.lblFetchTime.TabIndex = 8;
             this.lblFetchTime.Text = "Auto Fetch Time (Minutes):";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 118);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(128, 13);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "Use Windows Event Log:";
+            // 
+            // cbEventLog
+            // 
+            this.cbEventLog.AutoSize = true;
+            this.cbEventLog.Location = new System.Drawing.Point(152, 117);
+            this.cbEventLog.Name = "cbEventLog";
+            this.cbEventLog.Size = new System.Drawing.Size(15, 14);
+            this.cbEventLog.TabIndex = 11;
+            this.cbEventLog.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(372, 159);
+            this.ClientSize = new System.Drawing.Size(372, 191);
+            this.Controls.Add(this.cbEventLog);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.txtFetchTime);
             this.Controls.Add(this.lblFetchTime);
             this.Controls.Add(this.txtAPIKey);
@@ -159,5 +181,7 @@
         private System.Windows.Forms.Label lblAPIKey;
         private System.Windows.Forms.TextBox txtFetchTime;
         private System.Windows.Forms.Label lblFetchTime;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox cbEventLog;
     }
 }
