@@ -28,10 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.components = new System.ComponentModel.Container();
+            this.autoUpdateTimer = new System.Windows.Forms.Timer(this.components);
+            // 
+            // autoUpdateTimer
+            // 
+            this.autoUpdateTimer.Tick += new System.EventHandler(this.autoUpdateTimer_Tick);
+            // 
+            // Service
+            // 
             this.ServiceName = "Service";
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Timer autoUpdateTimer;
     }
 }

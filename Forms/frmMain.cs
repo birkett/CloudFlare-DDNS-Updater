@@ -18,7 +18,7 @@ namespace CloudFlare_DDNS
         /// <summary>
         /// Stores the fetched records in an accessible place
         /// </summary>
-        public JSONResponse FetchedRecords = null;
+        private JSONResponse FetchedRecords = null;
 
 
         /// <summary>
