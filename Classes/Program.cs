@@ -6,6 +6,8 @@ namespace CloudFlare_DDNS
 {
     static class Program
     {
+
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -25,6 +27,10 @@ namespace CloudFlare_DDNS
             return;
         }
 
+
+        /// <summary>
+        /// Run the application with the GUI
+        /// </summary>
         static void RunGUI()
         {
             Logger.log("Starting CloudFlare DDNS updater GUI", Logger.Level.Info);
@@ -33,15 +39,16 @@ namespace CloudFlare_DDNS
             Application.Run(new frmMain());
         }
 
+
+        /// <summary>
+        /// Run the application silently as a service
+        /// </summary>
         static void RunService()
         {
             Logger.log("Starting CloudFlare DDNS updater service", Logger.Level.Info);
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[] 
-            { 
-                new Service() 
-            };
-            ServiceBase.Run(ServicesToRun);
+            ServiceBase.Run(new Service());
         }
+
+
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace CloudFlare_DDNS
 {
+
+
     /// <summary>
     /// About box form
     /// </summary>
@@ -15,8 +18,13 @@ namespace CloudFlare_DDNS
         {
             InitializeComponent();
 
-            rtfAbout.Text = "CloudFlare Dynamic DNS client for Windows - Version 1.0.0.0\n"
-                           + "Copyright © Anthony Birkett 2014\n";
+            string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            string copyright = ((AssemblyCopyrightAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0]).Copyright;
+            string description = ((AssemblyDescriptionAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false)[0]).Description;
+
+            txtDescription.Text = description;
+            txtVersion.Text = version;
+            txtCopyright.Text = copyright;
         }
 
         /// <summary>
@@ -28,5 +36,7 @@ namespace CloudFlare_DDNS
         {
             this.Close();
         }
+
+
     }
 }
