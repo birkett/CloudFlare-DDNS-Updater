@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("CloudFlare DDNS")]
 [assembly: AssemblyDescription("CloudFlare Dynamic DNS client for Windows")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Anthony Birkett")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("CloudFlare DDNS")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright © Anthony Birkett 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

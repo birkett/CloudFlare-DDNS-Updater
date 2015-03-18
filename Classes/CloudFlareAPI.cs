@@ -9,6 +9,8 @@ namespace CloudFlare_DDNS
 {
     class CloudFlareAPI
     {
+
+
         /// <summary>
         /// Return the current external network address, using the default gateway
         /// </summary>
@@ -36,6 +38,12 @@ namespace CloudFlare_DDNS
             return webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
         }
 
+
+        /// <summary>
+        /// Run an update on the given record
+        /// </summary>
+        /// <param name="FetchedRecord"></param>
+        /// <returns></returns>
         public static string UpdateCloudflareRecords(DNSRecord FetchedRecord)
         {
             string postData = "a=rec_edit";
@@ -52,6 +60,7 @@ namespace CloudFlare_DDNS
             return webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
         }
 
+
         /// <summary>
         /// Enum to contain web request types (GET or POST)
         /// </summary>
@@ -60,6 +69,7 @@ namespace CloudFlare_DDNS
             Get = 0,
             Post,
         }
+
 
         /// <summary>
         /// Make a web request via GET or POST
@@ -110,5 +120,7 @@ namespace CloudFlare_DDNS
 
             return strResponse;
         }
+
+
     }
 }

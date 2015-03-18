@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using System.Diagnostics;
 
 namespace CloudFlare_DDNS
 {
     class Logger
     {
+
+
         /// <summary>
-        /// Used to store a reference to the ListView control on a form to populate with log entries
+        /// Stores the items for a list view control
         /// </summary>
-        static private System.Windows.Forms.ListView m_ListView = null;
+        static public List<ListViewItem> m_LogItems = new List<ListViewItem>();
 
         /// <summary>
         /// Enum of Log message levels
@@ -23,14 +26,6 @@ namespace CloudFlare_DDNS
             Error,
         }
 
-        /// <summary>
-        /// Set up the ListView control to send events to
-        /// </summary>
-        /// <param name="listView"></param>
-        public static void setTargetControl(ref System.Windows.Forms.ListView listView)
-        {
-            m_ListView = listView;
-        }
 
         /// <summary>
         /// Write an entry to the log
@@ -51,10 +46,7 @@ namespace CloudFlare_DDNS
         /// <param name="logLevel"></param>
         private static void writeFormControl(string szMessage, Level logLevel = 0)
         {
-            if(m_ListView == null)
-                return;
-
-            System.Windows.Forms.ListViewItem row = m_ListView.Items.Add("");
+            ListViewItem row = new ListViewItem();
             switch (logLevel)
             {
                 case Level.Warning:
@@ -70,6 +62,8 @@ namespace CloudFlare_DDNS
                     break;
             }
             row.SubItems.Add(szMessage);
+
+            m_LogItems.Add(row);
         }
 
 
@@ -105,5 +99,7 @@ namespace CloudFlare_DDNS
             }
             catch {}
         }
+
+
     }
 }

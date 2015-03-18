@@ -53,6 +53,7 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoupdateTimer = new System.Windows.Forms.Timer(this.components);
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.logupdateTimer = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -221,13 +222,13 @@
             // 
             this.aboutToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.information;
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // autoupdateTimer
             // 
-            this.autoupdateTimer.Tick += new System.EventHandler(this.timer1_Tick);
+            this.autoupdateTimer.Tick += new System.EventHandler(this.autoupdateTimer_Tick);
             // 
             // trayIcon
             // 
@@ -237,6 +238,11 @@
             this.trayIcon.Text = "trayIcon";
             this.trayIcon.Visible = true;
             this.trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            // 
+            // logupdateTimer
+            // 
+            this.logupdateTimer.Interval = 1000;
+            this.logupdateTimer.Tick += new System.EventHandler(this.logupdateTimer_Tick);
             // 
             // frmMain
             // 
@@ -248,6 +254,7 @@
             this.Controls.Add(this.listViewLog);
             this.Controls.Add(this.listViewRecords);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmMain";
             this.Text = "CloudFlare DDNS Updater";
@@ -285,6 +292,7 @@
         private System.Windows.Forms.Timer autoupdateTimer;
         private System.Windows.Forms.NotifyIcon trayIcon;
         private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.Timer logupdateTimer;
     }
 }
 

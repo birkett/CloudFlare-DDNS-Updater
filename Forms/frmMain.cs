@@ -5,7 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using System.Net;
 using System.IO;
@@ -18,10 +18,86 @@ namespace CloudFlare_DDNS
     /// </summary>
     public partial class frmMain : Form
     {
+
+
         /// <summary>
         /// Stores the fetched records in an accessible place
         /// </summary>
         public dynamic FetchedRecords = null;
+
+
+        /// <summary>
+        /// Called from another thread, get if a list entry is selected by the user
+        /// </summary>
+        /// <param name="szEntryName"></param>
+        /// <returns></returns>
+        private bool isEntryChecked(string szEntryName)
+        {
+            return (listViewRecords.FindItemWithText(szEntryName).Checked == true);
+        }
+
+
+        /// <summary>
+        /// Deletgate for isEntryChecked()
+        /// </summary>
+        /// <param name="szEntryName"></param>
+        /// <returns></returns>
+        delegate bool isEntryCheckedInvoker(string szEntryName);
+
+
+        /// <summary>
+        /// Called from another thread, select an entry in the list
+        /// </summary>
+        /// <param name="szEntryName"></param>
+        private void checkTickEntry(string szEntryName)
+        {
+            listViewRecords.FindItemWithText(szEntryName).Checked = true;
+        }
+
+
+        /// <summary>
+        /// Deletgate for checkTickEntry()
+        /// </summary>
+        /// <param name="szEntryName"></param>
+        delegate void checkTickEntryInvoker(string szEntryName);
+
+
+        /// <summary>
+        /// Called from another thread, adds an entry to the list control
+        /// </summary>
+        /// <param name="entry"></param>
+        private void addHostEntry(dynamic entry)
+        {
+            ListViewItem row = listViewRecords.Items.Add("");
+            row.SubItems.Add(entry.type);
+            row.SubItems.Add(entry.display_name);
+            row.SubItems.Add(entry.display_content);
+        }
+
+
+        /// <summary>
+        /// Delegate for addHostEntry()
+        /// </summary>
+        /// <param name="entry"></param>
+        delegate void addHostEntryInvoker(dynamic entry);
+
+
+        /// <summary>
+        /// Called from another thread, update the textbox control with the new external address
+        /// </summary>
+        /// <param name="szAddress"></param>
+        private void updateAddress(string szAddress)
+        {
+            txtExternalAddress.Text = szAddress;
+        }
+
+
+        /// <summary>
+        /// Delegate for updateAddress()
+        /// </summary>
+        /// <param name="szAddress"></param>
+        delegate void updateAddressInvoker(string szAddress);
+
 
         /// <summary>
         /// Logic to get the external address and CloudFlare records
@@ -35,7 +111,8 @@ namespace CloudFlare_DDNS
                 return;
 
             SettingsManager.setSetting("ExternalAddress", new_external_address);
-            txtExternalAddress.Text = new_external_address;
+
+            this.Invoke(new updateAddressInvoker(updateAddress), new_external_address);
 
             string records = CloudFlareAPI.GetCloudflareRecords();
             if (records == null)
@@ -73,20 +150,18 @@ namespace CloudFlare_DDNS
 
             for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
             {
-                ListViewItem row = listViewRecords.Items.Add("");
-                row.SubItems.Add(FetchedRecords.response.recs.objs[i].type);
-                row.SubItems.Add(FetchedRecords.response.recs.objs[i].display_name);
-                row.SubItems.Add(FetchedRecords.response.recs.objs[i].display_content);
+                this.Invoke(new addHostEntryInvoker(addHostEntry), FetchedRecords.response.recs.objs[i]);
 
-                foreach(string host in selectedHosts)
+                foreach (string host in selectedHosts)
                 {
-                    if(host == FetchedRecords.response.recs.objs[i].display_name)
+                    if (host == FetchedRecords.response.recs.objs[i].display_name)
                     {
-                        listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[i].display_name).Checked = true;
+                        this.Invoke(new checkTickEntryInvoker(checkTickEntry), FetchedRecords.response.recs.objs[i].display_name);
                     }
                 }
             }
         }
+
 
         /// <summary>
         /// Logic to update records
@@ -101,7 +176,7 @@ namespace CloudFlare_DDNS
             for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
             {
                 //Skip over anything that is not checked
-                if (listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[i].display_name).Checked == false)
+                if (this.Invoke(new isEntryCheckedInvoker(isEntryChecked), FetchedRecords.response.recs.objs[i].display_name) == false)
                 {
                     //Log("Ignoring " + FetchedRecords.response.recs.objs[i].name + " - not checked by user", 1);
                     ignored++;
@@ -142,6 +217,7 @@ namespace CloudFlare_DDNS
             Logger.log("Update at " + DateTime.Now + " - " + updated.ToString() + " updated, " + up_to_date.ToString() + " up to date, " + skipped.ToString() + " skipped, " + ignored.ToString() + " ignored, " + failed.ToString() + " failed", Logger.Level.Info);
         }
 
+
         /// <summary>
         /// Form entry point
         /// </summary>
@@ -150,9 +226,10 @@ namespace CloudFlare_DDNS
             InitializeComponent();
             autoupdateTimer.Interval = Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000; //Minutes to milliseconds
             autoupdateTimer.Start();
-            Logger.setTargetControl(ref this.listViewLog);
+            logupdateTimer.Start();
             Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"), Logger.Level.Info);
         }
+
 
         /// <summary>
         /// Clean up the tray icon when closing
@@ -164,6 +241,7 @@ namespace CloudFlare_DDNS
             autoupdateTimer.Dispose();
             trayIcon.Dispose();
         }
+
 
         /// <summary>
         /// Minimise to the tray instead of the taskbar
@@ -180,6 +258,7 @@ namespace CloudFlare_DDNS
             }
         }
 
+
         /// <summary>
         /// Get current external address and CloudFlare records
         /// </summary>
@@ -187,8 +266,10 @@ namespace CloudFlare_DDNS
         /// <param name="e"></param>
         private void fetchDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FetchRecords();
+            Thread fetchThread = new Thread(new ThreadStart(FetchRecords));
+            fetchThread.Start();
         }
+
 
         /// <summary>
         /// Update the selected records
@@ -197,8 +278,10 @@ namespace CloudFlare_DDNS
         /// <param name="e"></param>
         private void updateRecordsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UpdateRecords();
+            Thread updateThread = new Thread(new ThreadStart(UpdateRecords));
+            updateThread.Start();
         }
+
 
         /// <summary>
         /// Open the settings box
@@ -210,6 +293,7 @@ namespace CloudFlare_DDNS
             frmSettings settingsForm = new frmSettings(); settingsForm.Show();
         }
 
+
         /// <summary>
         /// Minimise the appplication to the task tray
         /// </summary>
@@ -220,16 +304,43 @@ namespace CloudFlare_DDNS
             this.WindowState = FormWindowState.Minimized;
         }
 
+
         /// <summary>
-        /// Auto update every x minutes
+        /// Thread to run updates every x minutes
+        /// </summary>
+        private void timerUpdateThread()
+        {
+            FetchedRecords();
+            UpdateRecords();
+        }
+
+
+        /// <summary>
+        /// Auto update every x minutes, creates a new timerUpdateThread() thread
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void timer1_Tick(object sender, EventArgs e)
+        private void autoupdateTimer_Tick(object sender, EventArgs e)
         {
-            FetchRecords();
-            UpdateRecords();
+            Thread thread = new Thread(new ThreadStart(timerUpdateThread));
+            thread.Start();
         }
+
+
+        /// <summary>
+        /// Tick every 1000ms to add new log entries to the listview control
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void logupdateTimer_Tick(object sender, EventArgs e)
+        {
+            foreach(ListViewItem ListItem in Logger.m_LogItems)
+            {
+                listViewLog.Items.Add(ListItem);
+            }
+            Logger.m_LogItems.Clear();
+        }
+
 
         /// <summary>
         /// Close the application
@@ -240,6 +351,7 @@ namespace CloudFlare_DDNS
         {
             Application.Exit();
         }
+
 
         /// <summary>
         /// Restore when double clicking the tray icon
@@ -252,6 +364,7 @@ namespace CloudFlare_DDNS
             WindowState = FormWindowState.Normal;
         }
 
+
         /// <summary>
         /// Show the about form
         /// </summary>
@@ -262,5 +375,7 @@ namespace CloudFlare_DDNS
             frmAbout about = new frmAbout();
             about.Show();
         }
+
+
     }
 }

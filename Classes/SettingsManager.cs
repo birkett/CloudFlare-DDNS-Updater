@@ -8,6 +8,8 @@ namespace CloudFlare_DDNS
 {
     class SettingsManager
     {
+
+
         /// <summary>
         /// Get a setting from the config file by a given name
         /// </summary>
@@ -17,6 +19,7 @@ namespace CloudFlare_DDNS
         {
             return Properties.Settings.Default[szName].ToString();
         }
+
 
         /// <summary>
         /// Set a setting in the user config file
@@ -28,6 +31,7 @@ namespace CloudFlare_DDNS
             Properties.Settings.Default[szName] = szValue;
         }
 
+
         /// <summary>
         /// Save the user config
         /// </summary>
@@ -35,5 +39,7 @@ namespace CloudFlare_DDNS
         {
             Properties.Settings.Default.Save();
         }
+
+
     }
 }
