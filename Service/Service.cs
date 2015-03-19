@@ -15,7 +15,7 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Used for auto updating
         /// </summary>
-        private System.Timers.Timer autoUpdateTimer;
+        private System.Timers.Timer autoUpdateTimer = null;
 
 
         /// <summary>
@@ -23,7 +23,8 @@ namespace CloudFlareDDNS
         /// </summary>
         public Service()
         {
-            InitializeComponent();
+            this.CanPauseAndContinue = true;
+            this.ServiceName = "CloudFlareDDNS";
         }
 
 
@@ -46,7 +47,28 @@ namespace CloudFlareDDNS
         /// </summary>
         protected override void OnStop()
         {
+            autoUpdateTimer.Enabled = false;
             Logger.log("Service stopping", Logger.Level.Info);
+        }
+
+
+        /// <summary>
+        /// Pause the service
+        /// </summary>
+        protected override void OnPause()
+        {
+            autoUpdateTimer.Enabled = false;
+            base.OnPause();
+        }
+
+
+        /// <summary>
+        /// Resume the service
+        /// </summary>
+        protected override void OnContinue()
+        {
+            autoUpdateTimer.Enabled = true;
+            base.OnContinue();
         }
 
 
@@ -57,7 +79,7 @@ namespace CloudFlareDDNS
         {
             UpdateRecords(FetchRecords());
         }
-   
+
 
         /// <summary>
         /// Auto update every x minutes, creates a new timerUpdateThread() thread

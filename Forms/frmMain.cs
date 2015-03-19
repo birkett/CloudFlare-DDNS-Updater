@@ -18,13 +18,13 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Used for auto updates
         /// </summary>
-        private System.Timers.Timer autoUpdateTimer;
+        private System.Timers.Timer autoUpdateTimer = null;
 
 
         /// <summary>
         /// Used for updating the log control
         /// </summary>
-        private System.Timers.Timer logUpdateTimer;
+        private System.Timers.Timer logUpdateTimer = null;
 
 
         /// <summary>

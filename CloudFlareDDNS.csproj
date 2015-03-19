@@ -103,14 +103,8 @@
     <Compile Include="Service\Service.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Service\Service.designer.cs">
-      <DependentUpon>Service.cs</DependentUpon>
-    </Compile>
     <Compile Include="Service\ServiceInstaller.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Service\ServiceInstaller.Designer.cs">
-      <DependentUpon>ServiceInstaller.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Forms\frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>
@@ -131,12 +125,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Service\Service.resx">
-      <DependentUpon>Service.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Service\ServiceInstaller.resx">
-      <DependentUpon>ServiceInstaller.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
