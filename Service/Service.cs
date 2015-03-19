@@ -13,6 +13,12 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Used for auto updating
+        /// </summary>
+        private System.Timers.Timer autoUpdateTimer;
+
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public Service()
@@ -27,8 +33,10 @@ namespace CloudFlareDDNS
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
-            autoUpdateTimer.Interval = Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000; //Minutes to milliseconds
-            autoUpdateTimer.Start();
+            autoUpdateTimer = new System.Timers.Timer(Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000); //Minutes to milliseconds
+            autoUpdateTimer.Elapsed += autoUpdateTimer_Tick;
+            autoUpdateTimer.Enabled = true;
+
             Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"), Logger.Level.Info);
         }
 
@@ -38,6 +46,7 @@ namespace CloudFlareDDNS
         /// </summary>
         protected override void OnStop()
         {
+            Logger.log("Service stopping", Logger.Level.Info);
         }
 
 
@@ -46,8 +55,7 @@ namespace CloudFlareDDNS
         /// </summary>
         private void timerUpdateThread()
         {
-            JSONResponse records = FetchRecords();
-            UpdateRecords(records);
+            UpdateRecords(FetchRecords());
         }
    
 
