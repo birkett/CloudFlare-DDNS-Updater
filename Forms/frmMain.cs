@@ -16,6 +16,18 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Used for auto updates
+        /// </summary>
+        private System.Timers.Timer autoUpdateTimer;
+
+
+        /// <summary>
+        /// Used for updating the log control
+        /// </summary>
+        private System.Timers.Timer logUpdateTimer;
+
+
+        /// <summary>
         /// Stores the fetched records in an accessible place
         /// </summary>
         private JSONResponse FetchedRecords = null;
@@ -76,6 +88,23 @@ namespace CloudFlareDDNS
         /// </summary>
         /// <param name="entry"></param>
         delegate void addHostEntryInvoker(DNSRecord entry);
+
+
+        /// <summary>
+        /// Called from another thread, adds an entry to the log control
+        /// </summary>
+        /// <param name="entry"></param>
+        private void addLogEntry(ListViewItem entry)
+        {
+            listViewLog.Items.Add(entry);
+        }
+
+
+        /// <summary>
+        /// Delegate for addLogEntry()
+        /// </summary>
+        /// <param name="entry"></param>
+        delegate void addLogEntryInvoker(ListViewItem entry);
 
 
         /// <summary>
@@ -225,9 +254,15 @@ namespace CloudFlareDDNS
         public frmMain()
         {
             InitializeComponent();
-            autoupdateTimer.Interval = Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000; //Minutes to milliseconds
-            autoupdateTimer.Start();
-            logupdateTimer.Start();
+
+            autoUpdateTimer = new System.Timers.Timer(Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000); //Minutes to milliseconds
+            autoUpdateTimer.Elapsed += autoUpdateTimer_Tick;
+            autoUpdateTimer.Enabled = true;
+
+            logUpdateTimer = new System.Timers.Timer(1000); //Refresh the log every second
+            logUpdateTimer.Elapsed += logUpdateTimer_Tick;
+            logUpdateTimer.Enabled = true;
+
             Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"), Logger.Level.Info);
         }
 
@@ -239,7 +274,8 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void frmMain_Closing(object sender, FormClosingEventArgs e)
         {
-            autoupdateTimer.Dispose();
+            autoUpdateTimer.Enabled = false;
+            logUpdateTimer.Enabled = false;
             trayIcon.Dispose();
         }
 
@@ -321,7 +357,7 @@ namespace CloudFlareDDNS
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void autoupdateTimer_Tick(object sender, EventArgs e)
+        private void autoUpdateTimer_Tick(object sender, EventArgs e)
         {
             Thread thread = new Thread(new ThreadStart(timerUpdateThread));
             thread.Start();
@@ -333,11 +369,11 @@ namespace CloudFlareDDNS
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void logupdateTimer_Tick(object sender, EventArgs e)
+        private void logUpdateTimer_Tick(object sender, EventArgs e)
         {
             foreach(ListViewItem ListItem in Logger.m_LogItems)
             {
-                listViewLog.Items.Add(ListItem);
+                this.Invoke(new addLogEntryInvoker(addLogEntry), ListItem);
             }
             Logger.m_LogItems.Clear();
         }

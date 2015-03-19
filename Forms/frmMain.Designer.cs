@@ -51,9 +51,7 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.autoupdateTimer = new System.Windows.Forms.Timer(this.components);
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.logupdateTimer = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -226,10 +224,6 @@
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // autoupdateTimer
-            // 
-            this.autoupdateTimer.Tick += new System.EventHandler(this.autoupdateTimer_Tick);
-            // 
             // trayIcon
             // 
             this.trayIcon.BalloonTipText = "Updates will continue in the background";
@@ -238,11 +232,6 @@
             this.trayIcon.Text = "trayIcon";
             this.trayIcon.Visible = true;
             this.trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
-            // 
-            // logupdateTimer
-            // 
-            this.logupdateTimer.Interval = 1000;
-            this.logupdateTimer.Tick += new System.EventHandler(this.logupdateTimer_Tick);
             // 
             // frmMain
             // 
@@ -289,10 +278,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.ImageList imageList1;
-        private System.Windows.Forms.Timer autoupdateTimer;
         private System.Windows.Forms.NotifyIcon trayIcon;
         private System.Windows.Forms.ColumnHeader columnHeader6;
-        private System.Windows.Forms.Timer logupdateTimer;
     }
 }
 
