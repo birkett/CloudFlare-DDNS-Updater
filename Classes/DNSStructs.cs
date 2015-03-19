@@ -9,7 +9,7 @@ namespace CloudFlareDDNS
     /// Each record contains a set of properties
     /// </summary>
     [DataContract]
-    public struct DNSRecordProps
+    public struct DnsRecordProps
     {
         /// <summary>
         /// Can be proxied
@@ -51,13 +51,13 @@ namespace CloudFlareDDNS
         /// </summary>
         [DataMember]
         public string vanity_lock;
-    }
+    }//end DnsRecordProps
 
     /// <summary>
     /// The actual DNS record
     /// </summary>
     [DataContract]
-    public struct DNSRecord
+    public struct DnsRecord
     {
         /// <summary>
         /// Record ID
@@ -143,14 +143,14 @@ namespace CloudFlareDDNS
         /// Properties for this record
         /// </summary>
         [DataMember]
-        public DNSRecordProps props;
-    }
+        public DnsRecordProps props;
+    }//end DnsRecord
 
     /// <summary>
     /// The JSON field "recs" contains a count and an array of actual records
     /// </summary>
     [DataContract]
-    public struct DNSRecords
+    public struct DnsRecords
     {
         /// <summary>
         /// Is this all of the records, or are more available
@@ -166,51 +166,51 @@ namespace CloudFlareDDNS
         /// List of  records
         /// </summary>
         [DataMember]
-        public DNSRecord[] objs;
-    }
+        public DnsRecord[] objs;
+    }//end DnsRecords
 
     /// <summary>
     /// Just a padding field, wraps up the records
     /// </summary>
     [DataContract]
-    public struct DNSResponse
+    public struct DnsResponse
     {
         /// <summary>
         /// Padding for the records
         /// </summary>
         [DataMember]
-        public DNSRecords recs;
-    }
+        public DnsRecords recs;
+    }//end DnsResponse
 
     /// <summary>
     /// The type of request that was made
     /// </summary>
     [DataContract]
-    public struct DNSRequest
+    public struct DnsRequest
     {
         /// <summary>
         /// The type of request this response is for (rec_edit, rec_load_all)
         /// </summary>
         [DataMember]
         public string act;
-    }
+    }//end DnsRequest
 
     /// <summary>
     /// Main response format
     /// </summary>
     [DataContract]
-    public class JSONResponse
+    public class JsonResponse
     {
         /// <summary>
         /// Request information
         /// </summary>
         [DataMember]
-        public DNSRequest request;
+        public DnsRequest request;
         /// <summary>
         /// Response information
         /// </summary>
         [DataMember]
-        public DNSResponse response;
+        public DnsResponse response;
         /// <summary>
         /// success or error
         /// </summary>
@@ -221,5 +221,5 @@ namespace CloudFlareDDNS
         /// </summary>
         [DataMember]
         public string msg;
-    }
+    }//end JsonResponse
 }

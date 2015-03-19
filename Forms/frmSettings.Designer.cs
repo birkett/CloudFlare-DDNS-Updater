@@ -18,7 +18,7 @@
                 components.Dispose();
             }
             base.Dispose(disposing);
-        }
+        }//end Dispose()
 
         #region Windows Form Designer generated code
 
@@ -183,5 +183,5 @@
         private System.Windows.Forms.Label lblFetchTime;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox cbEventLog;
-    }
-}
+    }//end class
+}//end namespace

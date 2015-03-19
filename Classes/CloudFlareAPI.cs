@@ -13,20 +13,21 @@ namespace CloudFlareDDNS
         /// Return the current external network address, using the default gateway
         /// </summary>
         /// <returns>IP address as a string, null on error</returns>
-        public static string GetExternalAddress()
+        public static string getExternalAddress()
         {
             string strResponse = webRequest(Method.Get, "http://checkip.dyndns.org", null);
             string[] strResponse2 = strResponse.Split(':');
             string strResponse3 = strResponse2[1].Substring(1);
             return strResponse3.Split('<')[0];
-        }
+
+        }//end getExternalAddress()
 
 
         /// <summary>
         /// Get the listed records from Cloudflare using their API
         /// </summary>
         /// <returns>JSON stream of records, null on error</returns>
-        public static string GetCloudflareRecords()
+        public static string getCloudflareRecords()
         {
             string postData = "a=rec_load_all";
             postData += "&tkn=" + SettingsManager.getSetting("APIKey");
@@ -34,7 +35,8 @@ namespace CloudFlareDDNS
             postData += "&z=" + SettingsManager.getSetting("Domain");
 
             return webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
-        }
+
+        }//end getCloudflareRecords()
 
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace CloudFlareDDNS
         /// </summary>
         /// <param name="FetchedRecord"></param>
         /// <returns></returns>
-        public static string UpdateCloudflareRecords(DNSRecord FetchedRecord)
+        public static string updateCloudflareRecords(DnsRecord FetchedRecord)
         {
             string postData = "a=rec_edit";
             postData += "&tkn=" + SettingsManager.getSetting("APIKey");
@@ -56,7 +58,8 @@ namespace CloudFlareDDNS
             postData += "&ttl=" + FetchedRecord.ttl;
 
             return webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
-        }
+
+        }//end updateCloudflareRecords()
 
 
         /// <summary>
@@ -66,7 +69,8 @@ namespace CloudFlareDDNS
         {
             Get = 0,
             Post,
-        }
+
+        } //end enum
 
 
         /// <summary>
@@ -117,8 +121,9 @@ namespace CloudFlareDDNS
             }
 
             return strResponse;
-        }
+
+        }//end webRequest()
 
 
-    }
-}
+    }//end class
+}//end namespace

@@ -39,11 +39,11 @@ namespace CloudFlareDDNS
             this.serviceProcessInstaller1,
             this.serviceInstaller1});
 
-        }
+        }//end ServiceInstaller()
 
         private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller1;
         private System.ServiceProcess.ServiceInstaller serviceInstaller1;
 
 
-    }
-}
+    }//end class
+}//end namespace

@@ -18,7 +18,7 @@
                 components.Dispose();
             }
             base.Dispose(disposing);
-        }
+        }//end Dispose()
 
         #region Windows Form Designer generated code
 
@@ -254,7 +254,7 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
-        }
+        }//end InitializeComponent()
 
         #endregion
 
@@ -280,6 +280,6 @@
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.NotifyIcon trayIcon;
         private System.Windows.Forms.ColumnHeader columnHeader6;
-    }
-}
+    }//end class
+}//end namespace
 

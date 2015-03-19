@@ -21,7 +21,8 @@ namespace CloudFlareDDNS
             Info = 0,
             Warning,
             Error,
-        }
+
+        }//end enum
 
 
         /// <summary>
@@ -35,7 +36,8 @@ namespace CloudFlareDDNS
 
             if(SettingsManager.getSetting("UseEventLog") == "True")
                 writeEventLog(szMessage, logLevel);
-        }
+
+        }//end log
 
 
         /// <summary>
@@ -63,7 +65,8 @@ namespace CloudFlareDDNS
             row.SubItems.Add(szMessage);
 
             m_LogItems.Add(row);
-        }
+
+        }//end writeFormControl()
 
 
         /// <summary>
@@ -97,8 +100,9 @@ namespace CloudFlareDDNS
                 }
             }
             catch {}
-        }
+
+        }//end writeEventLog()
 
 
-    }
-}
+    }//end class
+}//end namespace

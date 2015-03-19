@@ -25,7 +25,8 @@ namespace CloudFlareDDNS
         {
             this.CanPauseAndContinue = true;
             this.ServiceName = "CloudFlareDDNS";
-        }
+
+        }//end Service()
 
 
         /// <summary>
@@ -39,7 +40,8 @@ namespace CloudFlareDDNS
             autoUpdateTimer.Enabled = true;
 
             Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"), Logger.Level.Info);
-        }
+        
+        }//end OnStart()
 
 
         /// <summary>
@@ -49,7 +51,8 @@ namespace CloudFlareDDNS
         {
             autoUpdateTimer.Enabled = false;
             Logger.log("Service stopping", Logger.Level.Info);
-        }
+
+        }//end OnStop()
 
 
         /// <summary>
@@ -59,7 +62,8 @@ namespace CloudFlareDDNS
         {
             autoUpdateTimer.Enabled = false;
             base.OnPause();
-        }
+
+        }//end OnPause()
 
 
         /// <summary>
@@ -69,7 +73,8 @@ namespace CloudFlareDDNS
         {
             autoUpdateTimer.Enabled = true;
             base.OnContinue();
-        }
+
+        }//end OnContinue()
 
 
         /// <summary>
@@ -77,8 +82,9 @@ namespace CloudFlareDDNS
         /// </summary>
         private void timerUpdateThread()
         {
-            UpdateRecords(FetchRecords());
-        }
+            updateRecords(fetchRecords());
+
+        }//end timerUpdateThread()
 
 
         /// <summary>
@@ -90,16 +96,17 @@ namespace CloudFlareDDNS
         {
             Thread thread = new Thread(new ThreadStart(timerUpdateThread));
             thread.Start();
-        }
+
+        }//end autoUpdateTimer_Tick()
 
 
         /// <summary>
         /// Logic to get the external address and CloudFlare records
         /// </summary>
-        private static JSONResponse FetchRecords()
+        private static JsonResponse fetchRecords()
         {
-            JSONResponse FetchedRecords = new JSONResponse();
-            string new_external_address = CloudFlareAPI.GetExternalAddress();
+            JsonResponse fetchedRecords = new JsonResponse();
+            string new_external_address = CloudFlareAPI.getExternalAddress();
 
             if (new_external_address == null)
                 return null;
@@ -107,28 +114,29 @@ namespace CloudFlareDDNS
             SettingsManager.setSetting("ExternalAddress", new_external_address);
             SettingsManager.saveSettings();
 
-            string records = CloudFlareAPI.GetCloudflareRecords();
+            string records = CloudFlareAPI.getCloudflareRecords();
             if (records == null)
                 return null;
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-            FetchedRecords = serializer.Deserialize<JSONResponse>(records);
+            fetchedRecords = serializer.Deserialize<JsonResponse>(records);
 
-            if (FetchedRecords.result != "success")
+            if (fetchedRecords.result != "success")
             {
-                Logger.log(FetchedRecords.msg, Logger.Level.Error);
+                Logger.log(fetchedRecords.msg, Logger.Level.Error);
                 return null;
             }
 
-            return FetchedRecords;
-        }
+            return fetchedRecords;
+
+        }//end fetchRecords()
 
 
         /// <summary>
         /// Logic to update records
         /// </summary>
-        private static void UpdateRecords(JSONResponse FetchedRecords)
+        private static void updateRecords(JsonResponse FetchedRecords)
         {
             int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
             string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
@@ -157,11 +165,11 @@ namespace CloudFlareDDNS
                     continue;
                 }
 
-                string strResponse = CloudFlareAPI.UpdateCloudflareRecords(FetchedRecords.response.recs.objs[i]);
+                string strResponse = CloudFlareAPI.updateCloudflareRecords(FetchedRecords.response.recs.objs[i]);
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-                JSONResponse resp = serializer.Deserialize<JSONResponse>(strResponse);
+                JsonResponse resp = serializer.Deserialize<JsonResponse>(strResponse);
 
                 if (resp.result != "success")
                 {
@@ -175,8 +183,9 @@ namespace CloudFlareDDNS
             }
 
             Logger.log("Update at " + DateTime.Now + " - " + updated.ToString() + " updated, " + up_to_date.ToString() + " up to date, " + skipped.ToString() + " skipped, " + ignored.ToString() + " ignored, " + failed.ToString() + " failed", Logger.Level.Info);
-        }
+        
+        }//end updateRecords()
 
 
-    }
-}
+    }//end class
+}//end namespace

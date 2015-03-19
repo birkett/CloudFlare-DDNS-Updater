@@ -25,7 +25,9 @@ namespace CloudFlareDDNS
             txtDescription.Text = description;
             txtVersion.Text = version;
             txtCopyright.Text = copyright;
-        }
+
+        }//end frmAbout()
+
 
         /// <summary>
         /// Close the form
@@ -35,8 +37,9 @@ namespace CloudFlareDDNS
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
+
+        }//end btnClose_Click()
 
 
-    }
-}
+    }//end class
+}//end namespace

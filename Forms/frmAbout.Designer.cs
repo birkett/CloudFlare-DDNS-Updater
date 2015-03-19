@@ -7,6 +7,7 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
@@ -18,9 +19,11 @@
                 components.Dispose();
             }
             base.Dispose(disposing);
-        }
+
+        }//end Dispose()
 
         #region Windows Form Designer generated code
+
 
         /// <summary>
         /// Required method for Designer support - do not modify
@@ -93,7 +96,7 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
-        }
+        }//end InitializeComponent()
 
         #endregion
 
@@ -102,5 +105,5 @@
         private System.Windows.Forms.TextBox txtVersion;
         private System.Windows.Forms.TextBox txtCopyright;
 
-    }
-}
+    }//end class
+}//end namespace

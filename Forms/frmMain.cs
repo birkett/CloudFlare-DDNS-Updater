@@ -30,7 +30,7 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Stores the fetched records in an accessible place
         /// </summary>
-        private JSONResponse FetchedRecords = null;
+        private JsonResponse FetchedRecords = null;
 
 
         /// <summary>
@@ -41,7 +41,8 @@ namespace CloudFlareDDNS
         private bool isEntryChecked(string szEntryName)
         {
             return (listViewRecords.FindItemWithText(szEntryName).Checked == true);
-        }
+
+        }//end isEntryChecked()
 
 
         /// <summary>
@@ -59,7 +60,8 @@ namespace CloudFlareDDNS
         private void checkTickEntry(string szEntryName)
         {
             listViewRecords.FindItemWithText(szEntryName).Checked = true;
-        }
+
+        }//end checkTickEntry()
 
 
         /// <summary>
@@ -73,21 +75,22 @@ namespace CloudFlareDDNS
         /// Called from another thread, adds an entry to the list control
         /// </summary>
         /// <param name="entry"></param>
-        private void addHostEntry(DNSRecord entry)
+        private void addHostEntry(DnsRecord entry)
         {
             ListViewItem row = new ListViewItem();
             row.SubItems.Add(entry.type);
             row.SubItems.Add(entry.display_name);
             row.SubItems.Add(entry.display_content);
             listViewRecords.Items.Add(row);
-        }
+
+        }//end addHostEntry()
 
 
         /// <summary>
         /// Delegate for addHostEntry()
         /// </summary>
         /// <param name="entry"></param>
-        delegate void addHostEntryInvoker(DNSRecord entry);
+        delegate void addHostEntryInvoker(DnsRecord entry);
 
 
         /// <summary>
@@ -97,7 +100,8 @@ namespace CloudFlareDDNS
         private void addLogEntry(ListViewItem entry)
         {
             listViewLog.Items.Add(entry);
-        }
+
+        }//end addLogEntry()
 
 
         /// <summary>
@@ -114,7 +118,8 @@ namespace CloudFlareDDNS
         private void updateAddress(string szAddress)
         {
             txtExternalAddress.Text = szAddress;
-        }
+
+        }//end updateAddress()
 
 
         /// <summary>
@@ -127,10 +132,10 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Logic to get the external address and CloudFlare records
         /// </summary>
-        private void FetchRecords()
+        private void fetchRecords()
         {
             FetchedRecords = null;
-            string new_external_address = CloudFlareAPI.GetExternalAddress();
+            string new_external_address = CloudFlareAPI.getExternalAddress();
 
             if (new_external_address == null)
                 return;
@@ -139,13 +144,13 @@ namespace CloudFlareDDNS
 
             this.Invoke(new updateAddressInvoker(updateAddress), new_external_address);
 
-            string records = CloudFlareAPI.GetCloudflareRecords();
+            string records = CloudFlareAPI.getCloudflareRecords();
             if (records == null)
                 return;
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-            FetchedRecords = serializer.Deserialize<JSONResponse>(records);
+            FetchedRecords = serializer.Deserialize<JsonResponse>(records);
 
             if (FetchedRecords.result != "success")
             {
@@ -187,13 +192,14 @@ namespace CloudFlareDDNS
                     }
                 }
             }
-        }
+
+        }//end fetchRecords()
 
 
         /// <summary>
         /// Logic to update records
         /// </summary>
-        private void UpdateRecords()
+        private void updateRecords()
         {
             if (FetchedRecords == null) //Dont attempt updates if the fetch failed
                 return;
@@ -227,11 +233,11 @@ namespace CloudFlareDDNS
                     continue;
                 }
 
-                string strResponse = CloudFlareAPI.UpdateCloudflareRecords(FetchedRecords.response.recs.objs[i]);
+                string strResponse = CloudFlareAPI.updateCloudflareRecords(FetchedRecords.response.recs.objs[i]);
  
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-                JSONResponse resp = serializer.Deserialize<JSONResponse>(strResponse);
+                JsonResponse resp = serializer.Deserialize<JsonResponse>(strResponse);
 
                 if (resp.result != "success")
                 {
@@ -245,7 +251,8 @@ namespace CloudFlareDDNS
             }
 
             Logger.log("Update at " + DateTime.Now + " - " + updated.ToString() + " updated, " + up_to_date.ToString() + " up to date, " + skipped.ToString() + " skipped, " + ignored.ToString() + " ignored, " + failed.ToString() + " failed", Logger.Level.Info);
-        }
+
+        }//end updateRecords()
 
 
         /// <summary>
@@ -264,7 +271,8 @@ namespace CloudFlareDDNS
             logUpdateTimer.Enabled = true;
 
             Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"), Logger.Level.Info);
-        }
+
+        }//end frmMain()
 
 
         /// <summary>
@@ -277,7 +285,8 @@ namespace CloudFlareDDNS
             autoUpdateTimer.Enabled = false;
             logUpdateTimer.Enabled = false;
             trayIcon.Dispose();
-        }
+
+        }//end frmMain_Closing()
 
 
         /// <summary>
@@ -293,7 +302,8 @@ namespace CloudFlareDDNS
                 trayIcon.Visible = true;
                 trayIcon.ShowBalloonTip(1000);
             }
-        }
+
+        }//end frmMain_Resize()
 
 
         /// <summary>
@@ -303,9 +313,10 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void fetchDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread fetchThread = new Thread(new ThreadStart(FetchRecords));
+            Thread fetchThread = new Thread(new ThreadStart(fetchRecords));
             fetchThread.Start();
-        }
+
+        }//end fetchDataToolStripMenuItem_Click()
 
 
         /// <summary>
@@ -315,9 +326,10 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void updateRecordsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread updateThread = new Thread(new ThreadStart(UpdateRecords));
+            Thread updateThread = new Thread(new ThreadStart(updateRecords));
             updateThread.Start();
-        }
+
+        }//end updateRecordsToolStripMenuItem_Click()
 
 
         /// <summary>
@@ -328,7 +340,8 @@ namespace CloudFlareDDNS
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmSettings settingsForm = new frmSettings(); settingsForm.Show();
-        }
+
+        }//end settingsToolStripMenuItem_Click()
 
 
         /// <summary>
@@ -339,7 +352,8 @@ namespace CloudFlareDDNS
         private void minimiseToTrayToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
-        }
+
+        }//end minimiseToTrayToolStripMenuItem_Click()
 
 
         /// <summary>
@@ -347,9 +361,10 @@ namespace CloudFlareDDNS
         /// </summary>
         private void timerUpdateThread()
         {
-            FetchRecords();
-            UpdateRecords();
-        }
+            fetchRecords();
+            updateRecords();
+
+        }//end timerUpdateThread()
 
 
         /// <summary>
@@ -361,7 +376,8 @@ namespace CloudFlareDDNS
         {
             Thread thread = new Thread(new ThreadStart(timerUpdateThread));
             thread.Start();
-        }
+
+        }//end autoUpdateTimer_Tick()
 
 
         /// <summary>
@@ -376,7 +392,8 @@ namespace CloudFlareDDNS
                 this.Invoke(new addLogEntryInvoker(addLogEntry), ListItem);
             }
             Logger.m_LogItems.Clear();
-        }
+
+        }//end logUpdateTimer_Tick()
 
 
         /// <summary>
@@ -387,7 +404,8 @@ namespace CloudFlareDDNS
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
-        }
+
+        }//end exitToolStripMenuItem_Click()
 
 
         /// <summary>
@@ -399,7 +417,8 @@ namespace CloudFlareDDNS
         {
             ShowInTaskbar = true;
             WindowState = FormWindowState.Normal;
-        }
+
+        }//end notifyIcon1_MouseDoubleClick()
 
 
         /// <summary>
@@ -411,8 +430,9 @@ namespace CloudFlareDDNS
         {
             frmAbout about = new frmAbout();
             about.Show();
-        }
+
+        }//end aboutToolStripMenuItem_Click()
 
 
-    }
-}
+    }//end class
+}//end namespace

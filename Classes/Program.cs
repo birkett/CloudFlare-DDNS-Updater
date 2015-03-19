@@ -19,7 +19,7 @@ namespace CloudFlareDDNS
             {
                 if (args[0] == "/service")
                 {
-                    RunService();
+                    runService();
                     return;
                 }
                    
@@ -44,32 +44,35 @@ namespace CloudFlareDDNS
                 }
             }
 
-            RunGUI();
+            runGUI();
             return;
-        }
+
+        }//end Main()
 
 
         /// <summary>
         /// Run the application with the GUI
         /// </summary>
-        static void RunGUI()
+        static void runGUI()
         {
             Logger.log("Starting CloudFlare DDNS updater GUI", Logger.Level.Info);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmMain());
-        }
+
+        }// end runGUI()
 
 
         /// <summary>
         /// Run the application silently as a service
         /// </summary>
-        static void RunService()
+        static void runService()
         {
             Logger.log("Starting CloudFlare DDNS updater service", Logger.Level.Info);
             ServiceBase.Run(new Service());
-        }
+
+        }//end runService()
 
 
-    }
-}
+    }//end class
+}//end namespace

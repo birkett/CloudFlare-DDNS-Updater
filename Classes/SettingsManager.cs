@@ -12,7 +12,8 @@
         public static string getSetting(string szName)
         {
             return Properties.Settings.Default[szName].ToString();
-        }
+
+        }//end getSetting()
 
 
         /// <summary>
@@ -23,7 +24,8 @@
         public static void setSetting(string szName, string szValue)
         {
             Properties.Settings.Default[szName] = szValue;
-        }
+
+        }//end setSetting()
 
 
         /// <summary>
@@ -32,8 +34,9 @@
         public static void saveSettings()
         {
             Properties.Settings.Default.Save();
-        }
+
+        }//end saveSettings()
 
 
-    }
-}
+    }//end class
+}//end namespace
