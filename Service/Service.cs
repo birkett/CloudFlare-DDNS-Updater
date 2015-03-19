@@ -130,14 +130,17 @@ namespace CloudFlareDDNS
         /// </summary>
         private static JsonResponse fetchRecords()
         {
-            JsonResponse fetchedRecords = new JsonResponse();
+            JsonResponse fetchedRecords = null;
             string new_external_address = CloudFlareAPI.getExternalAddress();
 
             if (new_external_address == null)
                 return null;
 
-            SettingsManager.setSetting("ExternalAddress", new_external_address);
-            SettingsManager.saveSettings();
+            if (new_external_address != SettingsManager.getSetting("ExternalAddress"))
+            {
+                SettingsManager.setSetting("ExternalAddress", new_external_address);
+                SettingsManager.saveSettings();
+            }
 
             string records = CloudFlareAPI.getCloudflareRecords();
             if (records == null)
@@ -161,15 +164,18 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Logic to update records
         /// </summary>
-        private static void updateRecords(JsonResponse FetchedRecords)
+        private static void updateRecords(JsonResponse fetchedRecords)
         {
+            if (fetchedRecords == null) //Dont attempt updates if the fetch failed
+                return;
+
             int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
             string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
 
-            for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
+            for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
             {
                 //Skip over anything that was not checked
-                if ((Array.IndexOf(selectedHosts, FetchedRecords.response.recs.objs[i].display_name) >= 0) != true)
+                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) != true)
                 {
                     ignored++;
                     continue;
@@ -177,20 +183,20 @@ namespace CloudFlareDDNS
 
                 //Skip over MX and CNAME records
                 //TODO: Dont skip them :)
-                if (FetchedRecords.response.recs.objs[i].type != "A")
+                if (fetchedRecords.response.recs.objs[i].type != "A")
                 {
                     skipped++;
                     continue;
                 }
 
                 //Skip over anything that doesnt need an update
-                if (FetchedRecords.response.recs.objs[i].content == SettingsManager.getSetting("ExternalAddress"))
+                if (fetchedRecords.response.recs.objs[i].content == SettingsManager.getSetting("ExternalAddress"))
                 {
                     up_to_date++;
                     continue;
                 }
 
-                string strResponse = CloudFlareAPI.updateCloudflareRecords(FetchedRecords.response.recs.objs[i]);
+                string strResponse = CloudFlareAPI.updateCloudflareRecords(fetchedRecords.response.recs.objs[i]);
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
 
@@ -199,7 +205,7 @@ namespace CloudFlareDDNS
                 if (resp.result != "success")
                 {
                     failed++;
-                    Logger.log("Failed to update " + FetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
+                    Logger.log("Failed to update " + fetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
                 }
                 else
                 {

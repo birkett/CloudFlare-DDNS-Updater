@@ -51,12 +51,6 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
-        /// Stores the fetched records in an accessible place
-        /// </summary>
-        private JsonResponse FetchedRecords = null;
-
-
-        /// <summary>
         /// Called from another thread, get if a list entry is selected by the user
         /// </summary>
         /// <param name="szEntryName"></param>
@@ -117,6 +111,39 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Called from another thread
+        /// Populate the list hosts control with the new returned hosts
+        /// </summary>
+        /// <param name="fetchedRecords"></param>
+        private void updateHostsList(JsonResponse fetchedRecords)
+        {
+            listViewRecords.Items.Clear();
+
+            string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
+
+            for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
+            {
+                this.Invoke(new addHostEntryInvoker(addHostEntry), fetchedRecords.response.recs.objs[i]);
+
+                foreach (string host in selectedHosts)
+                {
+                    if (host == fetchedRecords.response.recs.objs[i].display_name)
+                    {
+                        this.Invoke(new checkTickEntryInvoker(checkTickEntry), fetchedRecords.response.recs.objs[i].display_name);
+                    }
+                }
+            }
+        }//end updateHostsList()
+
+
+        /// <summary>
+        /// Delegate for updateHostsList()
+        /// </summary>
+        /// <param name="fetchedRecords"></param>
+        delegate void updateHostsListInvoker(JsonResponse fetchedRecords);
+
+
+        /// <summary>
         /// Called from another thread, adds an entry to the log control
         /// </summary>
         /// <param name="entry"></param>
@@ -155,48 +182,39 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Logic to get the external address and CloudFlare records
         /// </summary>
-        private void fetchRecords()
+        private JsonResponse fetchRecords()
         {
-            FetchedRecords = null;
+            JsonResponse fetchedRecords = null;
             string new_external_address = CloudFlareAPI.getExternalAddress();
 
             if (new_external_address == null)
-                return;
+                return null;
 
-            SettingsManager.setSetting("ExternalAddress", new_external_address);
+            if (new_external_address != SettingsManager.getSetting("ExternalAddress"))
+            {
+                SettingsManager.setSetting("ExternalAddress", new_external_address);
+                SettingsManager.saveSettings();
+            }
 
             this.Invoke(new updateAddressInvoker(updateAddress), new_external_address);
 
             string records = CloudFlareAPI.getCloudflareRecords();
             if (records == null)
-                return;
+                return null;
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-            FetchedRecords = serializer.Deserialize<JsonResponse>(records);
+            fetchedRecords = serializer.Deserialize<JsonResponse>(records);
 
-            if (FetchedRecords.result != "success")
+            if (fetchedRecords.result != "success")
             {
-                Logger.log(FetchedRecords.msg, Logger.Level.Error);
-                return;
+                Logger.log(fetchedRecords.msg, Logger.Level.Error);
+                return null;
             }
 
-            listViewRecords.Items.Clear();
+            this.Invoke(new updateHostsListInvoker(updateHostsList), fetchedRecords);
 
-            string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
-
-            for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
-            {
-                this.Invoke(new addHostEntryInvoker(addHostEntry), FetchedRecords.response.recs.objs[i]);
-
-                foreach (string host in selectedHosts)
-                {
-                    if (host == FetchedRecords.response.recs.objs[i].display_name)
-                    {
-                        this.Invoke(new checkTickEntryInvoker(checkTickEntry), FetchedRecords.response.recs.objs[i].display_name);
-                    }
-                }
-            }
+            return fetchedRecords;
 
         }//end fetchRecords()
 
@@ -204,17 +222,17 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Logic to update records
         /// </summary>
-        private void updateRecords()
+        private void updateRecords(JsonResponse fetchedRecords)
         {
-            if (FetchedRecords == null) //Dont attempt updates if the fetch failed
+            if (fetchedRecords == null) //Dont attempt updates if the fetch failed
                 return;
        
             int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
 
-            for (int i = 0; i < Convert.ToInt32(FetchedRecords.response.recs.count); i++)
+            for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
             {
                 //Skip over anything that is not checked
-                if (Convert.ToBoolean(this.Invoke(new isEntryCheckedInvoker(isEntryChecked), FetchedRecords.response.recs.objs[i].display_name)) == false)
+                if (Convert.ToBoolean(this.Invoke(new isEntryCheckedInvoker(isEntryChecked), fetchedRecords.response.recs.objs[i].display_name)) == false)
                 {
                     //Log("Ignoring " + FetchedRecords.response.recs.objs[i].name + " - not checked by user", 1);
                     ignored++;
@@ -223,7 +241,7 @@ namespace CloudFlareDDNS
 
                 //Skip over MX and CNAME records
                 //TODO: Dont skip them :)
-                if (FetchedRecords.response.recs.objs[i].type != "A")
+                if (fetchedRecords.response.recs.objs[i].type != "A")
                 {
                     //Log("Skipping " + FetchedRecords.response.recs.objs[i].name + " - is not an A record", 1);
                     skipped++;
@@ -231,14 +249,14 @@ namespace CloudFlareDDNS
                 }
 
                 //Skip over anything that doesnt need an update
-                if (FetchedRecords.response.recs.objs[i].content == SettingsManager.getSetting("ExternalAddress"))
+                if (fetchedRecords.response.recs.objs[i].content == SettingsManager.getSetting("ExternalAddress"))
                 {
                     //Log("Skipping " + FetchedRecords.response.recs.objs[i].name + " - no update needed", 0);
                     up_to_date++;
                     continue;
                 }
 
-                string strResponse = CloudFlareAPI.updateCloudflareRecords(FetchedRecords.response.recs.objs[i]);
+                string strResponse = CloudFlareAPI.updateCloudflareRecords(fetchedRecords.response.recs.objs[i]);
  
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
 
@@ -247,7 +265,7 @@ namespace CloudFlareDDNS
                 if (resp.result != "success")
                 {
                     failed++;
-                    Logger.log("Failed to update " + FetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
+                    Logger.log("Failed to update " + fetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
                 }
                 else
                 {
@@ -319,20 +337,23 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void listHostsCheck(object sender, ItemCheckEventArgs e)
         {
+            ListViewItem item = listViewRecords.Items[e.Index];
+
             if (e.CurrentValue == CheckState.Unchecked)
             {
                 //Item has been selected by the user, store it for later
-                if(SettingsManager.getSetting("SelectedHosts").IndexOf(FetchedRecords.response.recs.objs[e.Index].display_name) >= 0)
+                //if(SettingsManager.getSetting("SelectedHosts").IndexOf(FetchedRecords.response.recs.objs[e.Index].display_name) >= 0)
+                if(SettingsManager.getSetting("SelectedHosts").IndexOf(item.SubItems[2].Text) >= 0)
                 {
                     //Item is already in the settings list, do nothing.
                     return;
                 }
-                SettingsManager.setSetting("SelectedHosts", SettingsManager.getSetting("SelectedHosts") + FetchedRecords.response.recs.objs[e.Index].display_name + ";");
+                SettingsManager.setSetting("SelectedHosts", SettingsManager.getSetting("SelectedHosts") + item.SubItems[2].Text + ";");
             }
             else if (e.CurrentValue == CheckState.Checked)
             {
                 //Make sure to clean up any old entries in the settings
-                string new_selected = SettingsManager.getSetting("SelectedHosts").Replace(FetchedRecords.response.recs.objs[e.Index].display_name + ';', "");
+                string new_selected = SettingsManager.getSetting("SelectedHosts").Replace(item.SubItems[2].Text + ';', "");
                 SettingsManager.setSetting("SelectedHosts", new_selected);
             }
 
@@ -342,13 +363,23 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Thread to fetch records, nothing else
+        /// </summary>
+        private void threadFetchOnly()
+        {
+            this.Invoke(new updateHostsListInvoker(updateHostsList), fetchRecords());
+
+        }//end threadFetchOnly()
+
+
+        /// <summary>
         /// Get current external address and CloudFlare records
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void fetchDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread fetchThread = new Thread(new ThreadStart(fetchRecords));
+            Thread fetchThread = new Thread(new ThreadStart(threadFetchOnly));
             fetchThread.Start();
 
         }//end fetchDataToolStripMenuItem_Click()
@@ -361,7 +392,7 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void updateRecordsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread updateThread = new Thread(new ThreadStart(updateRecords));
+            Thread updateThread = new Thread(new ThreadStart(timerUpdateThread));
             updateThread.Start();
 
         }//end updateRecordsToolStripMenuItem_Click()
@@ -396,8 +427,9 @@ namespace CloudFlareDDNS
         /// </summary>
         private void timerUpdateThread()
         {
-            fetchRecords();
-            updateRecords();
+            JsonResponse records = fetchRecords();
+            this.Invoke(new updateHostsListInvoker(updateHostsList), records);
+            updateRecords(records);
 
         }//end timerUpdateThread()
 
