@@ -180,105 +180,6 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
-        /// Logic to get the external address and CloudFlare records
-        /// </summary>
-        private JsonResponse fetchRecords()
-        {
-            JsonResponse fetchedRecords = null;
-            string new_external_address = CloudFlareAPI.getExternalAddress();
-
-            if (new_external_address == null)
-                return null;
-
-            if (new_external_address != SettingsManager.getSetting("ExternalAddress"))
-            {
-                SettingsManager.setSetting("ExternalAddress", new_external_address);
-                SettingsManager.saveSettings();
-            }
-
-            this.Invoke(new updateAddressInvoker(updateAddress), new_external_address);
-
-            string records = CloudFlareAPI.getCloudflareRecords();
-            if (records == null)
-                return null;
-
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-
-            fetchedRecords = serializer.Deserialize<JsonResponse>(records);
-
-            if (fetchedRecords.result != "success")
-            {
-                Logger.log(fetchedRecords.msg, Logger.Level.Error);
-                return null;
-            }
-
-            this.Invoke(new updateHostsListInvoker(updateHostsList), fetchedRecords);
-
-            return fetchedRecords;
-
-        }//end fetchRecords()
-
-
-        /// <summary>
-        /// Logic to update records
-        /// </summary>
-        private void updateRecords(JsonResponse fetchedRecords)
-        {
-            if (fetchedRecords == null) //Dont attempt updates if the fetch failed
-                return;
-       
-            int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
-
-            for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
-            {
-                //Skip over anything that is not checked
-                if (Convert.ToBoolean(this.Invoke(new isEntryCheckedInvoker(isEntryChecked), fetchedRecords.response.recs.objs[i].display_name)) == false)
-                {
-                    //Log("Ignoring " + FetchedRecords.response.recs.objs[i].name + " - not checked by user", 1);
-                    ignored++;
-                    continue;
-                }
-
-                //Skip over MX and CNAME records
-                //TODO: Dont skip them :)
-                if (fetchedRecords.response.recs.objs[i].type != "A")
-                {
-                    //Log("Skipping " + FetchedRecords.response.recs.objs[i].name + " - is not an A record", 1);
-                    skipped++;
-                    continue;
-                }
-
-                //Skip over anything that doesnt need an update
-                if (fetchedRecords.response.recs.objs[i].content == SettingsManager.getSetting("ExternalAddress"))
-                {
-                    //Log("Skipping " + FetchedRecords.response.recs.objs[i].name + " - no update needed", 0);
-                    up_to_date++;
-                    continue;
-                }
-
-                string strResponse = CloudFlareAPI.updateCloudflareRecords(fetchedRecords.response.recs.objs[i]);
- 
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-
-                JsonResponse resp = serializer.Deserialize<JsonResponse>(strResponse);
-
-                if (resp.result != "success")
-                {
-                    failed++;
-                    Logger.log("Failed to update " + fetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
-                }
-                else
-                {
-                    updated++;
-                }
-            }
-
-            Logger.log("Update at " + DateTime.Now + " - " + updated.ToString() + " updated, " + up_to_date.ToString() + " up to date, " + skipped.ToString() + " skipped, " + ignored.ToString() + " ignored, " + failed.ToString() + " failed", Logger.Level.Info);
-
-        }//end updateRecords()
-
-
-        /// <summary>
         /// Form entry point
         /// </summary>
         public frmMain()
@@ -367,7 +268,8 @@ namespace CloudFlareDDNS
         /// </summary>
         private void threadFetchOnly()
         {
-            this.Invoke(new updateHostsListInvoker(updateHostsList), fetchRecords());
+            this.Invoke(new updateAddressInvoker(updateAddress), CloudFlareAPI.getExternalAddress());
+            this.Invoke(new updateHostsListInvoker(updateHostsList), CloudFlareAPI.fetchRecords());
 
         }//end threadFetchOnly()
 
@@ -427,9 +329,10 @@ namespace CloudFlareDDNS
         /// </summary>
         private void timerUpdateThread()
         {
-            JsonResponse records = fetchRecords();
+            this.Invoke(new updateAddressInvoker(updateAddress), CloudFlareAPI.getExternalAddress());
+            JsonResponse records = CloudFlareAPI.fetchRecords();
             this.Invoke(new updateHostsListInvoker(updateHostsList), records);
-            updateRecords(records);
+            CloudFlareAPI.updateRecords(records);
 
         }//end timerUpdateThread()
 
