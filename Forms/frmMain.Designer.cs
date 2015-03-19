@@ -92,6 +92,7 @@ namespace CloudFlareDDNS
             this.listViewRecords.TabIndex = 0;
             this.listViewRecords.UseCompatibleStateImageBehavior = false;
             this.listViewRecords.View = System.Windows.Forms.View.Details;
+            this.listViewRecords.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listHostsCheck);
             // 
             // columnHeader6
             // 

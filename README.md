@@ -16,7 +16,7 @@ Written in C#, using Windows Forms.
 https://www.microsoft.com/en-gb/download/details.aspx?id=17851
 <br /><br />
 ## Building
-Solution is known to build with Visual Studio 2013, no additional dependencies are needed.<br />
+Solution is known to build with Visual Studio 2013 (Community, Pro and Ultimate tested, Express should work), no additional dependencies are needed.<br />
 The project targets the full .NET 4.0 profile (not the client profile).
 <br /><br />
 ## Installing
@@ -37,7 +37,7 @@ On first launch, enter your details in Tools->Options.
 ##Running as a service
 Once you have verified the application is updating your records as intended, you may run it as a service.
 
-To install as a service, run rom an evevated (Administrator) command prompt:<br />
+To install as a service, run from an evevated (Administrator) command prompt:<br />
 ```shell
 CloudFlareDDNS.exe /install
 ```

@@ -181,24 +181,6 @@ namespace CloudFlareDDNS
                 return;
             }
 
-            //Itterate through the current list, saving checked items.
-            for(int j = 0; j < listViewRecords.Items.Count; j++)
-            {
-                //Add checked items to a list to be saved
-                if (listViewRecords.FindItemWithText(FetchedRecords.response.recs.objs[j].display_name).Checked == true)
-                {
-                    //Item has been selected by the user, store it for later
-                    SettingsManager.setSetting("SelectedHosts", SettingsManager.getSetting("SelectedHosts") + FetchedRecords.response.recs.objs[j].display_name + ";");
-                }
-                else 
-                {
-                    //Make sure to clean up any old entries in the settings
-                    string new_selected = SettingsManager.getSetting("SelectedHosts").Replace(FetchedRecords.response.recs.objs[j].display_name + ';', "");
-                    SettingsManager.setSetting("SelectedHosts", new_selected);
-                }
-            }
-
-            SettingsManager.saveSettings(); //Save the selected host list accross sessions
             listViewRecords.Items.Clear();
 
             string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
@@ -330,6 +312,36 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// A host in the list contol has been checked or unchecked
+        /// Update the config to reflect the change
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void listHostsCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (e.CurrentValue == CheckState.Unchecked)
+            {
+                //Item has been selected by the user, store it for later
+                if(SettingsManager.getSetting("SelectedHosts").IndexOf(FetchedRecords.response.recs.objs[e.Index].display_name) >= 0)
+                {
+                    //Item is already in the settings list, do nothing.
+                    return;
+                }
+                SettingsManager.setSetting("SelectedHosts", SettingsManager.getSetting("SelectedHosts") + FetchedRecords.response.recs.objs[e.Index].display_name + ";");
+            }
+            else if (e.CurrentValue == CheckState.Checked)
+            {
+                //Make sure to clean up any old entries in the settings
+                string new_selected = SettingsManager.getSetting("SelectedHosts").Replace(FetchedRecords.response.recs.objs[e.Index].display_name + ';', "");
+                SettingsManager.setSetting("SelectedHosts", new_selected);
+            }
+
+            SettingsManager.saveSettings(); //Save the selected host list accross sessions
+
+        }//end listHostsCheck()
+
+
+        /// <summary>
         /// Get current external address and CloudFlare records
         /// </summary>
         /// <param name="sender"></param>
@@ -454,7 +466,12 @@ namespace CloudFlareDDNS
             frmAbout about = new frmAbout();
             about.Show();
 
-        }//end aboutToolStripMenuItem_Click()
+        }
+
+        private void listHostsChecked(object sender, ItemCheckedEventArgs e)
+        {
+
+        }
 
 
     }//end class
