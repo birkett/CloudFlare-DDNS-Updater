@@ -1,4 +1,4 @@
-﻿namespace CloudFlare_DDNS
+﻿namespace CloudFlareDDNS
 {
     partial class frmMain
     {
@@ -162,7 +162,7 @@
             // 
             // minimiseToTrayToolStripMenuItem
             // 
-            this.minimiseToTrayToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.application_double;
+            this.minimiseToTrayToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.application_double;
             this.minimiseToTrayToolStripMenuItem.Name = "minimiseToTrayToolStripMenuItem";
             this.minimiseToTrayToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.minimiseToTrayToolStripMenuItem.Text = "Minimise to tray";
@@ -170,7 +170,7 @@
             // 
             // exitToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.exit;
+            this.exitToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.exit;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "Exit";
@@ -188,7 +188,7 @@
             // 
             // fetchRecordsToolStripMenuItem
             // 
-            this.fetchRecordsToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.arrow_down;
+            this.fetchRecordsToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.arrow_down;
             this.fetchRecordsToolStripMenuItem.Name = "fetchRecordsToolStripMenuItem";
             this.fetchRecordsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.fetchRecordsToolStripMenuItem.Text = "Fetch Records";
@@ -196,7 +196,7 @@
             // 
             // updateRecordsToolStripMenuItem
             // 
-            this.updateRecordsToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.arrow_up;
+            this.updateRecordsToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.arrow_up;
             this.updateRecordsToolStripMenuItem.Name = "updateRecordsToolStripMenuItem";
             this.updateRecordsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.updateRecordsToolStripMenuItem.Text = "Update Records";
@@ -204,7 +204,7 @@
             // 
             // settingsToolStripMenuItem
             // 
-            this.settingsToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.cog;
+            this.settingsToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.cog;
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -220,7 +220,7 @@
             // 
             // aboutToolStripMenuItem
             // 
-            this.aboutToolStripMenuItem.Image = global::CloudFlare_DDNS.Properties.Resources.information;
+            this.aboutToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.information;
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";

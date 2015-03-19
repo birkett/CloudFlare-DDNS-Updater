@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace CloudFlare_DDNS
+namespace CloudFlareDDNS
 {
     /// <summary>
     /// Settings form - basic configuration 

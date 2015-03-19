@@ -6,7 +6,7 @@ using System.Net;
 using System.IO;
 using System.Web.Script.Serialization;
 
-namespace CloudFlare_DDNS
+namespace CloudFlareDDNS
 {
     /// <summary>
     /// Main form - all main functionality

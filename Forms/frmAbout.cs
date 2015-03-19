@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace CloudFlare_DDNS
+namespace CloudFlareDDNS
 {
 
 

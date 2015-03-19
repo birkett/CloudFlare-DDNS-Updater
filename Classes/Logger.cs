@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using System.Diagnostics;
 
-namespace CloudFlare_DDNS
+namespace CloudFlareDDNS
 {
     class Logger
     {

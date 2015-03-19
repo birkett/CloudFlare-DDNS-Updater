@@ -3,7 +3,7 @@ using System.ServiceProcess;
 using System.Threading;
 using System.Web.Script.Serialization;
 
-namespace CloudFlare_DDNS
+namespace CloudFlareDDNS
 {
     /// <summary>
     /// Run the update process as a Windows Service
@@ -29,6 +29,7 @@ namespace CloudFlare_DDNS
         {
             autoUpdateTimer.Interval = Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000; //Minutes to milliseconds
             autoUpdateTimer.Start();
+            Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"), Logger.Level.Info);
         }
 
 

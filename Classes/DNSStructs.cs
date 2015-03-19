@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace CloudFlare_DDNS
+namespace CloudFlareDDNS
 {
     // These structs define the JSON response for rec_load_all
     //  This is all here for serialization - JSON to struct

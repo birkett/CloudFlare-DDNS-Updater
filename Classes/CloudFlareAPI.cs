@@ -3,7 +3,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 
-namespace CloudFlare_DDNS
+namespace CloudFlareDDNS
 {
     class CloudFlareAPI
     {
