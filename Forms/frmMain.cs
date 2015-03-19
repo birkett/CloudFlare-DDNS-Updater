@@ -4,7 +4,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Net;
 using System.IO;
-using System.Web.Helpers;
+using System.Web.Script.Serialization;
 
 namespace CloudFlare_DDNS
 {
@@ -114,7 +114,9 @@ namespace CloudFlare_DDNS
             if (records == null)
                 return;
 
-            FetchedRecords = Json.Decode<JSONResponse>(records);
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            FetchedRecords = serializer.Deserialize<JSONResponse>(records);
 
             if (FetchedRecords.result != "success")
             {
@@ -197,7 +199,10 @@ namespace CloudFlare_DDNS
                 }
 
                 string strResponse = CloudFlareAPI.UpdateCloudflareRecords(FetchedRecords.response.recs.objs[i]);
-                JSONResponse resp = (JSONResponse)System.Web.Helpers.Json.Decode(strResponse);
+ 
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+                JSONResponse resp = serializer.Deserialize<JSONResponse>(strResponse);
 
                 if (resp.result != "success")
                 {

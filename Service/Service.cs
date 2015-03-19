@@ -1,13 +1,7 @@
 ﻿using System;
-//using System.Collections.Generic;
-//using System.ComponentModel;
-//using System.Data;
-//using System.Diagnostics;
-//using System.Linq;
 using System.ServiceProcess;
-//using System.Text;
 using System.Threading;
-using System.Web.Helpers;
+using System.Web.Script.Serialization;
 
 namespace CloudFlare_DDNS
 {
@@ -71,7 +65,7 @@ namespace CloudFlare_DDNS
         /// <summary>
         /// Logic to get the external address and CloudFlare records
         /// </summary>
-        private JSONResponse FetchRecords()
+        private static JSONResponse FetchRecords()
         {
             JSONResponse FetchedRecords = new JSONResponse();
             string new_external_address = CloudFlareAPI.GetExternalAddress();
@@ -86,7 +80,9 @@ namespace CloudFlare_DDNS
             if (records == null)
                 return null;
 
-            FetchedRecords = Json.Decode<JSONResponse>(records);
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            FetchedRecords = serializer.Deserialize<JSONResponse>(records);
 
             if (FetchedRecords.result != "success")
             {
@@ -101,7 +97,7 @@ namespace CloudFlare_DDNS
         /// <summary>
         /// Logic to update records
         /// </summary>
-        private void UpdateRecords(JSONResponse FetchedRecords)
+        private static void UpdateRecords(JSONResponse FetchedRecords)
         {
             int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
             string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
@@ -131,7 +127,10 @@ namespace CloudFlare_DDNS
                 }
 
                 string strResponse = CloudFlareAPI.UpdateCloudflareRecords(FetchedRecords.response.recs.objs[i]);
-                JSONResponse resp = (JSONResponse)System.Web.Helpers.Json.Decode(strResponse);
+
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+                JSONResponse resp = serializer.Deserialize<JSONResponse>(strResponse);
 
                 if (resp.result != "success")
                 {
