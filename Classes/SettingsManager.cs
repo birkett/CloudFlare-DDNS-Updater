@@ -64,5 +64,16 @@ namespace CloudFlareDDNS
         }//end saveSettings()
 
 
+        /// <summary>
+        /// Reload the config file from disk
+        /// Useful for when the GUI changes the config and the service needs to reload
+        /// </summary>
+        public static void reloadSettings()
+        {
+            Properties.Settings.Default.Reload();
+
+        }//end reloadSettings()
+
+
     }//end class
 }//end namespace

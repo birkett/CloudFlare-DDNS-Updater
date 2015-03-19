@@ -117,6 +117,8 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void autoUpdateTimer_Tick(object sender, EventArgs e)
         {
+            SettingsManager.reloadSettings(); //Do this to reload the config, GUI might have changed settings since last tick
+
             Thread thread = new Thread(new ThreadStart(timerUpdateThread));
             thread.Start();
 
