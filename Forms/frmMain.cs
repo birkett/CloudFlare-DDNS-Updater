@@ -27,7 +27,6 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Net;
 using System.IO;
-using System.Web.Script.Serialization;
 
 namespace CloudFlareDDNS
 {
@@ -51,66 +50,6 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
-        /// Called from another thread, get if a list entry is selected by the user
-        /// </summary>
-        /// <param name="szEntryName"></param>
-        /// <returns></returns>
-        private bool isEntryChecked(string szEntryName)
-        {
-            return (listViewRecords.FindItemWithText(szEntryName).Checked == true);
-
-        }//end isEntryChecked()
-
-
-        /// <summary>
-        /// Deletgate for isEntryChecked()
-        /// </summary>
-        /// <param name="szEntryName"></param>
-        /// <returns></returns>
-        delegate bool isEntryCheckedInvoker(string szEntryName);
-
-
-        /// <summary>
-        /// Called from another thread, select an entry in the list
-        /// </summary>
-        /// <param name="szEntryName"></param>
-        private void checkTickEntry(string szEntryName)
-        {
-            listViewRecords.FindItemWithText(szEntryName).Checked = true;
-
-        }//end checkTickEntry()
-
-
-        /// <summary>
-        /// Deletgate for checkTickEntry()
-        /// </summary>
-        /// <param name="szEntryName"></param>
-        delegate void checkTickEntryInvoker(string szEntryName);
-
-
-        /// <summary>
-        /// Called from another thread, adds an entry to the list control
-        /// </summary>
-        /// <param name="entry"></param>
-        private void addHostEntry(DnsRecord entry)
-        {
-            ListViewItem row = new ListViewItem();
-            row.SubItems.Add(entry.type);
-            row.SubItems.Add(entry.display_name);
-            row.SubItems.Add(entry.display_content);
-            listViewRecords.Items.Add(row);
-
-        }//end addHostEntry()
-
-
-        /// <summary>
-        /// Delegate for addHostEntry()
-        /// </summary>
-        /// <param name="entry"></param>
-        delegate void addHostEntryInvoker(DnsRecord entry);
-
-
-        /// <summary>
         /// Called from another thread
         /// Populate the list hosts control with the new returned hosts
         /// </summary>
@@ -123,15 +62,20 @@ namespace CloudFlareDDNS
 
             for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
             {
-                this.Invoke(new addHostEntryInvoker(addHostEntry), fetchedRecords.response.recs.objs[i]);
+                ListViewItem row = new ListViewItem();
+                row.SubItems.Add(fetchedRecords.response.recs.objs[i].type);
+                row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_name);
+                row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_content);
 
                 foreach (string host in selectedHosts)
                 {
                     if (host == fetchedRecords.response.recs.objs[i].display_name)
                     {
-                        this.Invoke(new checkTickEntryInvoker(checkTickEntry), fetchedRecords.response.recs.objs[i].display_name);
+                        row.Checked = true;
                     }
                 }
+
+                listViewRecords.Items.Add(row);
             }
         }//end updateHostsList()
 

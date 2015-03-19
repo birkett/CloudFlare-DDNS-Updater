@@ -24,7 +24,6 @@
 using System;
 using System.ServiceProcess;
 using System.Threading;
-using System.Web.Script.Serialization;
 
 namespace CloudFlareDDNS
 {
