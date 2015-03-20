@@ -78,6 +78,13 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Delegate for updateHostsList()
+        /// </summary>
+        /// <param name="fetchedRecords"></param>
+        delegate void updateHostsListInvoker(JsonResponse fetchedRecords);
+
+
+        /// <summary>
         /// Called from another thread, adds a log entry to the list control
         /// </summary>
         /// <param name="entry"></param>
@@ -92,13 +99,6 @@ namespace CloudFlareDDNS
         /// </summary>
         /// <param name="entry"></param>
         delegate void addLogEntryInvoker(ListViewItem entry);
-
-
-        /// <summary>
-        /// Delegate for updateHostsList()
-        /// </summary>
-        /// <param name="fetchedRecords"></param>
-        delegate void updateHostsListInvoker(JsonResponse fetchedRecords);
 
 
         /// <summary>
@@ -128,10 +128,12 @@ namespace CloudFlareDDNS
 
             autoUpdateTimer = new System.Timers.Timer(Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000); //Minutes to milliseconds
             autoUpdateTimer.Elapsed += autoUpdateTimer_Tick;
+            autoUpdateTimer.AutoReset = true;
             autoUpdateTimer.Enabled = true;
 
             logUpdateTimer = new System.Timers.Timer(1000); //Refresh the log every second
             logUpdateTimer.Elapsed += logUpdateTimer_Tick;
+            logUpdateTimer.AutoReset = true;
             logUpdateTimer.Enabled = true;
 
             Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"), Logger.Level.Info);
@@ -279,19 +281,20 @@ namespace CloudFlareDDNS
 
         /// <summary>
         /// Auto update every x minutes, creates a new timerUpdateThread() thread
+        /// NOTE: This already runs in its own thread!
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void autoUpdateTimer_Tick(object sender, EventArgs e)
         {
-            Thread thread = new Thread(new ThreadStart(threadFetchUpdate));
-            thread.Start();
+            threadFetchUpdate();
 
         }//end autoUpdateTimer_Tick()
 
 
         /// <summary>
         /// Tick every 1000ms to add new log entries to the listview control
+        /// NOTE: This already runs in its own thread!
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -358,7 +361,7 @@ namespace CloudFlareDDNS
             frmAbout about = new frmAbout();
             about.Show();
 
-        }
+        }//end aboutToolStripMenuItem_Click()
 
 
     }//end class
