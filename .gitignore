@@ -2,3 +2,4 @@
 /obj
 /*.suo
 /*.user
+/Properties/GeneratedVersion.cs

@@ -74,7 +74,6 @@
     <Compile Include="Classes\CloudFlareAPI.cs" />
     <Compile Include="Classes\DNSStructs.cs" />
     <Compile Include="Properties\GeneratedVersion.cs" />
-    <Compile Include="Classes\Version.cs" />
     <Compile Include="Forms\frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
