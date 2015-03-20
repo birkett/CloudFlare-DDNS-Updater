@@ -67,12 +67,9 @@ namespace CloudFlareDDNS
                 row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_name);
                 row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_content);
 
-                foreach (string host in selectedHosts)
+                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) == true)
                 {
-                    if (host == fetchedRecords.response.recs.objs[i].display_name)
-                    {
-                        row.Checked = true;
-                    }
+                    row.Checked = true;
                 }
 
                 listViewRecords.Items.Add(row);
@@ -81,28 +78,27 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
-        /// Delegate for updateHostsList()
-        /// </summary>
-        /// <param name="fetchedRecords"></param>
-        delegate void updateHostsListInvoker(JsonResponse fetchedRecords);
-
-
-        /// <summary>
-        /// Called from another thread, adds an entry to the log control
+        /// Called from another thread, adds a log entry to the list control
         /// </summary>
         /// <param name="entry"></param>
         private void addLogEntry(ListViewItem entry)
         {
             listViewLog.Items.Add(entry);
 
-        }//end addLogEntry()
-
+        }
 
         /// <summary>
         /// Delegate for addLogEntry()
         /// </summary>
         /// <param name="entry"></param>
         delegate void addLogEntryInvoker(ListViewItem entry);
+
+
+        /// <summary>
+        /// Delegate for updateHostsList()
+        /// </summary>
+        /// <param name="fetchedRecords"></param>
+        delegate void updateHostsListInvoker(JsonResponse fetchedRecords);
 
 
         /// <summary>
@@ -219,6 +215,19 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Thread to run updates every x minutes
+        /// </summary>
+        private void threadFetchUpdate()
+        {
+            this.Invoke(new updateAddressInvoker(updateAddress), CloudFlareAPI.getExternalAddress());
+            JsonResponse records = CloudFlareAPI.fetchRecords();
+            this.Invoke(new updateHostsListInvoker(updateHostsList), records);
+            CloudFlareAPI.updateRecords(records);
+
+        }//end timerUpdateThread()
+
+
+        /// <summary>
         /// Get current external address and CloudFlare records
         /// </summary>
         /// <param name="sender"></param>
@@ -238,7 +247,7 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void updateRecordsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread updateThread = new Thread(new ThreadStart(timerUpdateThread));
+            Thread updateThread = new Thread(new ThreadStart(threadFetchUpdate));
             updateThread.Start();
 
         }//end updateRecordsToolStripMenuItem_Click()
@@ -269,26 +278,13 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
-        /// Thread to run updates every x minutes
-        /// </summary>
-        private void timerUpdateThread()
-        {
-            this.Invoke(new updateAddressInvoker(updateAddress), CloudFlareAPI.getExternalAddress());
-            JsonResponse records = CloudFlareAPI.fetchRecords();
-            this.Invoke(new updateHostsListInvoker(updateHostsList), records);
-            CloudFlareAPI.updateRecords(records);
-
-        }//end timerUpdateThread()
-
-
-        /// <summary>
         /// Auto update every x minutes, creates a new timerUpdateThread() thread
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void autoUpdateTimer_Tick(object sender, EventArgs e)
         {
-            Thread thread = new Thread(new ThreadStart(timerUpdateThread));
+            Thread thread = new Thread(new ThreadStart(threadFetchUpdate));
             thread.Start();
 
         }//end autoUpdateTimer_Tick()
@@ -301,11 +297,28 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void logUpdateTimer_Tick(object sender, EventArgs e)
         {
-            foreach(ListViewItem ListItem in Logger.m_LogItems)
+            foreach(Logger.LogItem logItem in Logger.items)
             {
-                this.Invoke(new addLogEntryInvoker(addLogEntry), ListItem);
+                ListViewItem row = new ListViewItem();
+
+                switch (logItem.eLevel)
+                {
+                    case Logger.Level.Warning:
+                        row.ImageIndex = 1;
+                        break;
+
+                    case Logger.Level.Error:
+                        row.ImageIndex = 2;
+                        break;
+
+                    default: //Logger.Level.Info
+                        row.ImageIndex = 0;
+                        break;
+                }
+                row.SubItems.Add(logItem.szMsg);
+                this.Invoke(new addLogEntryInvoker(addLogEntry), row);
             }
-            Logger.m_LogItems.Clear();
+            Logger.reset(); //Clear the log
 
         }//end logUpdateTimer_Tick()
 
@@ -344,11 +357,6 @@ namespace CloudFlareDDNS
         {
             frmAbout about = new frmAbout();
             about.Show();
-
-        }
-
-        private void listHostsChecked(object sender, ItemCheckedEventArgs e)
-        {
 
         }
 

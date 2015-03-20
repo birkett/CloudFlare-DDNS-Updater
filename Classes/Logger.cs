@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Diagnostics;
 
 namespace CloudFlareDDNS
@@ -37,7 +36,7 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Stores the items for a list view control
         /// </summary>
-        static public List<ListViewItem> m_LogItems = new List<ListViewItem>();
+        private static List<LogItem> m_LogItems = new List<LogItem>();
 
         /// <summary>
         /// Enum of Log message levels
@@ -52,13 +51,32 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// LogItem is a generic way of storing messages
+        /// </summary>
+        public struct LogItem
+        {
+            public LogItem(string szMsg, Level eLevel)
+            {
+                m_szMsg = szMsg;
+                m_eLevel = eLevel;
+            }
+
+            public Level eLevel { get { return m_eLevel; } }
+            public string szMsg { get { return m_szMsg; } }
+
+            private Level  m_eLevel;
+            private string m_szMsg;
+        }//end LogItem;
+
+
+        /// <summary>
         /// Write an entry to the log
         /// </summary>
         /// <param name="szMessage"></param>
         /// <param name="logLevel"></param>
         public static void log(string szMessage, Level logLevel = 0)
         {
-            writeFormControl(szMessage, logLevel);
+            m_LogItems.Add(new LogItem(szMessage, logLevel));
 
             if(SettingsManager.getSetting("UseEventLog") == "True")
                 writeEventLog(szMessage, logLevel);
@@ -67,32 +85,22 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
-        /// Add messages to the log view
+        /// Property to get the logged items
         /// </summary>
-        /// <param name="szMessage"></param>
-        /// <param name="logLevel"></param>
-        private static void writeFormControl(string szMessage, Level logLevel = 0)
+        public static List<LogItem> items
         {
-            ListViewItem row = new ListViewItem();
-            switch (logLevel)
-            {
-                case Level.Warning:
-                    row.ImageIndex = 1;
-                    break;
+            get { return m_LogItems; }
+        }
 
-                case Level.Error:
-                    row.ImageIndex = 2;
-                    break;
 
-                default: //Level.Info
-                    row.ImageIndex = 0;
-                    break;
-            }
-            row.SubItems.Add(szMessage);
+        /// <summary>
+        /// Clear out the current log items
+        /// </summary>
+        public static void reset()
+        {
+            m_LogItems.Clear();
 
-            m_LogItems.Add(row);
-
-        }//end writeFormControl()
+        }
 
 
         /// <summary>
