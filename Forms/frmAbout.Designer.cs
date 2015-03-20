@@ -67,7 +67,7 @@ namespace CloudFlareDDNS
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 1;
-            this.btnClose.Text = "Close";
+            this.btnClose.Text = Properties.Resources.About_Close;
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
@@ -115,7 +115,7 @@ namespace CloudFlareDDNS
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmAbout";
-            this.Text = "About";
+            this.Text = Properties.Resources.About_Title;
             this.ResumeLayout(false);
             this.PerformLayout();
 

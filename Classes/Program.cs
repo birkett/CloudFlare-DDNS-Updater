@@ -28,11 +28,19 @@ using System.Configuration.Install;
 
 namespace CloudFlareDDNS
 {
+
+
     /// <summary>
     /// Program entry logic
     /// </summary>
     static class Program
     {
+
+
+        /// <summary>
+        /// Used for localising strings and conversions.
+        /// </summary>
+        public static System.Globalization.CultureInfo cultureInfo = new System.Globalization.CultureInfo("en-GB");
 
 
         /// <summary>
@@ -57,6 +65,7 @@ namespace CloudFlareDDNS
                     ti.Context = new InstallContext("", null);
                     ti.Context.Parameters["assemblypath"] = "\"" + System.Reflection.Assembly.GetExecutingAssembly().Location + "\" /service";
                     ti.Install(new System.Collections.Hashtable());
+                    ti.Dispose();
                     return;
                 }
 
@@ -67,6 +76,7 @@ namespace CloudFlareDDNS
                     ti.Context = new System.Configuration.Install.InstallContext("", null);
                     ti.Context.Parameters["assemblypath"] = "\"" + System.Reflection.Assembly.GetExecutingAssembly().Location + "\" /service";
                     ti.Uninstall(null);
+                    ti.Dispose();
                     return;
                 }
             }
@@ -82,7 +92,7 @@ namespace CloudFlareDDNS
         /// </summary>
         static void runGUI()
         {
-            Logger.log("Starting CloudFlare DDNS updater GUI", Logger.Level.Info);
+            Logger.log(Properties.Resources.Logger_RunGUI, Logger.Level.Info);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmMain());
@@ -95,7 +105,7 @@ namespace CloudFlareDDNS
         /// </summary>
         static void runService()
         {
-            Logger.log("Starting CloudFlare DDNS updater service", Logger.Level.Info);
+            Logger.log(Properties.Resources.Logger_RunService, Logger.Level.Info);
             ServiceBase.Run(new Service());
 
         }//end runService()

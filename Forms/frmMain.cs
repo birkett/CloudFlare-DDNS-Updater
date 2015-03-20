@@ -56,6 +56,9 @@ namespace CloudFlareDDNS
         /// <param name="fetchedRecords"></param>
         private void updateHostsList(JsonResponse fetchedRecords)
         {
+            if (fetchedRecords == null)
+                return; //bail if the fetch failed
+
             listViewRecords.Items.Clear();
 
             string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").ToString().Split(';');
@@ -136,7 +139,7 @@ namespace CloudFlareDDNS
             logUpdateTimer.AutoReset = true;
             logUpdateTimer.Enabled = true;
 
-            Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime").ToString() + " minutes for domain " + SettingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
+            Logger.log(Properties.Resources.Logger_Start + " " + SettingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " " + SettingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
 
         }//end frmMain()
 
@@ -185,7 +188,7 @@ namespace CloudFlareDDNS
             if (e.CurrentValue == CheckState.Unchecked)
             {
                 //Item has been selected by the user, store it for later
-                if(SettingsManager.getSetting("SelectedHosts").ToString().IndexOf(item.SubItems[2].Text) >= 0)
+                if(SettingsManager.getSetting("SelectedHosts").ToString().IndexOf(item.SubItems[2].Text, StringComparison.CurrentCulture) >= 0)
                 {
                     //Item is already in the settings list, do nothing.
                     return;

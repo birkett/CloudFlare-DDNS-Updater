@@ -96,22 +96,22 @@ namespace CloudFlareDDNS
             // 
             // columnHeader6
             // 
-            this.columnHeader6.Text = "Update";
+            this.columnHeader6.Text = Properties.Resources.Main_HostsList_Header1;
             this.columnHeader6.Width = 57;
             // 
             // columnHeader1
             // 
-            this.columnHeader1.Text = "Type";
+            this.columnHeader1.Text = Properties.Resources.Main_HostsList_Header2;
             this.columnHeader1.Width = 77;
             // 
             // columnHeader2
             // 
-            this.columnHeader2.Text = "Name";
+            this.columnHeader2.Text = Properties.Resources.Main_HostsList_Header3;
             this.columnHeader2.Width = 127;
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "Host";
+            this.columnHeader3.Text = Properties.Resources.Main_HostsList_Header4;
             this.columnHeader3.Width = 300;
             // 
             // listViewLog
@@ -129,12 +129,12 @@ namespace CloudFlareDDNS
             // 
             // columnHeader4
             // 
-            this.columnHeader4.Text = "Level";
+            this.columnHeader4.Text = Properties.Resources.Main_LogControl_Header1;
             this.columnHeader4.Width = 74;
             // 
             // columnHeader5
             // 
-            this.columnHeader5.Text = "Message";
+            this.columnHeader5.Text = Properties.Resources.Main_LogControl_Header2;
             this.columnHeader5.Width = 434;
             // 
             // imageList1
@@ -152,7 +152,7 @@ namespace CloudFlareDDNS
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(139, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "Current External IP Address:";
+            this.label1.Text = Properties.Resources.Main_ExterrnalAddress;
             // 
             // txtExternalAddress
             // 
@@ -171,7 +171,6 @@ namespace CloudFlareDDNS
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(549, 24);
             this.menuStrip1.TabIndex = 7;
-            this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
@@ -180,14 +179,14 @@ namespace CloudFlareDDNS
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            this.fileToolStripMenuItem.Text = Properties.Resources.Main_MenuItem_File;
             // 
             // minimiseToTrayToolStripMenuItem
             // 
             this.minimiseToTrayToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.application_double;
             this.minimiseToTrayToolStripMenuItem.Name = "minimiseToTrayToolStripMenuItem";
             this.minimiseToTrayToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.minimiseToTrayToolStripMenuItem.Text = "Minimise to tray";
+            this.minimiseToTrayToolStripMenuItem.Text = Properties.Resources.Main_MenuItem_Minimise;
             this.minimiseToTrayToolStripMenuItem.Click += new System.EventHandler(this.minimiseToTrayToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
@@ -195,7 +194,7 @@ namespace CloudFlareDDNS
             this.exitToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.exit;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Text = Properties.Resources.Main_MenuItem_Exit;
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
@@ -206,14 +205,14 @@ namespace CloudFlareDDNS
             this.settingsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
+            this.toolsToolStripMenuItem.Text = Properties.Resources.Main_MenuItem_Tools;
             // 
             // fetchRecordsToolStripMenuItem
             // 
             this.fetchRecordsToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.arrow_down;
             this.fetchRecordsToolStripMenuItem.Name = "fetchRecordsToolStripMenuItem";
             this.fetchRecordsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.fetchRecordsToolStripMenuItem.Text = "Fetch Records";
+            this.fetchRecordsToolStripMenuItem.Text = Properties.Resources.Main_MenuItem_Fetch;
             this.fetchRecordsToolStripMenuItem.Click += new System.EventHandler(this.fetchDataToolStripMenuItem_Click);
             // 
             // updateRecordsToolStripMenuItem
@@ -221,7 +220,7 @@ namespace CloudFlareDDNS
             this.updateRecordsToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.arrow_up;
             this.updateRecordsToolStripMenuItem.Name = "updateRecordsToolStripMenuItem";
             this.updateRecordsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.updateRecordsToolStripMenuItem.Text = "Update Records";
+            this.updateRecordsToolStripMenuItem.Text = Properties.Resources.Main_MenuItem_Update;
             this.updateRecordsToolStripMenuItem.Click += new System.EventHandler(this.updateRecordsToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
@@ -229,7 +228,7 @@ namespace CloudFlareDDNS
             this.settingsToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.cog;
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Text = Properties.Resources.Main_MenuItem_Settings;
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
@@ -238,22 +237,22 @@ namespace CloudFlareDDNS
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Text = Properties.Resources.Main_MenuItem_Help;
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Image = global::CloudFlareDDNS.Properties.Resources.information;
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Text = Properties.Resources.Main_MenuItem_About;
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // trayIcon
             // 
-            this.trayIcon.BalloonTipText = "Updates will continue in the background";
-            this.trayIcon.BalloonTipTitle = "CloudFlare DNS Updater";
+            this.trayIcon.BalloonTipText = Properties.Resources.Tooltip_Text;
+            this.trayIcon.BalloonTipTitle = Properties.Resources.Main_Title;
             this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
-            this.trayIcon.Text = "trayIcon";
+            this.trayIcon.Text = Properties.Resources.Main_Title;
             this.trayIcon.Visible = true;
             this.trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
@@ -270,7 +269,7 @@ namespace CloudFlareDDNS
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmMain";
-            this.Text = "CloudFlare DDNS Updater";
+            this.Text = Properties.Resources.Main_Title;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_Closing);
             this.Resize += new System.EventHandler(this.frmMain_Resize);
             this.menuStrip1.ResumeLayout(false);

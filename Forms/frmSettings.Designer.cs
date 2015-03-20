@@ -71,7 +71,7 @@ namespace CloudFlareDDNS
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 0;
-            this.btnClose.Text = "Close";
+            this.btnClose.Text = Properties.Resources.Settings_Close;
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
@@ -81,7 +81,7 @@ namespace CloudFlareDDNS
             this.btnApply.Name = "btnApply";
             this.btnApply.Size = new System.Drawing.Size(75, 23);
             this.btnApply.TabIndex = 1;
-            this.btnApply.Text = "Apply";
+            this.btnApply.Text = Properties.Resources.Settings_Apply;
             this.btnApply.UseVisualStyleBackColor = true;
             this.btnApply.Click += new System.EventHandler(this.btnApply_Click);
             // 
@@ -92,7 +92,7 @@ namespace CloudFlareDDNS
             this.lblDomain.Name = "lblDomain";
             this.lblDomain.Size = new System.Drawing.Size(77, 13);
             this.lblDomain.TabIndex = 2;
-            this.lblDomain.Text = "Domain Name:";
+            this.lblDomain.Text = Properties.Resources.Settings_Domain;
             // 
             // txtDomainName
             // 
@@ -115,7 +115,7 @@ namespace CloudFlareDDNS
             this.lblEmailAddress.Name = "lblEmailAddress";
             this.lblEmailAddress.Size = new System.Drawing.Size(76, 13);
             this.lblEmailAddress.TabIndex = 4;
-            this.lblEmailAddress.Text = "Email Address:";
+            this.lblEmailAddress.Text = Properties.Resources.Settings_EmailAddress;
             // 
             // txtAPIKey
             // 
@@ -131,7 +131,7 @@ namespace CloudFlareDDNS
             this.lblAPIKey.Name = "lblAPIKey";
             this.lblAPIKey.Size = new System.Drawing.Size(48, 13);
             this.lblAPIKey.TabIndex = 6;
-            this.lblAPIKey.Text = "API Key:";
+            this.lblAPIKey.Text = Properties.Resources.Settings_APIKey;
             // 
             // txtFetchTime
             // 
@@ -147,7 +147,7 @@ namespace CloudFlareDDNS
             this.lblFetchTime.Name = "lblFetchTime";
             this.lblFetchTime.Size = new System.Drawing.Size(134, 13);
             this.lblFetchTime.TabIndex = 8;
-            this.lblFetchTime.Text = "Auto Fetch Time (Minutes):";
+            this.lblFetchTime.Text = Properties.Resources.Settings_AutoFetchTime;
             // 
             // label1
             // 
@@ -156,7 +156,7 @@ namespace CloudFlareDDNS
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(128, 13);
             this.label1.TabIndex = 10;
-            this.label1.Text = "Use Windows Event Log:";
+            this.label1.Text = Properties.Resources.Settings_UseWindowsEventLog;
             // 
             // cbEventLog
             // 
@@ -185,7 +185,7 @@ namespace CloudFlareDDNS
             this.Controls.Add(this.btnApply);
             this.Controls.Add(this.btnClose);
             this.Name = "frmSettings";
-            this.Text = "Settings";
+            this.Text = Properties.Resources.Settings_Title;
             this.Load += new System.EventHandler(this.frmSettings_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

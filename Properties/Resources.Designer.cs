@@ -61,6 +61,24 @@ namespace CloudFlareDDNS.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string About_Close {
+            get {
+                return ResourceManager.GetString("About_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        internal static string About_Title {
+            get {
+                return ResourceManager.GetString("About_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon AppIcon {
@@ -137,6 +155,294 @@ namespace CloudFlareDDNS.Properties {
             get {
                 object obj = ResourceManager.GetObject("information", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to update.
+        /// </summary>
+        internal static string Logger_Failed {
+            get {
+                return ResourceManager.GetString("Logger_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to minutes for domain.
+        /// </summary>
+        internal static string Logger_Interval {
+            get {
+                return ResourceManager.GetString("Logger_Interval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting CloudFlare DDNS updater GUI.
+        /// </summary>
+        internal static string Logger_RunGUI {
+            get {
+                return ResourceManager.GetString("Logger_RunGUI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting CloudFlare DDNS updater service.
+        /// </summary>
+        internal static string Logger_RunService {
+            get {
+                return ResourceManager.GetString("Logger_RunService", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service stopping.
+        /// </summary>
+        internal static string Logger_ServiceStop {
+            get {
+                return ResourceManager.GetString("Logger_ServiceStop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting auto updates every.
+        /// </summary>
+        internal static string Logger_Start {
+            get {
+                return ResourceManager.GetString("Logger_Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current External IP Address:.
+        /// </summary>
+        internal static string Main_ExterrnalAddress {
+            get {
+                return ResourceManager.GetString("Main_ExterrnalAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update.
+        /// </summary>
+        internal static string Main_HostsList_Header1 {
+            get {
+                return ResourceManager.GetString("Main_HostsList_Header1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        internal static string Main_HostsList_Header2 {
+            get {
+                return ResourceManager.GetString("Main_HostsList_Header2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string Main_HostsList_Header3 {
+            get {
+                return ResourceManager.GetString("Main_HostsList_Header3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Host.
+        /// </summary>
+        internal static string Main_HostsList_Header4 {
+            get {
+                return ResourceManager.GetString("Main_HostsList_Header4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        internal static string Main_LogControl_Header1 {
+            get {
+                return ResourceManager.GetString("Main_LogControl_Header1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message.
+        /// </summary>
+        internal static string Main_LogControl_Header2 {
+            get {
+                return ResourceManager.GetString("Main_LogControl_Header2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        internal static string Main_MenuItem_About {
+            get {
+                return ResourceManager.GetString("Main_MenuItem_About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exit.
+        /// </summary>
+        internal static string Main_MenuItem_Exit {
+            get {
+                return ResourceManager.GetString("Main_MenuItem_Exit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fetch Records.
+        /// </summary>
+        internal static string Main_MenuItem_Fetch {
+            get {
+                return ResourceManager.GetString("Main_MenuItem_Fetch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        internal static string Main_MenuItem_File {
+            get {
+                return ResourceManager.GetString("Main_MenuItem_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        internal static string Main_MenuItem_Help {
+            get {
+                return ResourceManager.GetString("Main_MenuItem_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimise to tray.
+        /// </summary>
+        internal static string Main_MenuItem_Minimise {
+            get {
+                return ResourceManager.GetString("Main_MenuItem_Minimise", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string Main_MenuItem_Settings {
+            get {
+                return ResourceManager.GetString("Main_MenuItem_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tools.
+        /// </summary>
+        internal static string Main_MenuItem_Tools {
+            get {
+                return ResourceManager.GetString("Main_MenuItem_Tools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update Records.
+        /// </summary>
+        internal static string Main_MenuItem_Update {
+            get {
+                return ResourceManager.GetString("Main_MenuItem_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CloudFlare DDNS Updater.
+        /// </summary>
+        internal static string Main_Title {
+            get {
+                return ResourceManager.GetString("Main_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to API Key:.
+        /// </summary>
+        internal static string Settings_APIKey {
+            get {
+                return ResourceManager.GetString("Settings_APIKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Apply.
+        /// </summary>
+        internal static string Settings_Apply {
+            get {
+                return ResourceManager.GetString("Settings_Apply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto Fetch Time (Minutes):.
+        /// </summary>
+        internal static string Settings_AutoFetchTime {
+            get {
+                return ResourceManager.GetString("Settings_AutoFetchTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string Settings_Close {
+            get {
+                return ResourceManager.GetString("Settings_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Domain Name:.
+        /// </summary>
+        internal static string Settings_Domain {
+            get {
+                return ResourceManager.GetString("Settings_Domain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email Address:.
+        /// </summary>
+        internal static string Settings_EmailAddress {
+            get {
+                return ResourceManager.GetString("Settings_EmailAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string Settings_Title {
+            get {
+                return ResourceManager.GetString("Settings_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Windows Event Log:.
+        /// </summary>
+        internal static string Settings_UseWindowsEventLog {
+            get {
+                return ResourceManager.GetString("Settings_UseWindowsEventLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updates will continue in the background.
+        /// </summary>
+        internal static string Tooltip_Text {
+            get {
+                return ResourceManager.GetString("Tooltip_Text", resourceCulture);
             }
         }
         

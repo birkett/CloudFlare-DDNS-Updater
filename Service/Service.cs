@@ -60,7 +60,7 @@ namespace CloudFlareDDNS
             autoUpdateTimer.Elapsed += autoUpdateTimer_Tick;
             autoUpdateTimer.Enabled = true;
 
-            Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime").ToString() + " minutes for domain " + SettingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
+            Logger.log(Properties.Resources.Logger_Start + " " + SettingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " " + SettingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
         
         }//end OnStart()
 
@@ -71,7 +71,7 @@ namespace CloudFlareDDNS
         protected override void OnStop()
         {
             autoUpdateTimer.Enabled = false;
-            Logger.log("Service stopping", Logger.Level.Info);
+            Logger.log(Properties.Resources.Logger_ServiceStop, Logger.Level.Info);
 
         }//end OnStop()
 

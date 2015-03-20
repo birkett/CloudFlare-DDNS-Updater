@@ -51,7 +51,7 @@ namespace CloudFlareDDNS
             /// Constructor, new setting value from integer
             /// </summary>
             /// <param name="iValue"></param>
-            public Setting(int iValue)      { m_szValue = iValue.ToString(); }
+            public Setting(int iValue)      { m_szValue = iValue.ToString(Program.cultureInfo); }
 
             /// <summary>
             /// Accessor, return string
@@ -63,13 +63,13 @@ namespace CloudFlareDDNS
             /// Accessor, return boolean
             /// </summary>
             /// <returns></returns>
-            public bool             ToBool()    { return System.Convert.ToBoolean(m_szValue); }
+            public bool             ToBool()    { return System.Convert.ToBoolean(m_szValue, Program.cultureInfo); }
 
             /// <summary>
             /// Accessor, return integer
             /// </summary>
             /// <returns></returns>
-            public int              ToInt()     { return System.Convert.ToInt32(m_szValue); }
+            public int              ToInt()     { return System.Convert.ToInt32(m_szValue, Program.cultureInfo); }
 
             /// <summary>
             /// Storage
