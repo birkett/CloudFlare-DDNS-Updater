@@ -31,6 +31,8 @@ namespace CloudFlareDDNS
     /// </summary>
     public partial class frmSettings : Form
     {
+
+
         /// <summary>
         /// Form entry point
         /// </summary>
@@ -39,6 +41,7 @@ namespace CloudFlareDDNS
             InitializeComponent();
 
         }//end frmSettings()
+
 
         /// <summary>
         /// Load the saved values on open
@@ -55,6 +58,7 @@ namespace CloudFlareDDNS
 
         }//end frmSettings_Load()
 
+
         /// <summary>
         /// Save the new settings
         /// </summary>
@@ -70,6 +74,7 @@ namespace CloudFlareDDNS
             SettingsManager.saveSettings();
 
         }//end btnApply_Click()
+
 
         /// <summary>
         /// Close this form
