@@ -31,15 +31,63 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Storage for settings, allows the return value to be converted to whatever type needed
+        /// </summary>
+        public struct Setting
+        {
+            /// <summary>
+            /// Constructor, new setting value from string
+            /// </summary>
+            /// <param name="szValue"></param>
+            public Setting(string szValue)  { m_szValue = szValue; }
+
+            /// <summary>
+            /// Constructor, new setting value from boolean
+            /// </summary>
+            /// <param name="bValue"></param>
+            public Setting(bool bValue)     { m_szValue = bValue.ToString(); }
+
+            /// <summary>
+            /// Constructor, new setting value from integer
+            /// </summary>
+            /// <param name="iValue"></param>
+            public Setting(int iValue)      { m_szValue = iValue.ToString(); }
+
+            /// <summary>
+            /// Accessor, return string
+            /// </summary>
+            /// <returns></returns>
+            public override string  ToString()  { return m_szValue; }
+
+            /// <summary>
+            /// Accessor, return boolean
+            /// </summary>
+            /// <returns></returns>
+            public bool             ToBool()    { return System.Convert.ToBoolean(m_szValue); }
+
+            /// <summary>
+            /// Accessor, return integer
+            /// </summary>
+            /// <returns></returns>
+            public int              ToInt()     { return System.Convert.ToInt32(m_szValue); }
+
+            /// <summary>
+            /// Storage
+            /// </summary>
+            private string m_szValue;
+        }//end Setting
+
+
+        /// <summary>
         /// Get a setting from the config file by a given name
         /// </summary>
         /// <param name="szName"></param>
-        /// <returns></returns>
-        public static string getSetting(string szName)
+        /// <returns>String value</returns>
+        public static Setting getSetting(string szName)
         {
-            return Properties.Settings.Default[szName].ToString();
+            return new Setting(Properties.Settings.Default[szName].ToString());
 
-        }//end getSetting()
+        }//end getSetting() String
 
 
         /// <summary>

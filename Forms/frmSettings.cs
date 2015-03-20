@@ -47,11 +47,11 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void frmSettings_Load(object sender, EventArgs e)
         {
-            txtDomainName.Text = SettingsManager.getSetting("Domain");
-            txtEmailAddress.Text = SettingsManager.getSetting("EmailAddress");
-            txtAPIKey.Text = SettingsManager.getSetting("APIKey");
-            txtFetchTime.Text = SettingsManager.getSetting("FetchTime");
-            cbEventLog.Checked = Convert.ToBoolean(SettingsManager.getSetting("UseEventLog"));
+            txtDomainName.Text = SettingsManager.getSetting("Domain").ToString();
+            txtEmailAddress.Text = SettingsManager.getSetting("EmailAddress").ToString();
+            txtAPIKey.Text = SettingsManager.getSetting("APIKey").ToString();
+            txtFetchTime.Text = SettingsManager.getSetting("FetchTime").ToString();
+            cbEventLog.Checked = SettingsManager.getSetting("UseEventLog").ToBool();
 
         }//end frmSettings_Load()
 

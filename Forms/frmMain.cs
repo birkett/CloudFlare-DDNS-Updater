@@ -58,7 +58,7 @@ namespace CloudFlareDDNS
         {
             listViewRecords.Items.Clear();
 
-            string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
+            string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
             for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
             {
@@ -126,7 +126,7 @@ namespace CloudFlareDDNS
         {
             InitializeComponent();
 
-            autoUpdateTimer = new System.Timers.Timer(Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000); //Minutes to milliseconds
+            autoUpdateTimer = new System.Timers.Timer(SettingsManager.getSetting("FetchTime").ToInt() * 60000); //Minutes to milliseconds
             autoUpdateTimer.Elapsed += autoUpdateTimer_Tick;
             autoUpdateTimer.AutoReset = true;
             autoUpdateTimer.Enabled = true;
@@ -136,7 +136,7 @@ namespace CloudFlareDDNS
             logUpdateTimer.AutoReset = true;
             logUpdateTimer.Enabled = true;
 
-            Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"), Logger.Level.Info);
+            Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime").ToString() + " minutes for domain " + SettingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
 
         }//end frmMain()
 
@@ -185,18 +185,17 @@ namespace CloudFlareDDNS
             if (e.CurrentValue == CheckState.Unchecked)
             {
                 //Item has been selected by the user, store it for later
-                //if(SettingsManager.getSetting("SelectedHosts").IndexOf(FetchedRecords.response.recs.objs[e.Index].display_name) >= 0)
-                if(SettingsManager.getSetting("SelectedHosts").IndexOf(item.SubItems[2].Text) >= 0)
+                if(SettingsManager.getSetting("SelectedHosts").ToString().IndexOf(item.SubItems[2].Text) >= 0)
                 {
                     //Item is already in the settings list, do nothing.
                     return;
                 }
-                SettingsManager.setSetting("SelectedHosts", SettingsManager.getSetting("SelectedHosts") + item.SubItems[2].Text + ";");
+                SettingsManager.setSetting("SelectedHosts", SettingsManager.getSetting("SelectedHosts").ToString() + item.SubItems[2].Text + ";");
             }
             else if (e.CurrentValue == CheckState.Checked)
             {
                 //Make sure to clean up any old entries in the settings
-                string new_selected = SettingsManager.getSetting("SelectedHosts").Replace(item.SubItems[2].Text + ';', "");
+                string new_selected = SettingsManager.getSetting("SelectedHosts").ToString().Replace(item.SubItems[2].Text + ';', "");
                 SettingsManager.setSetting("SelectedHosts", new_selected);
             }
 
@@ -211,7 +210,7 @@ namespace CloudFlareDDNS
         private void threadFetchOnly()
         {
             this.Invoke(new updateAddressInvoker(updateAddress), CloudFlareAPI.getExternalAddress());
-            this.Invoke(new updateHostsListInvoker(updateHostsList), CloudFlareAPI.fetchRecords());
+            this.Invoke(new updateHostsListInvoker(updateHostsList), CloudFlareAPI.getCloudFlareRecords());
 
         }//end threadFetchOnly()
 
@@ -222,7 +221,7 @@ namespace CloudFlareDDNS
         private void threadFetchUpdate()
         {
             this.Invoke(new updateAddressInvoker(updateAddress), CloudFlareAPI.getExternalAddress());
-            JsonResponse records = CloudFlareAPI.fetchRecords();
+            JsonResponse records = CloudFlareAPI.getCloudFlareRecords();
             this.Invoke(new updateHostsListInvoker(updateHostsList), records);
             CloudFlareAPI.updateRecords(records);
 
@@ -300,11 +299,11 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void logUpdateTimer_Tick(object sender, EventArgs e)
         {
-            foreach(Logger.LogItem logItem in Logger.items)
+            foreach(Logger.Entry logItem in Logger.items)
             {
                 ListViewItem row = new ListViewItem();
 
-                switch (logItem.eLevel)
+                switch (logItem.Level)
                 {
                     case Logger.Level.Warning:
                         row.ImageIndex = 1;
@@ -318,7 +317,7 @@ namespace CloudFlareDDNS
                         row.ImageIndex = 0;
                         break;
                 }
-                row.SubItems.Add(logItem.szMsg);
+                row.SubItems.Add(logItem.Message);
                 this.Invoke(new addLogEntryInvoker(addLogEntry), row);
             }
             Logger.reset(); //Clear the log

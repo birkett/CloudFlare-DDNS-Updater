@@ -37,32 +37,6 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
-        /// Logic to get the external address and CloudFlare records
-        /// </summary>
-        public static JsonResponse fetchRecords()
-        {
-            JsonResponse fetchedRecords = null;
-
-            string records = CloudFlareAPI.getCloudflareRecords();
-            if (records == null)
-                return null;
-
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-
-            fetchedRecords = serializer.Deserialize<JsonResponse>(records);
-
-            if (fetchedRecords.result != "success")
-            {
-                Logger.log(fetchedRecords.msg, Logger.Level.Error);
-                return null;
-            }
-
-            return fetchedRecords;
-
-        }//end fetchRecords()
-
-
-        /// <summary>
         /// Logic to update records
         /// </summary>
         public static void updateRecords(JsonResponse fetchedRecords)
@@ -71,9 +45,9 @@ namespace CloudFlareDDNS
                 return;
 
             int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
-            string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").Split(';');
+            string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
-            for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
+            for (int i = 0; i < fetchedRecords.response.recs.count; i++)
             {
                 //Skip over anything that is not checked
                 if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) != true)
@@ -91,7 +65,7 @@ namespace CloudFlareDDNS
                 }
 
                 //Skip over anything that doesnt need an update
-                if (fetchedRecords.response.recs.objs[i].content == SettingsManager.getSetting("ExternalAddress"))
+                if (fetchedRecords.response.recs.objs[i].content == SettingsManager.getSetting("ExternalAddress").ToString())
                 {
                     up_to_date++;
                     continue;
@@ -133,7 +107,7 @@ namespace CloudFlareDDNS
             if (new_external_address == null)
                 return null; //Bail if failied, keeping the current address in settings
 
-            if (new_external_address != SettingsManager.getSetting("ExternalAddress"))
+            if (new_external_address != SettingsManager.getSetting("ExternalAddress").ToString())
             {
                 SettingsManager.setSetting("ExternalAddress", new_external_address);
                 SettingsManager.saveSettings();
@@ -148,14 +122,30 @@ namespace CloudFlareDDNS
         /// Get the listed records from Cloudflare using their API
         /// </summary>
         /// <returns>JSON stream of records, null on error</returns>
-        public static string getCloudflareRecords()
+        public static JsonResponse getCloudFlareRecords()
         {
-            string postData = "a=rec_load_all";
-            postData += "&tkn=" + SettingsManager.getSetting("APIKey");
-            postData += "&email=" + SettingsManager.getSetting("EmailAddress");
-            postData += "&z=" + SettingsManager.getSetting("Domain");
+            JsonResponse fetchedRecords = null;
 
-            return webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
+            string postData = "a=rec_load_all";
+            postData += "&tkn=" + SettingsManager.getSetting("APIKey").ToString();
+            postData += "&email=" + SettingsManager.getSetting("EmailAddress").ToString();
+            postData += "&z=" + SettingsManager.getSetting("Domain").ToString();
+
+            string records = webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
+            if (records == null)
+                return null;
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            fetchedRecords = serializer.Deserialize<JsonResponse>(records);
+
+            if (fetchedRecords.result != "success")
+            {
+                Logger.log(fetchedRecords.msg, Logger.Level.Error);
+                return null;
+            }
+
+            return fetchedRecords;
 
         }//end getCloudflareRecords()
 
@@ -168,13 +158,13 @@ namespace CloudFlareDDNS
         public static string updateCloudflareRecords(DnsRecord FetchedRecord)
         {
             string postData = "a=rec_edit";
-            postData += "&tkn=" + SettingsManager.getSetting("APIKey");
+            postData += "&tkn=" + SettingsManager.getSetting("APIKey").ToString();
             postData += "&id=" + FetchedRecord.rec_id;
-            postData += "&email=" + SettingsManager.getSetting("EmailAddress");
-            postData += "&z=" + SettingsManager.getSetting("Domain");
+            postData += "&email=" + SettingsManager.getSetting("EmailAddress").ToString();
+            postData += "&z=" + SettingsManager.getSetting("Domain").ToString();
             postData += "&type=" + FetchedRecord.type;
             postData += "&name=" + FetchedRecord.name;
-            postData += "&content=" + SettingsManager.getSetting("ExternalAddress");
+            postData += "&content=" + SettingsManager.getSetting("ExternalAddress").ToString();
             postData += "&service_mode=" + FetchedRecord.service_mode;
             postData += "&ttl=" + FetchedRecord.ttl;
 

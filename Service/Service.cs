@@ -23,7 +23,6 @@
  */
 using System;
 using System.ServiceProcess;
-using System.Threading;
 
 namespace CloudFlareDDNS
 {
@@ -57,11 +56,11 @@ namespace CloudFlareDDNS
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
-            autoUpdateTimer = new System.Timers.Timer(Convert.ToInt32(SettingsManager.getSetting("FetchTime")) * 60000); //Minutes to milliseconds
+            autoUpdateTimer = new System.Timers.Timer(SettingsManager.getSetting("FetchTime").ToInt() * 60000); //Minutes to milliseconds
             autoUpdateTimer.Elapsed += autoUpdateTimer_Tick;
             autoUpdateTimer.Enabled = true;
 
-            Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime") + " minutes for domain " + SettingsManager.getSetting("Domain"), Logger.Level.Info);
+            Logger.log("Starting auto updates every " + SettingsManager.getSetting("FetchTime").ToString() + " minutes for domain " + SettingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
         
         }//end OnStart()
 
@@ -83,7 +82,6 @@ namespace CloudFlareDDNS
         protected override void OnPause()
         {
             autoUpdateTimer.Enabled = false;
-            base.OnPause();
 
         }//end OnPause()
 
@@ -94,32 +92,21 @@ namespace CloudFlareDDNS
         protected override void OnContinue()
         {
             autoUpdateTimer.Enabled = true;
-            base.OnContinue();
 
         }//end OnContinue()
 
 
         /// <summary>
-        /// Thread to run updates every x minutes
-        /// </summary>
-        private void timerUpdateThread()
-        {
-            CloudFlareAPI.updateRecords(CloudFlareAPI.fetchRecords());
-
-        }//end timerUpdateThread()
-
-
-        /// <summary>
         /// Auto update every x minutes, creates a new timerUpdateThread() thread
+        /// NOTE: This already runs in its own thread!
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void autoUpdateTimer_Tick(object sender, EventArgs e)
         {
             SettingsManager.reloadSettings(); //Do this to reload the config, GUI might have changed settings since last tick
-
-            Thread thread = new Thread(new ThreadStart(timerUpdateThread));
-            thread.Start();
+            CloudFlareAPI.getExternalAddress();
+            CloudFlareAPI.updateRecords(CloudFlareAPI.getCloudFlareRecords());
 
         }//end autoUpdateTimer_Tick()
 

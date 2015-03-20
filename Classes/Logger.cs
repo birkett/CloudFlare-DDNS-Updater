@@ -36,7 +36,7 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Stores the items for a list view control
         /// </summary>
-        private static List<LogItem> m_LogItems = new List<LogItem>();
+        private static List<Entry> m_LogItems = new List<Entry>();
 
         /// <summary>
         /// Enum of Log message levels
@@ -53,18 +53,37 @@ namespace CloudFlareDDNS
         /// <summary>
         /// LogItem is a generic way of storing messages
         /// </summary>
-        public struct LogItem
+        public struct Entry
         {
-            public LogItem(string szMsg, Level eLevel)
-            {
-                m_szMsg = szMsg;
-                m_eLevel = eLevel;
-            }
+            /// <summary>
+            /// Constructor, create a log entry
+            /// </summary>
+            /// <param name="szMsg"></param>
+            /// <param name="eLevel"></param>
+            public Entry(string szMsg, Level eLevel) { m_szMsg = szMsg; m_eLevel = eLevel; }
 
-            public Level eLevel { get { return m_eLevel; } }
-            public string szMsg { get { return m_szMsg; } }
 
+            /// <summary>
+            /// Return the entry level
+            /// </summary>
+            public Level Level { get { return m_eLevel; } }
+
+
+            /// <summary>
+            /// Return the entry message
+            /// </summary>
+            public string Message { get { return m_szMsg; } }
+
+
+            /// <summary>
+            /// Entry level
+            /// </summary>
             private Level  m_eLevel;
+
+
+            /// <summary>
+            /// Entry message
+            /// </summary>
             private string m_szMsg;
         }//end LogItem;
 
@@ -76,9 +95,9 @@ namespace CloudFlareDDNS
         /// <param name="logLevel"></param>
         public static void log(string szMessage, Level logLevel = 0)
         {
-            m_LogItems.Add(new LogItem(szMessage, logLevel));
+            m_LogItems.Add(new Entry(szMessage, logLevel));
 
-            if(SettingsManager.getSetting("UseEventLog") == "True")
+            if(SettingsManager.getSetting("UseEventLog").ToBool())
                 writeEventLog(szMessage, logLevel);
 
         }//end log
@@ -87,7 +106,7 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Property to get the logged items
         /// </summary>
-        public static List<LogItem> items
+        public static List<Entry> items
         {
             get { return m_LogItems; }
         }

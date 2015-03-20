@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-using System.Runtime.Serialization;
 
 namespace CloudFlareDDNS
 {
@@ -30,225 +29,186 @@ namespace CloudFlareDDNS
 
     /// <summary>
     /// Each record contains a set of properties
+    /// The API will return 0 / 1 values for these, not valud boolean true / false - using short type
     /// </summary>
-    [DataContract]
     public struct DnsRecordProps
     {
         /// <summary>
         /// Can be proxied
         /// </summary>
-        [DataMember]
-        public string proxiable;
+        public short proxiable { get; set; }
         /// <summary>
         /// Are CloudFlare services enabled for this record
         /// </summary>
-        [DataMember]
-        public string cloud_on;
+        public short cloud_on { get; set; }
         /// <summary>
         /// Is CloudFlare accepting requests to this host
         /// </summary>
-        [DataMember]
-        public string cf_open;
+        public short cf_open { get; set; }
         /// <summary>
         /// Is SSL enabled
         /// </summary>
-        [DataMember]
-        public string ssl;
+        public short ssl { get; set; }
         /// <summary>
         /// Has the SSL certificate expired
         /// </summary>
-        [DataMember]
-        public string expired_ssl;
+        public short expired_ssl { get; set; }
         /// <summary>
         /// Is the SSL certificate due to expire
         /// </summary>
-        [DataMember]
-        public string expiring_ssl;
+        public short expiring_ssl { get; set; }
         /// <summary>
         /// Is the SSL certificate pending update
         /// </summary>
-        [DataMember]
-        public string pending_ssl;
+        public short pending_ssl { get; set; }
         /// <summary>
         /// CloudFlare vanity service
         /// </summary>
-        [DataMember]
-        public string vanity_lock;
+        public short vanity_lock { get; set; }
     }//end DnsRecordProps
 
 
     /// <summary>
     /// The actual DNS record
     /// </summary>
-    [DataContract]
     public struct DnsRecord
     {
         /// <summary>
         /// Record ID
         /// </summary>
-        [DataMember]
-        public string rec_id;
+        public string rec_id { get; set; }
         /// <summary>
         /// Has of the full record
         /// </summary>
-        [DataMember]
-        public string rec_hash;
+        public string rec_hash { get; set; }
         /// <summary>
         /// Zone name
         /// </summary>
-        [DataMember]
-        public string zone_name;
+        public string zone_name { get; set; }
         /// <summary>
         /// Record full name
         /// </summary>
-        [DataMember]
-        public string name;
+        public string name { get; set; }
         /// <summary>
         /// Record short name
         /// </summary>
-        [DataMember]
-        public string display_name;
+        public string display_name { get; set; }
         /// <summary>
         /// Type of record (A, CNAME, MX, SRV, TXT)
         /// </summary>
-        [DataMember]
-        public string type;
+        public string type { get; set; }
         /// <summary>
         /// MX priority
         /// </summary>
-        [DataMember]
-        public string prio;
+        public int? prio { get; set; } //nullable int
         /// <summary>
         /// IP address or host which this record points to
         /// </summary>
-        [DataMember]
-        public string content;
+        public string content { get; set; }
         /// <summary>
         /// Friendly IP or host
         /// </summary>
-        [DataMember]
-        public string display_content;
+        public string display_content { get; set; }
         /// <summary>
         /// Time To Live in seconds
         /// </summary>
-        [DataMember]
-        public string ttl;
+        public int ttl { get; set; }
         /// <summary>
         /// Maximum TTL value
         /// </summary>
-        [DataMember]
-        public string ttl_ceil;
+        public int ttl_ceil { get; set; }
         /// <summary>
         /// SSL certificate ID
         /// </summary>
-        [DataMember]
-        public string ssl_id;
+        public string ssl_id { get; set; }
         /// <summary>
         /// Is SSL enabled
         /// </summary>
-        [DataMember]
-        public string ssl_status;
+        public string ssl_status { get; set; }
         /// <summary>
         /// SSL certificate expiry date
         /// </summary>
-        [DataMember]
-        public string ssl_expires_on;
+        public string ssl_expires_on { get; set; }
         /// <summary>
         /// Automatic TTL configuration
         /// </summary>
-        [DataMember]
-        public string auto_ttl;
+        public string auto_ttl { get; set; }
         /// <summary>
         /// Are CloudFlare services enabled for this record
         /// </summary>
-        [DataMember]
-        public string service_mode;
+        public string service_mode { get; set; }
         /// <summary>
         /// Properties for this record
         /// </summary>
-        [DataMember]
-        public DnsRecordProps props;
+        public DnsRecordProps props { get; set; }
     }//end DnsRecord
 
 
     /// <summary>
     /// The JSON field "recs" contains a count and an array of actual records
     /// </summary>
-    [DataContract]
     public struct DnsRecords
     {
         /// <summary>
         /// Is this all of the records, or are more available
         /// </summary>
-        [DataMember]
-        public string has_more;
+        public bool has_more { get; set; }
         /// <summary>
         /// How many records have been returned
         /// </summary>
-        [DataMember]
-        public string count;
+        public int count { get; set; }
         /// <summary>
         /// List of  records
         /// </summary>
-        [DataMember]
-        public DnsRecord[] objs;
+        public DnsRecord[] objs { get; set; }
     }//end DnsRecords
 
 
     /// <summary>
     /// Just a padding field, wraps up the records
     /// </summary>
-    [DataContract]
     public struct DnsResponse
     {
         /// <summary>
         /// Padding for the records
         /// </summary>
-        [DataMember]
-        public DnsRecords recs;
+        public DnsRecords recs { get; set; }
     }//end DnsResponse
 
 
     /// <summary>
     /// The type of request that was made
     /// </summary>
-    [DataContract]
     public struct DnsRequest
     {
         /// <summary>
         /// The type of request this response is for (rec_edit, rec_load_all)
         /// </summary>
-        [DataMember]
-        public string act;
+        public string act { get; set; }
     }//end DnsRequest
 
 
     /// <summary>
     /// Main response format
     /// </summary>
-    [DataContract]
     public class JsonResponse
     {
         /// <summary>
         /// Request information
         /// </summary>
-        [DataMember]
-        public DnsRequest request;
+        public DnsRequest request { get; set; }
         /// <summary>
         /// Response information
         /// </summary>
-        [DataMember]
-        public DnsResponse response;
+        public DnsResponse response { get; set; }
         /// <summary>
         /// success or error
         /// </summary>
-        [DataMember]
-        public string result;
+        public string result { get; set; }
         /// <summary>
         /// Error message, blank on success
         /// </summary>
-        [DataMember]
-        public string msg;
+        public string msg { get; set; }
     }//end JsonResponse
 
 
