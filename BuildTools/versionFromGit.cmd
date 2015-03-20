@@ -7,5 +7,7 @@ git --version >nul 2>&1 && (
     @set SOURCEVERSION=Unofficial
 )
 
-echo class GeneratedVersion { public const string szAdditionalVersion = "%SOURCEVERSION%"; } > ../../Properties/GeneratedVersion.cs
+copy /y ..\..\BuildTools\GeneratedVersion.template ..\..\Properties\GeneratedVersion.cs
+
+echo class GeneratedVersion { public const string szAdditionalVersion = "%SOURCEVERSION%"; } >> ../../Properties/GeneratedVersion.cs
 exit 0
