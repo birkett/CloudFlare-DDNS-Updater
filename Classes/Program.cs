@@ -40,7 +40,13 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Used for localising strings and conversions.
         /// </summary>
-        public static System.Globalization.CultureInfo cultureInfo = new System.Globalization.CultureInfo("en-GB");
+        public static System.Globalization.CultureInfo cultureInfo;
+
+
+        /// <summary>
+        /// Global instance of the settingsManager
+        /// </summary>
+        public static SettingsManager settingsManager;
 
 
         /// <summary>
@@ -50,6 +56,9 @@ namespace CloudFlareDDNS
         [STAThread]
         static void Main(string[] args)
         {
+            cultureInfo = new System.Globalization.CultureInfo("en-GB");
+            settingsManager = new SettingsManager();
+
             if (args.Length > 0)
             {
                 if (args[0] == "/service")

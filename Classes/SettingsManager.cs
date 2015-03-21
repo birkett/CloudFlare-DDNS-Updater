@@ -37,13 +37,24 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Sorage for unserialized settings
         /// </summary>
-        private static List<Setting> m_Settings = new List<Setting>();
+        private List<Setting> m_Settings;
 
 
         /// <summary>
         /// Store the config location
         /// </summary>
-        private static string m_szConfigFilePath = null;
+        private string m_szConfigFilePath;
+
+
+        /// <summary>
+        /// Class constructor
+        /// </summary>
+        public SettingsManager()
+        {
+            m_Settings = new List<Setting>();
+            m_szConfigFilePath = null;
+            loadSettings();
+        }
 
 
         /// <summary>
@@ -107,7 +118,7 @@ namespace CloudFlareDDNS
         /// </summary>
         /// <param name="szName"></param>
         /// <returns>String value</returns>
-        public static Setting getSetting(string szName)
+        public Setting getSetting(string szName)
         {
             return m_Settings.Find(x => x.m_szName.Equals(szName));
 
@@ -119,7 +130,7 @@ namespace CloudFlareDDNS
         /// </summary>
         /// <param name="szName"></param>
         /// <param name="szValue"></param>
-        public static void setSetting(string szName, string szValue)
+        public void setSetting(string szName, string szValue)
         {
             //Find and remove the current setting value
             Setting found = m_Settings.Find(x => x.m_szName.Equals(szName));
@@ -131,20 +142,9 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
-        /// Reload the config file from disk
-        /// Useful for when the GUI changes the config and the service needs to reload
-        /// </summary>
-        public static void reloadSettings()
-        {
-            loadSettings();
-
-        }//end reloadSettings()
-
-
-        /// <summary>
         /// Create the folder in %appdata%, and the config file
         /// </summary>
-        private static void createSettingsFile()
+        private void createSettingsFile()
         {
             string appdataRoaming = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
             string configFolder = System.IO.Path.Combine(appdataRoaming, "CloudFlareDDNS");
@@ -166,7 +166,7 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Save application settings to file
         /// </summary>
-        public static void saveSettings()
+        public void saveSettings()
         {
             createSettingsFile();
            
@@ -183,7 +183,7 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Load application settings from file
         /// </summary>
-        public static void loadSettings()
+        public void loadSettings()
         {
             createSettingsFile();
             setDefaults();
@@ -203,7 +203,7 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Load in some default settings for first launch
         /// </summary>
-        private static void setDefaults()
+        private void setDefaults()
         {
             m_Settings.Add(new Setting("FetchTime", 10));
             m_Settings.Add(new Setting("Domain", ""));

@@ -97,7 +97,7 @@ namespace CloudFlareDDNS
         {
             m_LogItems.Add(new Entry(szMessage, logLevel));
 
-            if(SettingsManager.getSetting("UseEventLog").ToBool())
+            if (Program.settingsManager.getSetting("UseEventLog").ToBool())
                 writeEventLog(szMessage, logLevel);
 
         }//end log

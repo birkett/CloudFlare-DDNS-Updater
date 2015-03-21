@@ -45,7 +45,7 @@ namespace CloudFlareDDNS
                 return;
 
             int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
-            string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").ToString().Split(';');
+            string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
             for (int i = 0; i < fetchedRecords.response.recs.count; i++)
             {
@@ -65,7 +65,7 @@ namespace CloudFlareDDNS
                 }
 
                 //Skip over anything that doesnt need an update
-                if (fetchedRecords.response.recs.objs[i].content == SettingsManager.getSetting("ExternalAddress").ToString())
+                if (fetchedRecords.response.recs.objs[i].content == Program.settingsManager.getSetting("ExternalAddress").ToString())
                 {
                     up_to_date++;
                     continue;
@@ -107,10 +107,10 @@ namespace CloudFlareDDNS
             if (new_external_address == null)
                 return null; //Bail if failied, keeping the current address in settings
 
-            if (new_external_address != SettingsManager.getSetting("ExternalAddress").ToString())
+            if (new_external_address != Program.settingsManager.getSetting("ExternalAddress").ToString())
             {
-                SettingsManager.setSetting("ExternalAddress", new_external_address);
-                SettingsManager.saveSettings();
+                Program.settingsManager.setSetting("ExternalAddress", new_external_address);
+                Program.settingsManager.saveSettings();
             }
 
             return new_external_address;
@@ -127,9 +127,9 @@ namespace CloudFlareDDNS
             JsonResponse fetchedRecords = null;
 
             string postData = "a=rec_load_all";
-            postData += "&tkn=" + SettingsManager.getSetting("APIKey").ToString();
-            postData += "&email=" + SettingsManager.getSetting("EmailAddress").ToString();
-            postData += "&z=" + SettingsManager.getSetting("Domain").ToString();
+            postData += "&tkn=" + Program.settingsManager.getSetting("APIKey").ToString();
+            postData += "&email=" + Program.settingsManager.getSetting("EmailAddress").ToString();
+            postData += "&z=" + Program.settingsManager.getSetting("Domain").ToString();
 
             string records = webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
             if (records == null)
@@ -158,13 +158,13 @@ namespace CloudFlareDDNS
         public static string updateCloudflareRecords(DnsRecord FetchedRecord)
         {
             string postData = "a=rec_edit";
-            postData += "&tkn=" + SettingsManager.getSetting("APIKey").ToString();
+            postData += "&tkn=" + Program.settingsManager.getSetting("APIKey").ToString();
             postData += "&id=" + FetchedRecord.rec_id;
-            postData += "&email=" + SettingsManager.getSetting("EmailAddress").ToString();
-            postData += "&z=" + SettingsManager.getSetting("Domain").ToString();
+            postData += "&email=" + Program.settingsManager.getSetting("EmailAddress").ToString();
+            postData += "&z=" + Program.settingsManager.getSetting("Domain").ToString();
             postData += "&type=" + FetchedRecord.type;
             postData += "&name=" + FetchedRecord.name;
-            postData += "&content=" + SettingsManager.getSetting("ExternalAddress").ToString();
+            postData += "&content=" + Program.settingsManager.getSetting("ExternalAddress").ToString();
             postData += "&service_mode=" + FetchedRecord.service_mode;
             postData += "&ttl=" + FetchedRecord.ttl;
 

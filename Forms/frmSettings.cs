@@ -50,11 +50,11 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void frmSettings_Load(object sender, EventArgs e)
         {
-            txtDomainName.Text = SettingsManager.getSetting("Domain").ToString();
-            txtEmailAddress.Text = SettingsManager.getSetting("EmailAddress").ToString();
-            txtAPIKey.Text = SettingsManager.getSetting("APIKey").ToString();
-            txtFetchTime.Text = SettingsManager.getSetting("FetchTime").ToString();
-            cbEventLog.Checked = SettingsManager.getSetting("UseEventLog").ToBool();
+            txtDomainName.Text = Program.settingsManager.getSetting("Domain").ToString();
+            txtEmailAddress.Text = Program.settingsManager.getSetting("EmailAddress").ToString();
+            txtAPIKey.Text = Program.settingsManager.getSetting("APIKey").ToString();
+            txtFetchTime.Text = Program.settingsManager.getSetting("FetchTime").ToString();
+            cbEventLog.Checked = Program.settingsManager.getSetting("UseEventLog").ToBool();
 
         }//end frmSettings_Load()
 
@@ -66,12 +66,12 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void btnApply_Click(object sender, EventArgs e)
         {
-            SettingsManager.setSetting("Domain", txtDomainName.Text);
-            SettingsManager.setSetting("EmailAddress", txtEmailAddress.Text);
-            SettingsManager.setSetting("APIKey", txtAPIKey.Text);
-            SettingsManager.setSetting("FetchTime", txtFetchTime.Text);
-            SettingsManager.setSetting("UseEventLog", cbEventLog.Checked.ToString());
-            SettingsManager.saveSettings();
+            Program.settingsManager.setSetting("Domain", txtDomainName.Text);
+            Program.settingsManager.setSetting("EmailAddress", txtEmailAddress.Text);
+            Program.settingsManager.setSetting("APIKey", txtAPIKey.Text);
+            Program.settingsManager.setSetting("FetchTime", txtFetchTime.Text);
+            Program.settingsManager.setSetting("UseEventLog", cbEventLog.Checked.ToString());
+            Program.settingsManager.saveSettings();
 
         }//end btnApply_Click()
 

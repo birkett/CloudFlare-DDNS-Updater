@@ -61,7 +61,7 @@ namespace CloudFlareDDNS
 
             listViewRecords.Items.Clear();
 
-            string[] selectedHosts = SettingsManager.getSetting("SelectedHosts").ToString().Split(';');
+            string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
             for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
             {
@@ -129,7 +129,7 @@ namespace CloudFlareDDNS
         {
             InitializeComponent();
 
-            autoUpdateTimer = new System.Timers.Timer(SettingsManager.getSetting("FetchTime").ToInt() * 60000); //Minutes to milliseconds
+            autoUpdateTimer = new System.Timers.Timer(Program.settingsManager.getSetting("FetchTime").ToInt() * 60000); //Minutes to milliseconds
             autoUpdateTimer.Elapsed += autoUpdateTimer_Tick;
             autoUpdateTimer.AutoReset = true;
             autoUpdateTimer.Enabled = true;
@@ -139,7 +139,7 @@ namespace CloudFlareDDNS
             logUpdateTimer.AutoReset = true;
             logUpdateTimer.Enabled = true;
 
-            Logger.log(Properties.Resources.Logger_Start + " " + SettingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " " + SettingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
+            Logger.log(Properties.Resources.Logger_Start + " " + Program.settingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " " + Program.settingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
 
         }//end frmMain()
 
@@ -188,21 +188,21 @@ namespace CloudFlareDDNS
             if (e.CurrentValue == CheckState.Unchecked)
             {
                 //Item has been selected by the user, store it for later
-                if(SettingsManager.getSetting("SelectedHosts").ToString().IndexOf(item.SubItems[2].Text, StringComparison.CurrentCulture) >= 0)
+                if (Program.settingsManager.getSetting("SelectedHosts").ToString().IndexOf(item.SubItems[2].Text, StringComparison.CurrentCulture) >= 0)
                 {
                     //Item is already in the settings list, do nothing.
                     return;
                 }
-                SettingsManager.setSetting("SelectedHosts", SettingsManager.getSetting("SelectedHosts").ToString() + item.SubItems[2].Text + ";");
+                Program.settingsManager.setSetting("SelectedHosts", Program.settingsManager.getSetting("SelectedHosts").ToString() + item.SubItems[2].Text + ";");
             }
             else if (e.CurrentValue == CheckState.Checked)
             {
                 //Make sure to clean up any old entries in the settings
-                string new_selected = SettingsManager.getSetting("SelectedHosts").ToString().Replace(item.SubItems[2].Text + ';', "");
-                SettingsManager.setSetting("SelectedHosts", new_selected);
+                string new_selected = Program.settingsManager.getSetting("SelectedHosts").ToString().Replace(item.SubItems[2].Text + ';', "");
+                Program.settingsManager.setSetting("SelectedHosts", new_selected);
             }
 
-            SettingsManager.saveSettings(); //Save the selected host list accross sessions
+            Program.settingsManager.saveSettings(); //Save the selected host list accross sessions
 
         }//end listHostsCheck()
 

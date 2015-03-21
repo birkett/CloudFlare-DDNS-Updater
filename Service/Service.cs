@@ -56,11 +56,11 @@ namespace CloudFlareDDNS
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
-            autoUpdateTimer = new System.Timers.Timer(SettingsManager.getSetting("FetchTime").ToInt() * 60000); //Minutes to milliseconds
+            autoUpdateTimer = new System.Timers.Timer(Program.settingsManager.getSetting("FetchTime").ToInt() * 60000); //Minutes to milliseconds
             autoUpdateTimer.Elapsed += autoUpdateTimer_Tick;
             autoUpdateTimer.Enabled = true;
 
-            Logger.log(Properties.Resources.Logger_Start + " " + SettingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " " + SettingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
+            Logger.log(Properties.Resources.Logger_Start + " " + Program.settingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " " + Program.settingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
         
         }//end OnStart()
 
@@ -104,7 +104,7 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void autoUpdateTimer_Tick(object sender, EventArgs e)
         {
-            SettingsManager.reloadSettings(); //Do this to reload the config, GUI might have changed settings since last tick
+            Program.settingsManager.loadSettings(); //Do this to reload the config, GUI might have changed settings since last tick
             CloudFlareAPI.getExternalAddress();
             CloudFlareAPI.updateRecords(CloudFlareAPI.getCloudFlareRecords());
 
