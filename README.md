@@ -21,7 +21,7 @@ The project targets the full .NET 4.0 profile (not the client profile).
 <br /><br />
 ## Installing
 The executable can be run from anywhere, no install required.
-Settings will be saved in %userprofile%\AppData\Local\CloudFlareDDNS
+Settings will be saved in %userprofile%\AppData\Roaming\CloudFlareDDNS
 
 The application makes use of the Windows Event Log to save messages.
 Run the application as an Administrator at least once (Right Click->Run as Administrator), this will automatically create the required registry keys for Event Log access.

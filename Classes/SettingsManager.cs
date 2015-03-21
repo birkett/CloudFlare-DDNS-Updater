@@ -21,6 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+using System.Collections.Generic;
+using System;
+using System.IO;
+
 namespace CloudFlareDDNS
 {
     /// <summary>
@@ -31,6 +35,18 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Sorage for unserialized settings
+        /// </summary>
+        private static List<Setting> m_Settings = new List<Setting>();
+
+
+        /// <summary>
+        /// Store the config location
+        /// </summary>
+        private static string m_szConfigFilePath = null;
+
+
+        /// <summary>
         /// Storage for settings, allows the return value to be converted to whatever type needed
         /// </summary>
         public struct Setting
@@ -38,20 +54,23 @@ namespace CloudFlareDDNS
             /// <summary>
             /// Constructor, new setting value from string
             /// </summary>
+            /// <param name="szName"></param>
             /// <param name="szValue"></param>
-            public Setting(string szValue)  { m_szValue = szValue; }
+            public Setting(string szName, string szValue)  { m_szName = szName; m_szValue = szValue; }
 
             /// <summary>
             /// Constructor, new setting value from boolean
             /// </summary>
+            /// <param name="szName"></param>
             /// <param name="bValue"></param>
-            public Setting(bool bValue)     { m_szValue = bValue.ToString(); }
+            public Setting(string szName, bool bValue)     { m_szName = szName; m_szValue = bValue.ToString(); }
 
             /// <summary>
             /// Constructor, new setting value from integer
             /// </summary>
+            /// <param name="szName"></param>
             /// <param name="iValue"></param>
-            public Setting(int iValue)      { m_szValue = iValue.ToString(Program.cultureInfo); }
+            public Setting(string szName, int iValue)      { m_szName = szName; m_szValue = iValue.ToString(Program.cultureInfo); }
 
             /// <summary>
             /// Accessor, return string
@@ -72,9 +91,14 @@ namespace CloudFlareDDNS
             public int              ToInt()     { return System.Convert.ToInt32(m_szValue, Program.cultureInfo); }
 
             /// <summary>
-            /// Storage
+            /// Store the value
             /// </summary>
-            private string m_szValue;
+            public string m_szValue;
+
+            /// <summary>
+            /// Store the name
+            /// </summary>
+            public string m_szName;
         }//end Setting
 
 
@@ -85,7 +109,7 @@ namespace CloudFlareDDNS
         /// <returns>String value</returns>
         public static Setting getSetting(string szName)
         {
-            return new Setting(Properties.Settings.Default[szName].ToString());
+            return m_Settings.Find(x => x.m_szName.Equals(szName));
 
         }//end getSetting() String
 
@@ -97,19 +121,13 @@ namespace CloudFlareDDNS
         /// <param name="szValue"></param>
         public static void setSetting(string szName, string szValue)
         {
-            Properties.Settings.Default[szName] = szValue;
+            //Find and remove the current setting value
+            Setting found = m_Settings.Find(x => x.m_szName.Equals(szName));
+            m_Settings.Remove(found);
+            //Add the new setting value
+            m_Settings.Add(new Setting(szName, szValue));
 
         }//end setSetting()
-
-
-        /// <summary>
-        /// Save the user config
-        /// </summary>
-        public static void saveSettings()
-        {
-            Properties.Settings.Default.Save();
-
-        }//end saveSettings()
 
 
         /// <summary>
@@ -118,9 +136,84 @@ namespace CloudFlareDDNS
         /// </summary>
         public static void reloadSettings()
         {
-            Properties.Settings.Default.Reload();
+            loadSettings();
 
         }//end reloadSettings()
+
+
+        /// <summary>
+        /// Create the folder in %appdata%, and the config file
+        /// </summary>
+        private static void createSettingsFile()
+        {
+            string appdataRoaming = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+            string configFolder = System.IO.Path.Combine(appdataRoaming, "CloudFlareDDNS");
+
+            if (!System.IO.Directory.Exists(configFolder))
+                System.IO.Directory.CreateDirectory(configFolder);
+
+            m_szConfigFilePath = System.IO.Path.Combine(configFolder, "user.config");
+
+            if (!System.IO.File.Exists(m_szConfigFilePath))
+            {
+                FileStream file = System.IO.File.Create(m_szConfigFilePath);
+                file.Close();
+            }
+
+        }//end createSettingsFile()
+
+
+        /// <summary>
+        /// Save application settings to file
+        /// </summary>
+        public static void saveSettings()
+        {
+            createSettingsFile();
+           
+            System.Web.Script.Serialization.JavaScriptSerializer ser = new System.Web.Script.Serialization.JavaScriptSerializer();
+
+            StreamWriter myWriter = new StreamWriter(m_szConfigFilePath);
+            string json = ser.Serialize(m_Settings);
+            myWriter.Write(json);
+            myWriter.Close();
+            
+        }//end saveSettings()
+
+
+        /// <summary>
+        /// Load application settings from file
+        /// </summary>
+        public static void loadSettings()
+        {
+            createSettingsFile();
+            setDefaults();
+
+            System.Web.Script.Serialization.JavaScriptSerializer ser = new System.Web.Script.Serialization.JavaScriptSerializer();
+            StreamReader file = new StreamReader(m_szConfigFilePath);
+            string json = file.ReadToEnd();
+            file.Close();
+            //Dont null the list if the file is empty
+            if (json != "")
+            {
+                m_Settings = ser.Deserialize<List<Setting>>(json);
+            }
+        }//end loadSettings()
+
+
+        /// <summary>
+        /// Load in some default settings for first launch
+        /// </summary>
+        private static void setDefaults()
+        {
+            m_Settings.Add(new Setting("FetchTime", 10));
+            m_Settings.Add(new Setting("Domain", ""));
+            m_Settings.Add(new Setting("EmailAddress", ""));
+            m_Settings.Add(new Setting("APIKey", ""));
+            m_Settings.Add(new Setting("SelectedHosts", ""));
+            m_Settings.Add(new Setting("ExternalAddress", ""));
+            m_Settings.Add(new Setting("UseEventLog", true));
+
+        }//end setDefaults()
 
 
     }//end class
