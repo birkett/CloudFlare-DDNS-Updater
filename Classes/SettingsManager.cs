@@ -193,7 +193,7 @@ namespace CloudFlareDDNS
             string json = file.ReadToEnd();
             file.Close();
             //Dont null the list if the file is empty
-            if (json != "")
+            if (String.IsNullOrEmpty(json))
             {
                 m_Settings = ser.Deserialize<List<Setting>>(json);
             }

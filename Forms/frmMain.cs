@@ -264,7 +264,8 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            frmSettings settingsForm = new frmSettings(); settingsForm.Show();
+            frmSettings settingsForm = new frmSettings();
+            settingsForm.Show();
 
         }//end settingsToolStripMenuItem_Click()
 
