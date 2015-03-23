@@ -82,7 +82,8 @@ namespace CloudFlareDDNS
                 row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_name);
                 row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_content);
 
-                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) == true)
+                //Only check this if it's an A record. MX records may have the same name as the primary A record, but should never be updated with an IP.
+                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) == true && fetchedRecords.response.recs.objs[i].type == "A")
                 {
                     row.Checked = true;
                 }

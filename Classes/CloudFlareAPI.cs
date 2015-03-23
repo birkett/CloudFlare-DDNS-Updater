@@ -49,18 +49,19 @@ namespace CloudFlareDDNS
 
             for (int i = 0; i < fetchedRecords.response.recs.count; i++)
             {
-                //Skip over anything that is not checked
-                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) != true)
-                {
-                    ignored++;
-                    continue;
-                }
-
                 //Skip over MX and CNAME records
                 //TODO: Dont skip them :)
                 if (fetchedRecords.response.recs.objs[i].type != "A")
                 {
                     skipped++;
+                    continue;
+                }
+
+
+                //Ignore anything that is not checked
+                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) != true)
+                {
+                    ignored++;
                     continue;
                 }
 
