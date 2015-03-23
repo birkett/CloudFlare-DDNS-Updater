@@ -50,6 +50,18 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Thread for fetching records
+        /// </summary>
+        private Thread fetchThread = null;
+
+
+        /// <summary>
+        /// Thread for updating records
+        /// </summary>
+        private Thread updateThread = null;
+
+
+        /// <summary>
         /// Called from another thread
         /// Populate the list hosts control with the new returned hosts
         /// </summary>
@@ -153,6 +165,18 @@ namespace CloudFlareDDNS
         {
             autoUpdateTimer.Enabled = false;
             logUpdateTimer.Enabled = false;
+
+            //Stop the threads if they are active
+            if (fetchThread != null && fetchThread.IsAlive)
+            {
+                fetchThread.Abort();
+            }
+
+            if (updateThread != null && updateThread.IsAlive)
+            {
+                updateThread.Abort();
+            }
+
             trayIcon.Dispose();
 
         }//end frmMain_Closing()
@@ -238,7 +262,7 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void fetchDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread fetchThread = new Thread(new ThreadStart(threadFetchOnly));
+            fetchThread = new Thread(new ThreadStart(threadFetchOnly));
             fetchThread.Start();
 
         }//end fetchDataToolStripMenuItem_Click()
@@ -251,7 +275,7 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void updateRecordsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread updateThread = new Thread(new ThreadStart(threadFetchUpdate));
+            updateThread = new Thread(new ThreadStart(threadFetchUpdate));
             updateThread.Start();
 
         }//end updateRecordsToolStripMenuItem_Click()

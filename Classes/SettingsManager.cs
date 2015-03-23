@@ -24,6 +24,7 @@
 using System.Collections.Generic;
 using System;
 using System.IO;
+using System.Web.Script.Serialization;
 
 namespace CloudFlareDDNS
 {
@@ -121,7 +122,6 @@ namespace CloudFlareDDNS
         public Setting getSetting(string szName)
         {
             return m_Settings.Find(x => x.m_szName.Equals(szName));
-
         }//end getSetting() String
 
 
@@ -146,17 +146,17 @@ namespace CloudFlareDDNS
         /// </summary>
         private void createSettingsFile()
         {
-            string appdataRoaming = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
-            string configFolder = System.IO.Path.Combine(appdataRoaming, "CloudFlareDDNS");
+            string appdataRoaming = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string configFolder = Path.Combine(appdataRoaming, "CloudFlareDDNS");
 
-            if (!System.IO.Directory.Exists(configFolder))
-                System.IO.Directory.CreateDirectory(configFolder);
+            if (!Directory.Exists(configFolder))
+                Directory.CreateDirectory(configFolder);
 
-            m_szConfigFilePath = System.IO.Path.Combine(configFolder, "user.config");
+            m_szConfigFilePath = Path.Combine(configFolder, "user.config");
 
-            if (!System.IO.File.Exists(m_szConfigFilePath))
+            if (!File.Exists(m_szConfigFilePath))
             {
-                FileStream file = System.IO.File.Create(m_szConfigFilePath);
+                FileStream file = File.Create(m_szConfigFilePath);
                 file.Close();
             }
 
@@ -170,12 +170,12 @@ namespace CloudFlareDDNS
         {
             createSettingsFile();
            
-            System.Web.Script.Serialization.JavaScriptSerializer ser = new System.Web.Script.Serialization.JavaScriptSerializer();
+            JavaScriptSerializer ser = new JavaScriptSerializer();
 
-            StreamWriter myWriter = new StreamWriter(m_szConfigFilePath);
+            StreamWriter fileStream = new StreamWriter(m_szConfigFilePath);
             string json = ser.Serialize(m_Settings);
-            myWriter.Write(json);
-            myWriter.Close();
+            fileStream.Write(json);
+            fileStream.Close();
             
         }//end saveSettings()
 
@@ -188,12 +188,12 @@ namespace CloudFlareDDNS
             createSettingsFile();
             setDefaults();
 
-            System.Web.Script.Serialization.JavaScriptSerializer ser = new System.Web.Script.Serialization.JavaScriptSerializer();
-            StreamReader file = new StreamReader(m_szConfigFilePath);
-            string json = file.ReadToEnd();
-            file.Close();
+            JavaScriptSerializer ser = new JavaScriptSerializer();
+            StreamReader fileStream = new StreamReader(m_szConfigFilePath);
+            string json = fileStream.ReadToEnd();
+            fileStream.Close();
             //Dont null the list if the file is empty
-            if (String.IsNullOrEmpty(json))
+            if (!String.IsNullOrEmpty(json))
             {
                 m_Settings = ser.Deserialize<List<Setting>>(json);
             }
