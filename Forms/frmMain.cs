@@ -236,8 +236,8 @@ namespace CloudFlareDDNS
         /// </summary>
         private void threadFetchOnly()
         {
-            this.Invoke(new updateAddressInvoker(updateAddress), CloudFlareAPI.getExternalAddress());
-            this.Invoke(new updateHostsListInvoker(updateHostsList), CloudFlareAPI.getCloudFlareRecords());
+            this.Invoke(new updateAddressInvoker(updateAddress), Program.cloudFlareAPI.getExternalAddress());
+            this.Invoke(new updateHostsListInvoker(updateHostsList), Program.cloudFlareAPI.getCloudFlareRecords());
 
         }//end threadFetchOnly()
 
@@ -247,10 +247,10 @@ namespace CloudFlareDDNS
         /// </summary>
         private void threadFetchUpdate()
         {
-            this.Invoke(new updateAddressInvoker(updateAddress), CloudFlareAPI.getExternalAddress());
-            JsonResponse records = CloudFlareAPI.getCloudFlareRecords();
+            this.Invoke(new updateAddressInvoker(updateAddress), Program.cloudFlareAPI.getExternalAddress());
+            JsonResponse records = Program.cloudFlareAPI.getCloudFlareRecords();
             this.Invoke(new updateHostsListInvoker(updateHostsList), records);
-            CloudFlareAPI.updateRecords(records);
+            Program.cloudFlareAPI.updateRecords(records);
 
         }//end timerUpdateThread()
 

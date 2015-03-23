@@ -106,8 +106,8 @@ namespace CloudFlareDDNS
         {
             Program.settingsManager.loadSettings(); //Do this to reload the config, GUI might have changed settings since last tick
             autoUpdateTimer.Interval = (Program.settingsManager.getSetting("FetchTime").ToInt() * 60000); //Minutes to milliseconds
-            CloudFlareAPI.getExternalAddress();
-            CloudFlareAPI.updateRecords(CloudFlareAPI.getCloudFlareRecords());
+            Program.cloudFlareAPI.getExternalAddress();
+            Program.cloudFlareAPI.updateRecords(Program.cloudFlareAPI.getCloudFlareRecords());
 
         }//end autoUpdateTimer_Tick()
 

@@ -39,7 +39,7 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Logic to update records
         /// </summary>
-        public static void updateRecords(JsonResponse fetchedRecords)
+        public void updateRecords(JsonResponse fetchedRecords)
         {
             if (fetchedRecords == null) //Dont attempt updates if the fetch failed
                 return;
@@ -71,7 +71,7 @@ namespace CloudFlareDDNS
                     continue;
                 }
 
-                string strResponse = CloudFlareAPI.updateCloudflareRecords(fetchedRecords.response.recs.objs[i]);
+                string strResponse = this.updateCloudflareRecords(fetchedRecords.response.recs.objs[i]);
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
 
@@ -97,7 +97,7 @@ namespace CloudFlareDDNS
         /// Return the current external network address, using the default gateway
         /// </summary>
         /// <returns>IP address as a string, null on error</returns>
-        public static string getExternalAddress()
+        public string getExternalAddress()
         {
             string strResponse = webRequest(Method.Get, "http://checkip.dyndns.org", null);
             string[] strResponse2 = strResponse.Split(':');
@@ -122,7 +122,7 @@ namespace CloudFlareDDNS
         /// Get the listed records from Cloudflare using their API
         /// </summary>
         /// <returns>JSON stream of records, null on error</returns>
-        public static JsonResponse getCloudFlareRecords()
+        public JsonResponse getCloudFlareRecords()
         {
             JsonResponse fetchedRecords = null;
 
@@ -155,7 +155,7 @@ namespace CloudFlareDDNS
         /// </summary>
         /// <param name="FetchedRecord"></param>
         /// <returns></returns>
-        public static string updateCloudflareRecords(DnsRecord FetchedRecord)
+        private string updateCloudflareRecords(DnsRecord FetchedRecord)
         {
             string postData = "a=rec_edit";
             postData += "&tkn=" + Program.settingsManager.getSetting("APIKey").ToString();
@@ -191,7 +191,7 @@ namespace CloudFlareDDNS
         /// <param name="szUrl"></param>
         /// <param name="szData"></param>
         /// <returns></returns>
-        private static string webRequest(Method MethodType, string szUrl, string szData)
+        private string webRequest(Method MethodType, string szUrl, string szData)
         {
             WebRequest webrequest = WebRequest.Create(szUrl);
             byte[] data = null;

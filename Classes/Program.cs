@@ -50,6 +50,12 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Global instance of the CloudFlareAPI class
+        /// </summary>
+        public static CloudFlareAPI cloudFlareAPI;
+
+
+        /// <summary>
         /// The main entry point for the application.
         /// This will decide if to run the service, GUI, or install / uninstall helpers for the service
         /// </summary>
@@ -58,6 +64,7 @@ namespace CloudFlareDDNS
         {
             cultureInfo = new System.Globalization.CultureInfo("en-GB");
             settingsManager = new SettingsManager();
+            cloudFlareAPI = new CloudFlareAPI();
 
             if (args.Length > 0)
             {
