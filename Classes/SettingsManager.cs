@@ -55,7 +55,8 @@ namespace CloudFlareDDNS
             m_Settings = new List<Setting>();
             m_szConfigFilePath = null;
             loadSettings();
-        }
+
+        }//end SettingsManager()
 
 
         /// <summary>
@@ -122,6 +123,7 @@ namespace CloudFlareDDNS
         public Setting getSetting(string szName)
         {
             return m_Settings.Find(x => x.m_szName.Equals(szName));
+
         }//end getSetting() String
 
 
@@ -197,6 +199,7 @@ namespace CloudFlareDDNS
             {
                 m_Settings = ser.Deserialize<List<Setting>>(json);
             }
+
         }//end loadSettings()
 
 

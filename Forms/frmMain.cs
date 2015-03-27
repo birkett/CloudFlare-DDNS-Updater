@@ -118,7 +118,7 @@ namespace CloudFlareDDNS
         {
             listViewLog.Items.Add(entry);
 
-        }
+        }//end addLogEntry()
 
         /// <summary>
         /// Delegate for addLogEntry()
