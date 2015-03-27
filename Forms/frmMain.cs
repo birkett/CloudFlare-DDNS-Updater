@@ -90,6 +90,16 @@ namespace CloudFlareDDNS
 
                 listViewRecords.Items.Add(row);
             }
+
+            //Grey out anything that isn't an A record.
+            for(int j = 0; j < listViewRecords.Items.Count; j++)
+            {
+                if (listViewRecords.Items[j].SubItems[1].Text != "A")
+                {
+                    listViewRecords.Items[j].ForeColor = System.Drawing.Color.LightGray;
+                }
+            }
+
         }//end updateHostsList()
 
 
@@ -209,6 +219,13 @@ namespace CloudFlareDDNS
         private void listHostsCheck(object sender, ItemCheckEventArgs e)
         {
             ListViewItem item = listViewRecords.Items[e.Index];
+
+            //Do nothing for items that are not A records.
+            if(item.SubItems[1].Text != "A")
+            {
+                e.NewValue = CheckState.Unchecked;
+                return;
+            }
 
             if (e.CurrentValue == CheckState.Unchecked)
             {
