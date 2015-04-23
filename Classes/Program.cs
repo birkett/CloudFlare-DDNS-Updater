@@ -62,6 +62,9 @@ namespace CloudFlareDDNS
         [STAThread]
         static void Main(string[] args)
         {
+            // Set up the crash dump handler.
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(unhandledException);
+
             cultureInfo = new System.Globalization.CultureInfo("en-GB");
             settingsManager = new SettingsManager();
             cloudFlareAPI = new CloudFlareAPI();
@@ -104,6 +107,43 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
+        /// Call into dbghelp.dll for MiniDumpWriteDump()
+        /// </summary>
+        /// <param name="hProcess"></param>
+        /// <param name="ProcessId"></param>
+        /// <param name="hFile"></param>
+        /// <param name="DumpType"></param>
+        /// <param name="ExceptionParam"></param>
+        /// <param name="UserStreamParam"></param>
+        /// <param name="CallackParam"></param>
+        /// <returns></returns>
+        [System.Runtime.InteropServices.DllImport("dbghelp.dll")]
+        public static extern bool MiniDumpWriteDump(IntPtr hProcess, Int32 ProcessId, IntPtr hFile, int DumpType, IntPtr ExceptionParam, IntPtr UserStreamParam, IntPtr CallackParam);
+
+
+        /// <summary>
+        /// Create a dump file when crashing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void unhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            long unixTimestamp = DateTime.UtcNow.Ticks - new DateTime(1970, 1, 1).Ticks;
+            unixTimestamp /= TimeSpan.TicksPerSecond;
+
+            string filename = "ExceptionDump-" + unixTimestamp + ".dmp";
+
+            using (System.IO.FileStream fs = new System.IO.FileStream(filename, System.IO.FileMode.Create))
+            {
+                using (System.Diagnostics.Process process = System.Diagnostics.Process.GetCurrentProcess())
+                {
+                    MiniDumpWriteDump(process.Handle, process.Id, fs.SafeFileHandle.DangerousGetHandle(), 0x00000002, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+                }
+            }
+        }//end unhandledException()
+
+
+        /// <summary>
         /// Run the application with the GUI
         /// </summary>
         static void runGUI()
@@ -113,7 +153,7 @@ namespace CloudFlareDDNS
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmMain());
 
-        }// end runGUI()
+        }//end runGUI()
 
 
         /// <summary>
