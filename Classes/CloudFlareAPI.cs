@@ -26,6 +26,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 using System.Web.Script.Serialization;
+using System.Collections.Generic;
 
 namespace CloudFlareDDNS
 {
@@ -39,7 +40,7 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Logic to update records
         /// </summary>
-        public void updateRecords(JsonResponse fetchedRecords)
+        public void updateRecords(ICollection<DomainDnsJsonResponse> fetchedRecords)
         {
             if (fetchedRecords == null) //Dont attempt updates if the fetch failed
                 return;
@@ -47,45 +48,52 @@ namespace CloudFlareDDNS
             int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
             string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
-            for (int i = 0; i < fetchedRecords.response.recs.count; i++)
+            foreach (var fetchedRecord in fetchedRecords)
             {
-                //Skip over MX and CNAME records
-                //TODO: Dont skip them :)
-                if (fetchedRecords.response.recs.objs[i].type != "A")
+                var record = fetchedRecord.Response.response;
+                for (int i = 0; i < record.recs.count; i++)
                 {
-                    skipped++;
-                    continue;
-                }
+                    //Skip over MX and CNAME records
+                    //TODO: Dont skip them :)
+                    if (record.recs.objs[i].type != "A")
+                    {
+                        skipped++;
+                        continue;
+                    }
 
 
-                //Ignore anything that is not checked
-                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) != true)
-                {
-                    ignored++;
-                    continue;
-                }
+                    //Ignore anything that is not checked
+                    if ((Array.IndexOf(selectedHosts, record.recs.objs[i].display_name) >= 0) != true)
+                    {
+                        ignored++;
+                        continue;
+                    }
 
-                //Skip over anything that doesnt need an update
-                if (fetchedRecords.response.recs.objs[i].content == Program.settingsManager.getSetting("ExternalAddress").ToString())
-                {
-                    up_to_date++;
-                    continue;
-                }
+                    //Skip over anything that doesnt need an update
+                    if (record.recs.objs[i].content ==
+                        Program.settingsManager.getSetting("ExternalAddress").ToString())
+                    {
+                        up_to_date++;
+                        continue;
+                    }
 
-                string strResponse = this.updateCloudflareRecords(fetchedRecords.response.recs.objs[i]);
+                    string strResponse = this.updateCloudflareRecords(record.recs.objs[i]);
 
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                    JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-                JsonResponse resp = serializer.Deserialize<JsonResponse>(strResponse);
+                    JsonResponse resp = serializer.Deserialize<JsonResponse>(strResponse);
 
-                if (resp.result != "success")
-                {
-                    failed++;
-                    Logger.log(Properties.Resources.Logger_Failed + " " + fetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
-                }
-                else
-                {
-                    updated++;
+                    if (resp.result != "success")
+                    {
+                        failed++;
+                        Logger.log(
+                            Properties.Resources.Logger_Failed + " " + record.recs.objs[i].name + " " +
+                            resp.msg, Logger.Level.Error);
+                    }
+                    else
+                    {
+                        updated++;
+                    }
                 }
             }
 
@@ -118,19 +126,84 @@ namespace CloudFlareDDNS
 
         }//end getExternalAddress()
 
+        /// <summary>
+        /// Get the list of domains from Cloudflare using their API
+        /// </summary>
+        /// <returns>JSON stream of records, null on error</returns>
+        public DomainJsonResponse getCloudFlareDomains()
+        {
+            DomainJsonResponse fetchedRecords = null;
+
+            string postData = "a=zone_load_multi";
+            postData += "&tkn=" + Program.settingsManager.getSetting("APIKey").ToString();
+            postData += "&email=" + Program.settingsManager.getSetting("EmailAddress").ToString();
+
+            string records = webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
+            if (records == null)
+                return null;
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            fetchedRecords = serializer.Deserialize<DomainJsonResponse>(records);
+
+            if (fetchedRecords.result != "success")
+            {
+                Logger.log(fetchedRecords.msg, Logger.Level.Error);
+                return null;
+            }
+
+            return fetchedRecords;
+
+        }//end getCloudflareRecords()
 
         /// <summary>
         /// Get the listed records from Cloudflare using their API
         /// </summary>
         /// <returns>JSON stream of records, null on error</returns>
-        public JsonResponse getCloudFlareRecords()
+        public List<DomainDnsJsonResponse> getCloudFlareRecords()
+        {
+            var result = new List<DomainDnsJsonResponse>();
+            var domain = Program.settingsManager.getSetting("Domain").ToString();
+            if (String.IsNullOrEmpty(domain) || domain == "*")
+            {
+                var domainResponse = getCloudFlareDomains();
+                if (domainResponse != null)
+                {
+                    var zones = domainResponse.response.zones.objs;
+                    foreach (var zone in zones)
+                    {
+                        var zoneRecord = getCloudFlareRecords(zone.zone_name);
+                        if (zoneRecord != null)
+                        {
+                            result.Add(new DomainDnsJsonResponse { Domain = zone.zone_name, Response = zoneRecord });
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var domainRecord = getCloudFlareRecords(domain);
+                if (domainRecord != null)
+                {
+                    result.Add(new DomainDnsJsonResponse { Domain = domain, Response = domainRecord });
+                }
+            }
+
+            return result;
+        }//end getCloudflareRecords()
+
+        /// <summary>
+        /// Get the listed records from Cloudflare using their API
+        /// </summary>
+        /// <returns>JSON stream of records, null on error</returns>
+        private JsonResponse getCloudFlareRecords(string domain)
         {
             JsonResponse fetchedRecords = null;
 
             string postData = "a=rec_load_all";
-            postData += "&tkn=" + Program.settingsManager.getSetting("APIKey").ToString();
-            postData += "&email=" + Program.settingsManager.getSetting("EmailAddress").ToString();
-            postData += "&z=" + Program.settingsManager.getSetting("Domain").ToString();
+            postData += "&tkn=" + Program.settingsManager.getSetting("APIKey");
+            postData += "&email=" + Program.settingsManager.getSetting("EmailAddress");
+            postData += "&z=" + domain;
 
             string records = webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
             if (records == null)
@@ -197,10 +270,10 @@ namespace CloudFlareDDNS
             WebRequest webrequest = WebRequest.Create(szUrl);
             byte[] data = null;
 
-            if(szData != null)
+            if (szData != null)
                 data = Encoding.ASCII.GetBytes(szData);
 
-            if(MethodType == Method.Post)
+            if (MethodType == Method.Post)
             {
                 webrequest.Method = "POST";
                 webrequest.ContentType = "application/x-www-form-urlencoded";

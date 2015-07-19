@@ -69,14 +69,14 @@ namespace CloudFlareDDNS
             settingsManager = new SettingsManager();
             cloudFlareAPI = new CloudFlareAPI();
 
+            if (!Environment.UserInteractive || args.Length > 0 && args[0] == "/service")
+            {
+                runService();
+                return;
+            }
+
             if (args.Length > 0)
             {
-                if (args[0] == "/service")
-                {
-                    runService();
-                    return;
-                }
-                   
                 if (args[0] == "/install")
                 {
                     TransactedInstaller ti = new TransactedInstaller();
@@ -101,7 +101,6 @@ namespace CloudFlareDDNS
             }
 
             runGUI();
-            return;
 
         }//end Main()
 
@@ -162,7 +161,10 @@ namespace CloudFlareDDNS
         static void runService()
         {
             Logger.log(Properties.Resources.Logger_RunService, Logger.Level.Info);
-            ServiceBase.Run(new Service());
+            using (var svc = new Service())
+            {
+                ServiceBase.Run(svc);
+            }
 
         }//end runService()
 
