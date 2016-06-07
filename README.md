@@ -4,7 +4,9 @@ Written in C#, using Windows Forms.
 
 
 ## Support Me
-[![Donate Via Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CALMNQUWLZNYL)
+[![Donation](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=hostmax%40gmail%2ecom&lc=FI&item_name=SubSearch&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+
+The code is licensed under the MIT license. See opensource.org for more details.
 <br /><br />
 ## Requirements
 ####OS Support
