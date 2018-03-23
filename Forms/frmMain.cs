@@ -27,6 +27,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Net;
 using System.IO;
+using System.Collections.Generic;
 
 namespace CloudFlareDDNS
 {
@@ -83,7 +84,17 @@ namespace CloudFlareDDNS
                 row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_content);
 
                 //Only check this if it's an A record. MX records may have the same name as the primary A record, but should never be updated with an IP.
-                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) == true && fetchedRecords.response.recs.objs[i].type == "A")
+                bool NeedIp = false;
+                switch (fetchedRecords.response.recs.objs[i].type)
+                {
+                    case "A":
+                        NeedIp = true;
+                        break;
+                    case "AAAA":
+                        NeedIp = true;
+                        break;
+                }
+                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) == true && NeedIp == true)
                 {
                     row.Checked = true;
                 }
@@ -94,7 +105,17 @@ namespace CloudFlareDDNS
             //Grey out anything that isn't an A record.
             for(int j = 0; j < listViewRecords.Items.Count; j++)
             {
-                if (listViewRecords.Items[j].SubItems[1].Text != "A")
+                bool NeedIp = false;
+                switch (listViewRecords.Items[j].SubItems[1].Text)
+                {
+                    case "A":
+                        NeedIp = true;
+                        break;
+                    case "AAAA":
+                        NeedIp = true;
+                        break;
+                }
+                if (NeedIp==false)
                 {
                     listViewRecords.Items[j].ForeColor = System.Drawing.Color.LightGray;
                 }
@@ -130,19 +151,21 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Called from another thread, update the textbox control with the new external address
         /// </summary>
-        /// <param name="szAddress"></param>
-        private void updateAddress(string szAddress)
+        /// <param name="IPV4"></param>
+        /// <param name="IPV6"></param>
+        private void updateAddress(string IPV4,string IPV6)
         {
-            txtExternalAddress.Text = szAddress;
-
+            txtExternalAddressIPV4.Text = IPV4;
+            txtExternalAddressIPV6.Text = IPV6;
         }//end updateAddress()
 
 
         /// <summary>
         /// Delegate for updateAddress()
         /// </summary>
-        /// <param name="szAddress"></param>
-        delegate void updateAddressInvoker(string szAddress);
+        /// <param name="IPV4"></param>
+        /// <param name="IPV6"></param>
+        delegate void updateAddressInvoker(string IPV4,string IPV6);
 
 
         /// <summary>
@@ -219,9 +242,18 @@ namespace CloudFlareDDNS
         private void listHostsCheck(object sender, ItemCheckEventArgs e)
         {
             ListViewItem item = listViewRecords.Items[e.Index];
-
+            bool NeedIp = false;
+            switch (item.SubItems[1].Text)
+            {
+                case "A":
+                    NeedIp = true;
+                        break;
+                case "AAAA":
+                    NeedIp = true;
+                    break;
+            }
             //Do nothing for items that are not A records.
-            if(item.SubItems[1].Text != "A")
+            if(NeedIp==false)
             {
                 e.NewValue = CheckState.Unchecked;
                 return;
@@ -254,7 +286,8 @@ namespace CloudFlareDDNS
         /// </summary>
         private void threadFetchOnly()
         {
-            this.Invoke(new updateAddressInvoker(updateAddress), Program.cloudFlareAPI.getExternalAddress());
+            Program.cloudFlareAPI.getExternalAddress();
+            this.Invoke(new updateAddressInvoker(updateAddress), Program.settingsManager.getSetting("ExternalAddressIPV4").ToString(), Program.settingsManager.getSetting("ExternalAddressIPV6").ToString());
             this.Invoke(new updateHostsListInvoker(updateHostsList), Program.cloudFlareAPI.getCloudFlareRecords());
 
         }//end threadFetchOnly()
@@ -265,10 +298,24 @@ namespace CloudFlareDDNS
         /// </summary>
         private void threadFetchUpdate()
         {
-            this.Invoke(new updateAddressInvoker(updateAddress), Program.cloudFlareAPI.getExternalAddress());
+            Program.cloudFlareAPI.getExternalAddress();
+            this.Invoke(new updateAddressInvoker(updateAddress), Program.settingsManager.getSetting("ExternalAddressIPV4").ToString(), Program.settingsManager.getSetting("ExternalAddressIPV6").ToString());
             JsonResponse records = Program.cloudFlareAPI.getCloudFlareRecords();
             this.Invoke(new updateHostsListInvoker(updateHostsList), records);
-            Program.cloudFlareAPI.updateRecords(records);
+            List<DnsRecord> Ldns = Program.cloudFlareAPI.updateRecords(records);
+
+            //Update UI
+            foreach (ListViewItem i in listViewRecords.Items)
+            {
+                foreach (DnsRecord dns in Ldns) {
+                    if (i.SubItems[2].Text == dns.name){
+                        if (dns.type == "A")
+                            i.SubItems[3].Text = Program.settingsManager.getSetting("ExternalAddressIPV4").ToString();
+                        if (dns.type == "AAAA")
+                            i.SubItems[3].Text = Program.settingsManager.getSetting("ExternalAddressIPV6").ToString();
+                    }
+                }
+            }
 
         }//end timerUpdateThread()
 

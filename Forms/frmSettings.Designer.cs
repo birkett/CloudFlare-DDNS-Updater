@@ -63,25 +63,33 @@ namespace CloudFlareDDNS
             this.lblFetchTime = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.cbEventLog = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.IPV6UpdateURL = new System.Windows.Forms.TextBox();
+            this.IPV4UpdateURL = new System.Windows.Forms.TextBox();
+            this.IPV6RESET = new System.Windows.Forms.Button();
+            this.IPV4RESET = new System.Windows.Forms.Button();
+            this.StartMinimized = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(285, 156);
+            this.btnClose.Location = new System.Drawing.Point(370, 324);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 0;
-            this.btnClose.Text = Properties.Resources.Settings_Close;
+            this.btnClose.Text = global::CloudFlareDDNS.Properties.Resources.Settings_Close;
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // btnApply
             // 
-            this.btnApply.Location = new System.Drawing.Point(12, 156);
+            this.btnApply.Location = new System.Drawing.Point(12, 324);
             this.btnApply.Name = "btnApply";
             this.btnApply.Size = new System.Drawing.Size(75, 23);
             this.btnApply.TabIndex = 1;
-            this.btnApply.Text = Properties.Resources.Settings_Apply;
+            this.btnApply.Text = global::CloudFlareDDNS.Properties.Resources.Settings_Apply;
             this.btnApply.UseVisualStyleBackColor = true;
             this.btnApply.Click += new System.EventHandler(this.btnApply_Click);
             // 
@@ -92,20 +100,20 @@ namespace CloudFlareDDNS
             this.lblDomain.Name = "lblDomain";
             this.lblDomain.Size = new System.Drawing.Size(77, 13);
             this.lblDomain.TabIndex = 2;
-            this.lblDomain.Text = Properties.Resources.Settings_Domain;
+            this.lblDomain.Text = "Domain Name:";
             // 
             // txtDomainName
             // 
             this.txtDomainName.Location = new System.Drawing.Point(95, 12);
             this.txtDomainName.Name = "txtDomainName";
-            this.txtDomainName.Size = new System.Drawing.Size(265, 20);
+            this.txtDomainName.Size = new System.Drawing.Size(350, 20);
             this.txtDomainName.TabIndex = 3;
             // 
             // txtEmailAddress
             // 
             this.txtEmailAddress.Location = new System.Drawing.Point(95, 38);
             this.txtEmailAddress.Name = "txtEmailAddress";
-            this.txtEmailAddress.Size = new System.Drawing.Size(265, 20);
+            this.txtEmailAddress.Size = new System.Drawing.Size(350, 20);
             this.txtEmailAddress.TabIndex = 5;
             // 
             // lblEmailAddress
@@ -115,13 +123,13 @@ namespace CloudFlareDDNS
             this.lblEmailAddress.Name = "lblEmailAddress";
             this.lblEmailAddress.Size = new System.Drawing.Size(76, 13);
             this.lblEmailAddress.TabIndex = 4;
-            this.lblEmailAddress.Text = Properties.Resources.Settings_EmailAddress;
+            this.lblEmailAddress.Text = "Email Address:";
             // 
             // txtAPIKey
             // 
             this.txtAPIKey.Location = new System.Drawing.Point(95, 64);
             this.txtAPIKey.Name = "txtAPIKey";
-            this.txtAPIKey.Size = new System.Drawing.Size(265, 20);
+            this.txtAPIKey.Size = new System.Drawing.Size(350, 20);
             this.txtAPIKey.TabIndex = 7;
             // 
             // lblAPIKey
@@ -131,13 +139,13 @@ namespace CloudFlareDDNS
             this.lblAPIKey.Name = "lblAPIKey";
             this.lblAPIKey.Size = new System.Drawing.Size(48, 13);
             this.lblAPIKey.TabIndex = 6;
-            this.lblAPIKey.Text = Properties.Resources.Settings_APIKey;
+            this.lblAPIKey.Text = "API Key:";
             // 
             // txtFetchTime
             // 
             this.txtFetchTime.Location = new System.Drawing.Point(152, 90);
             this.txtFetchTime.Name = "txtFetchTime";
-            this.txtFetchTime.Size = new System.Drawing.Size(208, 20);
+            this.txtFetchTime.Size = new System.Drawing.Size(293, 20);
             this.txtFetchTime.TabIndex = 9;
             // 
             // lblFetchTime
@@ -147,7 +155,7 @@ namespace CloudFlareDDNS
             this.lblFetchTime.Name = "lblFetchTime";
             this.lblFetchTime.Size = new System.Drawing.Size(134, 13);
             this.lblFetchTime.TabIndex = 8;
-            this.lblFetchTime.Text = Properties.Resources.Settings_AutoFetchTime;
+            this.lblFetchTime.Text = "Auto Fetch Time (Minutes):";
             // 
             // label1
             // 
@@ -156,7 +164,7 @@ namespace CloudFlareDDNS
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(128, 13);
             this.label1.TabIndex = 10;
-            this.label1.Text = Properties.Resources.Settings_UseWindowsEventLog;
+            this.label1.Text = "Use Windows Event Log:";
             // 
             // cbEventLog
             // 
@@ -167,11 +175,89 @@ namespace CloudFlareDDNS
             this.cbEventLog.TabIndex = 11;
             this.cbEventLog.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 169);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(93, 13);
+            this.label2.TabIndex = 12;
+            this.label2.Text = "IPV6 Update URL";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 143);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(93, 13);
+            this.label3.TabIndex = 13;
+            this.label3.Text = "IPV4 Update URL";
+            // 
+            // IPV6UpdateURL
+            // 
+            this.IPV6UpdateURL.Location = new System.Drawing.Point(152, 166);
+            this.IPV6UpdateURL.Name = "IPV6UpdateURL";
+            this.IPV6UpdateURL.Size = new System.Drawing.Size(225, 20);
+            this.IPV6UpdateURL.TabIndex = 14;
+            // 
+            // IPV4UpdateURL
+            // 
+            this.IPV4UpdateURL.Location = new System.Drawing.Point(152, 140);
+            this.IPV4UpdateURL.Name = "IPV4UpdateURL";
+            this.IPV4UpdateURL.Size = new System.Drawing.Size(225, 20);
+            this.IPV4UpdateURL.TabIndex = 15;
+            // 
+            // IPV6RESET
+            // 
+            this.IPV6RESET.Location = new System.Drawing.Point(384, 166);
+            this.IPV6RESET.Name = "IPV6RESET";
+            this.IPV6RESET.Size = new System.Drawing.Size(61, 20);
+            this.IPV6RESET.TabIndex = 20;
+            this.IPV6RESET.Text = "Default";
+            this.IPV6RESET.UseVisualStyleBackColor = true;
+            this.IPV6RESET.Click += new System.EventHandler(this.IPV6RESET_Click);
+            // 
+            // IPV4RESET
+            // 
+            this.IPV4RESET.Location = new System.Drawing.Point(384, 140);
+            this.IPV4RESET.Name = "IPV4RESET";
+            this.IPV4RESET.Size = new System.Drawing.Size(61, 20);
+            this.IPV4RESET.TabIndex = 21;
+            this.IPV4RESET.Text = "Default";
+            this.IPV4RESET.UseVisualStyleBackColor = true;
+            this.IPV4RESET.Click += new System.EventHandler(this.IPV4RESET_Click);
+            // 
+            // StartMinimized
+            // 
+            this.StartMinimized.AutoSize = true;
+            this.StartMinimized.Location = new System.Drawing.Point(152, 192);
+            this.StartMinimized.Name = "StartMinimized";
+            this.StartMinimized.Size = new System.Drawing.Size(15, 14);
+            this.StartMinimized.TabIndex = 22;
+            this.StartMinimized.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(9, 192);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(81, 13);
+            this.label4.TabIndex = 23;
+            this.label4.Text = "Start Minimized:";
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(372, 191);
+            this.ClientSize = new System.Drawing.Size(457, 359);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.StartMinimized);
+            this.Controls.Add(this.IPV4RESET);
+            this.Controls.Add(this.IPV6RESET);
+            this.Controls.Add(this.IPV4UpdateURL);
+            this.Controls.Add(this.IPV6UpdateURL);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.cbEventLog);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtFetchTime);
@@ -185,7 +271,7 @@ namespace CloudFlareDDNS
             this.Controls.Add(this.btnApply);
             this.Controls.Add(this.btnClose);
             this.Name = "frmSettings";
-            this.Text = Properties.Resources.Settings_Title;
+            this.Text = "Settings";
             this.Load += new System.EventHandler(this.frmSettings_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -206,5 +292,13 @@ namespace CloudFlareDDNS
         private System.Windows.Forms.Label lblFetchTime;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox cbEventLog;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox IPV6UpdateURL;
+        private System.Windows.Forms.TextBox IPV4UpdateURL;
+        private System.Windows.Forms.Button IPV6RESET;
+        private System.Windows.Forms.Button IPV4RESET;
+        private System.Windows.Forms.CheckBox StartMinimized;
+        private System.Windows.Forms.Label label4;
     }//end class
 }//end namespace

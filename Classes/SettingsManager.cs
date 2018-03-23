@@ -213,9 +213,12 @@ namespace CloudFlareDDNS
             m_Settings.Add(new Setting("EmailAddress", ""));
             m_Settings.Add(new Setting("APIKey", ""));
             m_Settings.Add(new Setting("SelectedHosts", ""));
-            m_Settings.Add(new Setting("ExternalAddress", ""));
+            m_Settings.Add(new Setting("ExternalAddressIPv4", ""));
+            m_Settings.Add(new Setting("ExternalAddressIPv6", ""));
             m_Settings.Add(new Setting("UseEventLog", true));
-
+            m_Settings.Add(new Setting("IPV4UpdateURL", "http://checkip.dyndns.org/"));
+            m_Settings.Add(new Setting("IPV6UpdateURL", "http://myexternalip.com/raw"));
+            m_Settings.Add(new Setting("UseLocalInfos", false));
         }//end setDefaults()
 
 

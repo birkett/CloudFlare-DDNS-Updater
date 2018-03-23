@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 using System;
+using System.Net;
+using System.Net.Sockets;
 using System.Windows.Forms;
 
 namespace CloudFlareDDNS
@@ -39,7 +41,6 @@ namespace CloudFlareDDNS
         public frmSettings()
         {
             InitializeComponent();
-
         }//end frmSettings()
 
 
@@ -55,7 +56,9 @@ namespace CloudFlareDDNS
             txtAPIKey.Text = Program.settingsManager.getSetting("APIKey").ToString();
             txtFetchTime.Text = Program.settingsManager.getSetting("FetchTime").ToString();
             cbEventLog.Checked = Program.settingsManager.getSetting("UseEventLog").ToBool();
-
+            IPV6UpdateURL.Text = Program.settingsManager.getSetting("IPV6UpdateURL").ToString();
+            IPV4UpdateURL.Text = Program.settingsManager.getSetting("IPV4UpdateURL").ToString();
+            StartMinimized.Checked = Program.settingsManager.getSetting("StartMinimized").ToBool();
         }//end frmSettings_Load()
 
 
@@ -71,6 +74,9 @@ namespace CloudFlareDDNS
             Program.settingsManager.setSetting("APIKey", txtAPIKey.Text);
             Program.settingsManager.setSetting("FetchTime", txtFetchTime.Text);
             Program.settingsManager.setSetting("UseEventLog", cbEventLog.Checked.ToString());
+            Program.settingsManager.setSetting("IPV6UpdateURL", IPV6UpdateURL.Text);
+            Program.settingsManager.setSetting("IPV4UpdateURL", IPV4UpdateURL.Text);
+            Program.settingsManager.setSetting("StartMinimized", StartMinimized.Checked.ToString());
             Program.settingsManager.saveSettings();
 
         }//end btnApply_Click()
@@ -87,6 +93,14 @@ namespace CloudFlareDDNS
 
         }//end btnClose_Click()
 
+        private void IPV4RESET_Click(object sender, EventArgs e)
+        {
+            IPV4UpdateURL.Text = "http://checkip.dyndns.org/";
+        }
 
+        private void IPV6RESET_Click(object sender, EventArgs e)
+        {
+            IPV6UpdateURL.Text = "http://myexternalip.com/raw";
+        }
     }//end class
 }//end namespace

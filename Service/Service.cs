@@ -22,7 +22,9 @@
  * SOFTWARE.
  */
 using System;
+using System.Collections.Generic;
 using System.ServiceProcess;
+using System.Windows.Forms;
 
 namespace CloudFlareDDNS
 {
@@ -107,8 +109,7 @@ namespace CloudFlareDDNS
             Program.settingsManager.loadSettings(); //Do this to reload the config, GUI might have changed settings since last tick
             autoUpdateTimer.Interval = (Program.settingsManager.getSetting("FetchTime").ToInt() * 60000); //Minutes to milliseconds
             Program.cloudFlareAPI.getExternalAddress();
-            Program.cloudFlareAPI.updateRecords(Program.cloudFlareAPI.getCloudFlareRecords());
-
+            List<DnsRecord> Ldns = Program.cloudFlareAPI.updateRecords(Program.cloudFlareAPI.getCloudFlareRecords());
         }//end autoUpdateTimer_Tick()
 
 

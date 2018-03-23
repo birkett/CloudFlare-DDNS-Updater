@@ -26,6 +26,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 using System.Web.Script.Serialization;
+using System.Collections.Generic;
 
 namespace CloudFlareDDNS
 {
@@ -38,11 +39,15 @@ namespace CloudFlareDDNS
 
         /// <summary>
         /// Logic to update records
+        /// And return changes
         /// </summary>
-        public void updateRecords(JsonResponse fetchedRecords)
+        public List<DnsRecord> updateRecords(JsonResponse fetchedRecords)
         {
+            //List for the Updated IPs
+            List<DnsRecord> return_updated_list = new List<DnsRecord>();
+
             if (fetchedRecords == null) //Dont attempt updates if the fetch failed
-                return;
+                return return_updated_list;
 
             int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
             string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
@@ -51,7 +56,17 @@ namespace CloudFlareDDNS
             {
                 //Skip over MX and CNAME records
                 //TODO: Dont skip them :)
-                if (fetchedRecords.response.recs.objs[i].type != "A")
+                bool NeedIp = false;
+                switch (fetchedRecords.response.recs.objs[i].type)
+                {
+                    case "A":
+                        NeedIp = true;
+                        break;
+                    case "AAAA":
+                        NeedIp = true;
+                        break;
+                }
+                if (NeedIp ==false)
                 {
                     skipped++;
                     continue;
@@ -66,31 +81,45 @@ namespace CloudFlareDDNS
                 }
 
                 //Skip over anything that doesnt need an update
-                if (fetchedRecords.response.recs.objs[i].content == Program.settingsManager.getSetting("ExternalAddress").ToString())
+                if (fetchedRecords.response.recs.objs[i].content == Program.settingsManager.getSetting("ExternalAddressIPV4").ToString() || fetchedRecords.response.recs.objs[i].content == Program.settingsManager.getSetting("ExternalAddressIPV6").ToString())
                 {
                     up_to_date++;
                     continue;
                 }
-
-                string strResponse = this.updateCloudflareRecords(fetchedRecords.response.recs.objs[i]);
-
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-
-                JsonResponse resp = serializer.Deserialize<JsonResponse>(strResponse);
-
-                if (resp.result != "success")
+                string strResponse = "";
+                try
                 {
-                    failed++;
-                    Logger.log(Properties.Resources.Logger_Failed + " " + fetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
+                     strResponse = this.updateCloudflareRecords(fetchedRecords.response.recs.objs[i]);
+                }
+                catch (Exception) { }
+
+                if (!string.IsNullOrEmpty(strResponse))
+                {
+                    JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+                    JsonResponse resp = serializer.Deserialize<JsonResponse>(strResponse);
+
+                    if (resp.result != "success")
+                    {
+                        failed++;
+                        Logger.log(Properties.Resources.Logger_Failed + " " + fetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
+                    }
+                    else
+                    {
+
+                        return_updated_list.Add(fetchedRecords.response.recs.objs[i]);
+                        updated++;
+                    }
                 }
                 else
                 {
-                    updated++;
+                    failed++;
+                    Logger.log(Properties.Resources.Logger_Failed + " " + fetchedRecords.response.recs.objs[i].name + "Unknown Error 001, maybe no IPV4 or IPV6 ", Logger.Level.Error);
                 }
             }
 
             Logger.log("Update at " + DateTime.Now + " - " + updated.ToString(Program.cultureInfo) + " updated, " + up_to_date.ToString(Program.cultureInfo) + " up to date, " + skipped.ToString(Program.cultureInfo) + " skipped, " + ignored.ToString(Program.cultureInfo) + " ignored, " + failed.ToString(Program.cultureInfo) + " failed", Logger.Level.Info);
-
+            return return_updated_list;
         }//end updateRecords()
 
 
@@ -98,25 +127,44 @@ namespace CloudFlareDDNS
         /// Return the current external network address, using the default gateway
         /// </summary>
         /// <returns>IP address as a string, null on error</returns>
-        public string getExternalAddress()
+        public void getExternalAddress()
         {
-            string strResponse = webRequest(Method.Get, "http://checkip.dyndns.org", null);
-            string[] strResponse2 = strResponse.Split(':');
-            string strResponse3 = strResponse2[1].Substring(1);
-            string new_external_address = strResponse3.Split('<')[0];
-
-            if (new_external_address == null)
-                return null; //Bail if failied, keeping the current address in settings
-
-            if (new_external_address != Program.settingsManager.getSetting("ExternalAddress").ToString())
+            //UPDATE IPV4
+            string new_external_addressIPV4;
+                string strResponseIPV4 = webRequest(Method.Get, Program.settingsManager.getSetting("IPV4UpdateURL").ToString(), null);
+                if (Program.settingsManager.getSetting("IPV4UpdateURL").ToString().Contains("checkip.dyndns.org"))
+                {
+                    string[] strResponse2 = strResponseIPV4.Split(':');
+                    string strResponse3 = strResponse2[1].Substring(1);
+                    new_external_addressIPV4 = strResponse3.Split('<')[0];
+                }
+                else
+                {
+                    new_external_addressIPV4 = System.Text.RegularExpressions.Regex.Replace(strResponseIPV4, "<.*?>", String.Empty).Trim();
+                }
+            if (new_external_addressIPV4 != null)
             {
-                Program.settingsManager.setSetting("ExternalAddress", new_external_address);
-                Program.settingsManager.saveSettings();
+
+                if (new_external_addressIPV4 != Program.settingsManager.getSetting("ExternalAddressIPV4").ToString())
+                {
+                    Program.settingsManager.setSetting("ExternalAddressIPV4", new_external_addressIPV4);
+                    Program.settingsManager.saveSettings();
+                }
+            }
+            //UPDATE IPV6
+            string new_external_addressIPV6;
+            string strResponseIPV6 = webRequest(Method.Get, Program.settingsManager.getSetting("IPV6UpdateURL").ToString(), null);
+                new_external_addressIPV6 = System.Text.RegularExpressions.Regex.Replace(strResponseIPV6, "<.*?>", String.Empty).Trim();
+            if (new_external_addressIPV6 != null)
+            {
+                if (new_external_addressIPV6 != Program.settingsManager.getSetting("ExternalAddressIPV6").ToString())
+                {
+                    Program.settingsManager.setSetting("ExternalAddressIPV6", new_external_addressIPV6);
+                    Program.settingsManager.saveSettings();
+                }
             }
 
-            return new_external_address;
-
-        }//end getExternalAddress()
+            }//end getExternalAddress()
 
 
         /// <summary>
@@ -165,7 +213,23 @@ namespace CloudFlareDDNS
             postData += "&z=" + Program.settingsManager.getSetting("Domain").ToString();
             postData += "&type=" + FetchedRecord.type;
             postData += "&name=" + FetchedRecord.name;
-            postData += "&content=" + Program.settingsManager.getSetting("ExternalAddress").ToString();
+            //Switch IPV4 and IPV6 if its A or AAAA
+            if (FetchedRecord.type.ToString() == "A")
+            {
+                if (string.IsNullOrEmpty(Program.settingsManager.getSetting("ExternalAddressIPV4").ToString()))
+                {
+                    throw new Exception();
+                }
+                postData += "&content=" + Program.settingsManager.getSetting("ExternalAddressIPV4").ToString();
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(Program.settingsManager.getSetting("ExternalAddressIPV6").ToString()))
+                {
+                    throw new Exception();
+                }
+                postData += "&content=" + Program.settingsManager.getSetting("ExternalAddressIPV6").ToString();
+            }
             postData += "&service_mode=" + FetchedRecord.service_mode;
             postData += "&ttl=" + FetchedRecord.ttl;
 
