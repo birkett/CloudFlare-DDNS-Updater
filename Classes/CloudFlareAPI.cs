@@ -251,7 +251,7 @@ namespace CloudFlareDDNS
 
                 try
                 {
-                    string data = Newtonsoft.Json.JsonConvert.SerializeObject(new { type = FetchedRecord.type, name = FetchedRecord.name, content = ip });
+                    string data = Newtonsoft.Json.JsonConvert.SerializeObject(new { type = FetchedRecord.type, name = FetchedRecord.name, content = ip,proxied = FetchedRecord.proxied });
                     webRequest(Method.Put, url, headerData, data);
                     return FetchedRecord.name;
                 }

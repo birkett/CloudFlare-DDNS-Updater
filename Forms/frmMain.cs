@@ -256,56 +256,60 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void listHostsCheck(object sender, ItemCheckEventArgs e)
         {
-            ListViewItem item = listViewRecords.Items[e.Index];
-            bool NeedIp = false;
-            switch (item.SubItems[1].Text)
+            try
             {
-                case "A":
-                    NeedIp = true;
+                ListViewItem item = listViewRecords.Items[e.Index];
+                bool NeedIp = false;
+                switch (item.SubItems[1].Text)
+                {
+                    case "A":
+                        NeedIp = true;
                         break;
-                case "AAAA":
-                    NeedIp = true;
-                    break;
-            }
-            //Do nothing for items that are not A records.
-            if(NeedIp==false)
-            {
-                e.NewValue = CheckState.Unchecked;
-                return;
-            }
-            string selectedHosts = "";
-            if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedHosts").ToString())) {
-                selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString();
-            }
-            //Add Item if checked delete item if unchecked
-            string[] selectedHostsArray = selectedHosts.Split(';');
-            if (item.Checked)
-            {
-                int pos = Array.IndexOf(selectedHostsArray, item.SubItems[2].Text);
-                if (pos < -1)
-                {
-                    if (!string.IsNullOrEmpty(selectedHosts.Trim()))
-                        selectedHosts += ";";
-
-                    selectedHosts += item.SubItems[2].Text.Trim();
+                    case "AAAA":
+                        NeedIp = true;
+                        break;
                 }
-            }
-            else
-            {
-                foreach (ListViewItem lvt in listViewRecords.Items)
+                //Do nothing for items that are not A records.
+                if (NeedIp == false)
                 {
-
-                    if (!string.IsNullOrEmpty(selectedHosts.Trim()))
-                        selectedHosts += ";";
-
-                    selectedHosts += lvt.SubItems[2].Text.Trim();
+                    e.NewValue = CheckState.Unchecked;
+                    return;
                 }
-            }
-           
-            Debug.WriteLine(selectedHosts);
-            Program.settingsManager.setSetting("SelectedHosts", selectedHosts);
-            Program.settingsManager.saveSettings(); //Save the selected host list accross sessions
+                string selectedHosts = "";
+                if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedHosts").ToString()))
+                {
+                    selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString();
+                }
+                //Add Item if checked delete item if unchecked
+                string[] selectedHostsArray = selectedHosts.Split(';');
+                if (item.Checked)
+                {
+                    int pos = Array.IndexOf(selectedHostsArray, item.SubItems[2].Text);
+                    if (pos < -1)
+                    {
+                        if (!string.IsNullOrEmpty(selectedHosts.Trim()))
+                            selectedHosts += ";";
 
+                        selectedHosts += item.SubItems[2].Text.Trim();
+                    }
+                }
+                else
+                {
+                    foreach (ListViewItem lvt in listViewRecords.Items)
+                    {
+
+                        if (!string.IsNullOrEmpty(selectedHosts.Trim()))
+                            selectedHosts += ";";
+
+                        selectedHosts += lvt.SubItems[2].Text.Trim();
+                    }
+                }
+
+                Debug.WriteLine(selectedHosts);
+                Program.settingsManager.setSetting("SelectedHosts", selectedHosts);
+                Program.settingsManager.saveSettings(); //Save the selected host list accross sessions
+            }
+            catch (Exception) { }
         }//end listHostsCheck()
 
 
