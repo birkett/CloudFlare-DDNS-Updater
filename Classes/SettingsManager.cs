@@ -69,39 +69,39 @@ namespace CloudFlareDDNS
             /// </summary>
             /// <param name="szName"></param>
             /// <param name="szValue"></param>
-            public Setting(string szName, string szValue)  { m_szName = szName; m_szValue = szValue; }
+            public Setting(string szName, string szValue){ m_szName = szName; m_szValue = szValue; }
 
             /// <summary>
             /// Constructor, new setting value from boolean
             /// </summary>
             /// <param name="szName"></param>
             /// <param name="bValue"></param>
-            public Setting(string szName, bool bValue)     { m_szName = szName; m_szValue = bValue.ToString(); }
+            public Setting(string szName, bool bValue){ m_szName = szName; m_szValue = bValue.ToString(); }
 
             /// <summary>
             /// Constructor, new setting value from integer
             /// </summary>
             /// <param name="szName"></param>
             /// <param name="iValue"></param>
-            public Setting(string szName, int iValue)      { m_szName = szName; m_szValue = iValue.ToString(Program.cultureInfo); }
+            public Setting(string szName, int iValue){ m_szName = szName; m_szValue = iValue.ToString(Program.cultureInfo); }
 
             /// <summary>
             /// Accessor, return string
             /// </summary>
             /// <returns></returns>
-            public override string  ToString()  { return m_szValue; }
+            public override string ToString(){ return m_szValue; }
 
             /// <summary>
             /// Accessor, return boolean
             /// </summary>
             /// <returns></returns>
-            public bool             ToBool()    { return System.Convert.ToBoolean(m_szValue, Program.cultureInfo); }
+            public bool ToBool(){ return System.Convert.ToBoolean(m_szValue, Program.cultureInfo); }
 
             /// <summary>
             /// Accessor, return integer
             /// </summary>
             /// <returns></returns>
-            public int              ToInt()     { return System.Convert.ToInt32(m_szValue, Program.cultureInfo); }
+            public int ToInt(){ return System.Convert.ToInt32(m_szValue, Program.cultureInfo); }
 
             /// <summary>
             /// Store the value
@@ -219,6 +219,8 @@ namespace CloudFlareDDNS
             m_Settings.Add(new Setting("IPV4UpdateURL", "http://checkip.dyndns.org/"));
             m_Settings.Add(new Setting("IPV6UpdateURL", "http://myexternalip.com/raw"));
             m_Settings.Add(new Setting("UseLocalInfos", false));
+            m_Settings.Add(new Setting("APIUrl", "https://api.cloudflare.com/client/v4"));
+            m_Settings.Add(new Setting("SelectedZone", ""));
         }//end setDefaults()
 
 

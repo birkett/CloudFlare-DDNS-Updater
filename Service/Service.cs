@@ -109,7 +109,13 @@ namespace CloudFlareDDNS
             Program.settingsManager.loadSettings(); //Do this to reload the config, GUI might have changed settings since last tick
             autoUpdateTimer.Interval = (Program.settingsManager.getSetting("FetchTime").ToInt() * 60000); //Minutes to milliseconds
             Program.cloudFlareAPI.getExternalAddress();
-            List<DnsRecord> Ldns = Program.cloudFlareAPI.updateRecords(Program.cloudFlareAPI.getCloudFlareRecords());
+            if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
+            {
+                foreach (string SelectedZones in Program.settingsManager.getSetting("SelectedZones").ToString().Split(';'))
+                {
+                    List<Result> Ldns = Program.cloudFlareAPI.updateRecords(Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones));
+                }
+            }
         }//end autoUpdateTimer_Tick()
 
 
