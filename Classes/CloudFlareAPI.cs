@@ -92,6 +92,7 @@ namespace CloudFlareDDNS
                 try
                 {
                     strResponse = this.updateCloudflareRecords(r);
+                    System.Threading.Thread.Sleep(1000); //DontNeedTooSpamCloudflareServer
                 }
                 catch (Exception)
                 {
