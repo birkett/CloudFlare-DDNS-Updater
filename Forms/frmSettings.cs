@@ -21,21 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 using System;
-using System.Diagnostics;
-using System.Net;
-using System.Net.Sockets;
 using System.Windows.Forms;
+using CloudFlareDDNS.Classes.JsonObjects.Cloudflare;
 
 namespace CloudFlareDDNS
 {
     /// <summary>
-    /// Settings form - basic configuration 
+    /// Settings form - basic configuration
     /// </summary>
     public partial class frmSettings : Form
     {
-
-
         /// <summary>
         /// Form entry point
         /// </summary>
@@ -44,7 +41,6 @@ namespace CloudFlareDDNS
             InitializeComponent();
         }//end frmSettings()
 
-
         /// <summary>
         /// Load the saved values on open
         /// </summary>
@@ -52,19 +48,24 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void frmSettings_Load(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(Program.settingsManager.getSetting("APIUrl").ToString()))
+            {
+                cloudflare_api_url_input.Text = "https://api.cloudflare.com/client/v4";
+                Program.settingsManager.setSetting("APIUrl", cloudflare_api_url_input.Text);
+            }
             try
             {
-                Cloudflare_get_Zone_list_Response response = new Cloudflare_get_Zone_list_Response();
+                Get_zone_list_response response = new Get_zone_list_response();
                 if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("EmailAddress").ToString()) && !string.IsNullOrEmpty(Program.settingsManager.getSetting("APIKey").ToString()))
-                     response = Program.cloudFlareAPI.getCloudFlareZones();
+                    response = Program.cloudFlareAPI.getCloudFlareZones();
 
-                    foreach (Result rs in response.result)
-                    {
-                        ListViewItem row = new ListViewItem();
-                        row.SubItems.Add(rs.name.ToString());
-                        row.SubItems.Add(rs.id.ToString());
-                        ZoneUpdateList.Items.Add(row);
-                    }
+                foreach (Result rs in response.result)
+                {
+                    ListViewItem row = new ListViewItem();
+                    row.SubItems.Add(rs.name.ToString());
+                    row.SubItems.Add(rs.id.ToString());
+                    ZoneUpdateList.Items.Add(row);
+                }
                 if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
                 {
                     string[] selectedZone = Program.settingsManager.getSetting("SelectedZones").ToString().Split(';');
@@ -82,10 +83,9 @@ namespace CloudFlareDDNS
                     }
                 }
             }
-            catch (Exception er)
+            catch (Exception)
             {
                 Logger.log("Failed to load Zones");
-                Logger.log("Failed: "+er.ToString());
             }
 
             txtEmailAddress.Text = Program.settingsManager.getSetting("EmailAddress").ToString();
@@ -95,9 +95,12 @@ namespace CloudFlareDDNS
             IPV6UpdateURL.Text = Program.settingsManager.getSetting("IPV6UpdateURL").ToString();
             IPV4UpdateURL.Text = Program.settingsManager.getSetting("IPV4UpdateURL").ToString();
             StartMinimized.Checked = Program.settingsManager.getSetting("StartMinimized").ToBool();
-            cloudflare_api_url_input.Text= Program.settingsManager.getSetting("APIUrl").ToString();
+            cloudflare_api_url_input.Text = Program.settingsManager.getSetting("APIUrl").ToString();
+            UseInternalIP_input.Checked = Program.settingsManager.getSetting("UseInternalIP").ToBool();
+            HideSRV_input.Checked = Program.settingsManager.getSetting("HideSRV").ToBool();
         }//end frmSettings_Load()
 
+        #region Click buttons
 
         /// <summary>
         /// Save the new settings
@@ -109,7 +112,7 @@ namespace CloudFlareDDNS
             if (cloudflare_api_url_input.Text.EndsWith("/"))
                 cloudflare_api_url_input.Text = cloudflare_api_url_input.Text.Substring(0, cloudflare_api_url_input.Text.Length - 1);
 
-            string selectedZone="";
+            string selectedZone = "";
             foreach (ListViewItem ListViewItem in ZoneUpdateList.CheckedItems)
             {
                 if (!string.IsNullOrEmpty(ListViewItem.SubItems[2].Text.Trim()))
@@ -130,10 +133,10 @@ namespace CloudFlareDDNS
             Program.settingsManager.setSetting("IPV4UpdateURL", IPV4UpdateURL.Text);
             Program.settingsManager.setSetting("StartMinimized", StartMinimized.Checked.ToString());
             Program.settingsManager.setSetting("APIUrl", cloudflare_api_url_input.Text);
+            Program.settingsManager.setSetting("UseInternalIP", UseInternalIP_input.Checked.ToString());
+            Program.settingsManager.setSetting("HideSRV", HideSRV_input.Checked.ToString());
             Program.settingsManager.saveSettings();
-
         }//end btnApply_Click()
-
 
         /// <summary>
         /// Close this form
@@ -143,7 +146,6 @@ namespace CloudFlareDDNS
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Close();
-
         }//end btnClose_Click()
 
         private void IPV4RESET_Click(object sender, EventArgs e)
@@ -161,9 +163,6 @@ namespace CloudFlareDDNS
             cloudflare_api_url_input.Text = "https://api.cloudflare.com/client/v4";
         }
 
-        private void listViewRecords_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
+        #endregion Click buttons
     }//end class
 }//end namespace

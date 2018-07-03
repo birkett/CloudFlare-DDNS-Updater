@@ -21,15 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 using System;
-using System.Text;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-using System.Net;
-using System.IO;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Diagnostics;
+using CloudFlareDDNS.Classes.JsonObjects.Cloudflare;
 
 namespace CloudFlareDDNS
 {
@@ -38,25 +37,20 @@ namespace CloudFlareDDNS
     /// </summary>
     public partial class frmMain : Form
     {
-
-
         /// <summary>
         /// Used for auto updates
         /// </summary>
         private System.Timers.Timer autoUpdateTimer = null;
-
 
         /// <summary>
         /// Used for updating the log control
         /// </summary>
         private System.Timers.Timer logUpdateTimer = null;
 
-
         /// <summary>
         /// Thread for fetching records
         /// </summary>
         private Thread fetchThread = null;
-
 
         /// <summary>
         /// Thread for updating records
@@ -67,11 +61,22 @@ namespace CloudFlareDDNS
         /// Make borderless window move able
         /// </summary>
         public const int WM_NCLBUTTONDOWN = 0xA1;
+
+        /// <summary>
+        /// Make borderless window move able
+        /// </summary>
         public const int HT_CAPTION = 0x2;
 
         [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
+        /// <summary>
+        /// Make borderless window move able
+        /// </summary>
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
         [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
+        /// <summary>
+        /// Make borderless window move able
+        /// </summary>
         public static extern bool ReleaseCapture();
 
         /// <summary>
@@ -79,9 +84,8 @@ namespace CloudFlareDDNS
         /// Populate the list hosts control with the new returned hosts
         /// </summary>
         /// <param name="fetchedRecords"></param>
-        private void updateHostsList(Cloudflare_get_dns_records_Response fetchedRecords)
+        private void updateHostsList(Get_dns_records_response fetchedRecords)
         {
-
             if (fetchedRecords == null)
                 return; //bail if the fetch failed
 
@@ -95,17 +99,18 @@ namespace CloudFlareDDNS
                 row.SubItems.Add(r.type);
                 row.SubItems.Add(r.name);
                 row.SubItems.Add(r.content);
-
+                row.SubItems.Add(r.modified_on.ToShortDateString() + " " + r.modified_on.ToShortTimeString());
                 //Only check this if it's an A record. MX records may have the same name as the primary A record, but should never be updated with an IP.
                 bool NeedIp = false;
                 switch (r.type)
                 {
                     case "A":
                         NeedIp = true;
-                    break;
+                        break;
+
                     case "AAAA":
                         NeedIp = true;
-                    break;
+                        break;
                 }
                 if (NeedIp)
                 {
@@ -115,19 +120,37 @@ namespace CloudFlareDDNS
                         row.Checked = true;
                     }
                 }
-                listViewRecords.Items.Add(row);
+                try
+                {
+                    if (Program.settingsManager.getSetting("HideSRV").ToBool())
+                    {
+                        if(r.type != "SRV")
+                        {
+                            listViewRecords.Items.Add(row);
+                        }
+                    }
+                    else
+                    {
+                        listViewRecords.Items.Add(row);
+                    }
+                }
+                catch (Exception)
+                {
+                    listViewRecords.Items.Add(row);
+                }
             }
 
             //Grey out anything that isn't an A record.
-             for (int j = 0; j < listViewRecords.Items.Count; j++)
-             {
+            for (int j = 0; j < listViewRecords.Items.Count; j++)
+            {
                 bool NeedIp = false;
                 switch (listViewRecords.Items[j].SubItems[1].Text)
                 {
-                     case "A":
+                    case "A":
                         NeedIp = true;
                         break;
-                     case "AAAA":
+
+                    case "AAAA":
                         NeedIp = true;
                         break;
                 }
@@ -135,16 +158,14 @@ namespace CloudFlareDDNS
                 {
                     listViewRecords.Items[j].ForeColor = System.Drawing.Color.Gray;
                 }
-             }
+            }
         }//end updateHostsList()
-
 
         /// <summary>
         /// Delegate for updateHostsList()
         /// </summary>
         /// <param name="fetchedRecords"></param>
-        delegate void updateHostsListInvoker(Cloudflare_get_dns_records_Response fetchedRecords);
-
+        private delegate void updateHostsListInvoker(Get_dns_records_response fetchedRecords);
 
         /// <summary>
         /// Called from another thread, adds a log entry to the list control
@@ -153,35 +174,31 @@ namespace CloudFlareDDNS
         private void addLogEntry(ListViewItem entry)
         {
             listViewLog.Items.Add(entry);
-
         }//end addLogEntry()
 
         /// <summary>
         /// Delegate for addLogEntry()
         /// </summary>
         /// <param name="entry"></param>
-        delegate void addLogEntryInvoker(ListViewItem entry);
-
+        private delegate void addLogEntryInvoker(ListViewItem entry);
 
         /// <summary>
         /// Called from another thread, update the textbox control with the new external address
         /// </summary>
         /// <param name="IPV4"></param>
         /// <param name="IPV6"></param>
-        private void updateAddress(string IPV4,string IPV6)
+        private void updateAddress(string IPV4, string IPV6)
         {
             labeltxtExternalAddressIPV4.Text = IPV4;
             labeltxtExternalAddressIPV6.Text = IPV6;
         }//end updateAddress()
-
 
         /// <summary>
         /// Delegate for updateAddress()
         /// </summary>
         /// <param name="IPV4"></param>
         /// <param name="IPV6"></param>
-        delegate void updateAddressInvoker(string IPV4,string IPV6);
-
+        private delegate void updateAddressInvoker(string IPV4, string IPV6);
 
         /// <summary>
         /// Form entry point
@@ -201,9 +218,7 @@ namespace CloudFlareDDNS
             logUpdateTimer.Enabled = true;
 
             Logger.log(Properties.Resources.Logger_Start + " " + Program.settingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " ", Logger.Level.Info);
-
         }//end frmMain()
-
 
         /// <summary>
         /// Clean up the tray icon when closing
@@ -227,9 +242,7 @@ namespace CloudFlareDDNS
             }
 
             trayIcon.Dispose();
-
         }//end frmMain_Closing()
-
 
         /// <summary>
         /// Minimise to the tray instead of the taskbar
@@ -244,9 +257,7 @@ namespace CloudFlareDDNS
                 trayIcon.Visible = true;
                 trayIcon.ShowBalloonTip(1000);
             }
-
         }//end frmMain_Resize()
-
 
         /// <summary>
         /// A host in the list contol has been checked or unchecked
@@ -265,6 +276,7 @@ namespace CloudFlareDDNS
                     case "A":
                         NeedIp = true;
                         break;
+
                     case "AAAA":
                         NeedIp = true;
                         break;
@@ -297,7 +309,6 @@ namespace CloudFlareDDNS
                 {
                     foreach (ListViewItem lvt in listViewRecords.Items)
                     {
-
                         if (!string.IsNullOrEmpty(selectedHosts.Trim()))
                             selectedHosts += ";";
 
@@ -311,7 +322,6 @@ namespace CloudFlareDDNS
             }
             catch (Exception) { }
         }//end listHostsCheck()
-
 
         /// <summary>
         /// Thread to fetch records, nothing else
@@ -327,9 +337,7 @@ namespace CloudFlareDDNS
                     this.Invoke(new updateHostsListInvoker(updateHostsList), Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones));
                 }
             }
-
         }//end threadFetchOnly()
-
 
         /// <summary>
         /// Thread to run updates every x minutes
@@ -342,37 +350,16 @@ namespace CloudFlareDDNS
             {
                 foreach (string SelectedZones in Program.settingsManager.getSetting("SelectedZones").ToString().Split(';'))
                 {
-                    Cloudflare_get_dns_records_Response records = Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones);
+                    Get_dns_records_response records = Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones);
                     if (records != null)
                     {
                         this.Invoke(new updateHostsListInvoker(updateHostsList), records);
                         List<Result> Ldns = Program.cloudFlareAPI.updateRecords(records);
-
-                        //Update UI
-                        try
-                        {
-                            foreach (ListViewItem i in listViewRecords.Items)
-                            {
-                                foreach (Result dns in Ldns)
-                                {
-                                    if (i.SubItems[2].Text == dns.name)
-                                    {
-                                        if (dns.type == "A")
-                                            i.SubItems[3].Text = Program.settingsManager.getSetting("ExternalAddressIPV4").ToString();
-                                        if (dns.type == "AAAA")
-                                            i.SubItems[3].Text = Program.settingsManager.getSetting("ExternalAddressIPV6").ToString();
-                                    }
-                                }
-                            }
-                        }catch(Exception e)
-                        {
-
-                        }
                     }
                 }
+                start_fetchThread();
             }
         }//end timerUpdateThread()
-
 
         /// <summary>
         /// Get current external address and CloudFlare records
@@ -381,11 +368,14 @@ namespace CloudFlareDDNS
         /// <param name="e"></param>
         private void fetchDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            fetchThread = new Thread(new ThreadStart(threadFetchOnly));
-            fetchThread.Start();
-
+            start_fetchThread();
         }//end fetchDataToolStripMenuItem_Click()
 
+        private void start_fetchThread()
+        {
+            fetchThread = new Thread(new ThreadStart(threadFetchOnly));
+            fetchThread.Start();
+        }
 
         /// <summary>
         /// Update the selected records
@@ -396,9 +386,7 @@ namespace CloudFlareDDNS
         {
             updateThread = new Thread(new ThreadStart(threadFetchUpdate));
             updateThread.Start();
-
         }//end updateRecordsToolStripMenuItem_Click()
-
 
         /// <summary>
         /// Open the settings box
@@ -409,9 +397,7 @@ namespace CloudFlareDDNS
         {
             frmSettings settingsForm = new frmSettings();
             settingsForm.Show();
-
         }//end settingsToolStripMenuItem_Click()
-
 
         /// <summary>
         /// Minimise the appplication to the task tray
@@ -421,9 +407,7 @@ namespace CloudFlareDDNS
         private void minimiseToTrayToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
-
         }//end minimiseToTrayToolStripMenuItem_Click()
-
 
         /// <summary>
         /// Auto update every x minutes, creates a new timerUpdateThread() thread
@@ -434,9 +418,7 @@ namespace CloudFlareDDNS
         private void autoUpdateTimer_Tick(object sender, EventArgs e)
         {
             threadFetchUpdate();
-
         }//end autoUpdateTimer_Tick()
-
 
         /// <summary>
         /// Tick every 1000ms to add new log entries to the listview control
@@ -468,7 +450,6 @@ namespace CloudFlareDDNS
                     }
                     row.SubItems.Add(logItem.Message);
                     this.Invoke(new addLogEntryInvoker(addLogEntry), row);
-
                 }
                 Logger.reset(); //Clear the log
             }
@@ -476,7 +457,6 @@ namespace CloudFlareDDNS
             {
             }
         }//end logUpdateTimer_Tick()
-
 
         /// <summary>
         /// Close the application
@@ -486,9 +466,7 @@ namespace CloudFlareDDNS
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
-
         }//end exitToolStripMenuItem_Click()
-
 
         /// <summary>
         /// Restore when double clicking the tray icon
@@ -499,9 +477,7 @@ namespace CloudFlareDDNS
         {
             ShowInTaskbar = true;
             WindowState = FormWindowState.Normal;
-
         }//end notifyIcon1_MouseDoubleClick()
-
 
         /// <summary>
         /// Show the about form
@@ -512,7 +488,6 @@ namespace CloudFlareDDNS
         {
             frmAbout about = new frmAbout();
             about.Show();
-
         }//end aboutToolStripMenuItem_Click()
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -521,7 +496,7 @@ namespace CloudFlareDDNS
             this.Invoke(new updateAddressInvoker(updateAddress), Program.settingsManager.getSetting("ExternalAddressIPV4").ToString(), Program.settingsManager.getSetting("ExternalAddressIPV6").ToString());
             try
             {
-                threadFetchUpdate();
+                start_fetchThread();
             }
             catch (Exception) { }
         }
@@ -534,7 +509,6 @@ namespace CloudFlareDDNS
 
         private void listViewRecords_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
         {
-       
             e.Graphics.FillRectangle(Brushes.DarkOrange, e.Bounds);
             e.DrawText();
         }
@@ -560,7 +534,6 @@ namespace CloudFlareDDNS
 
         private void listViewLog_SelectedIndexChanged(object sender, EventArgs e)
         {
-
         }
     }//end class
 }//end namespace

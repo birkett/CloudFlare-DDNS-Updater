@@ -21,46 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 using System;
-using System.Windows.Forms;
-using System.ServiceProcess;
 using System.Configuration.Install;
+using System.ServiceProcess;
+using System.Windows.Forms;
 
 namespace CloudFlareDDNS
 {
-
-
     /// <summary>
     /// Program entry logic
     /// </summary>
-    static class Program
+    internal static class Program
     {
-
-
         /// <summary>
         /// Used for localising strings and conversions.
         /// </summary>
         public static System.Globalization.CultureInfo cultureInfo;
-
 
         /// <summary>
         /// Global instance of the settingsManager
         /// </summary>
         public static SettingsManager settingsManager;
 
-
         /// <summary>
         /// Global instance of the CloudFlareAPI class
         /// </summary>
         public static CloudFlareAPI cloudFlareAPI;
-
 
         /// <summary>
         /// The main entry point for the application.
         /// This will decide if to run the service, GUI, or install / uninstall helpers for the service
         /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // Set up the crash dump handler.
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(unhandledException);
@@ -79,9 +73,9 @@ namespace CloudFlareDDNS
 
                 if (args[0] == "/install")
                 {
-                    if(!isAdmin)
+                    if (!isAdmin)
                     {
-                        AttachConsole( -1 /*ATTACH_PARENT_PROCESS*/ );
+                        AttachConsole(-1 /*ATTACH_PARENT_PROCESS*/ );
                         Console.WriteLine("Need to be running from an elevated (Administrator) command prompt.");
                         FreeConsole();
                         return;
@@ -118,9 +112,7 @@ namespace CloudFlareDDNS
 
             runGUI();
             return;
-
         }//end Main()
-
 
         /// <summary>
         /// Call into kernel32.dll for AttachConsole()
@@ -128,8 +120,7 @@ namespace CloudFlareDDNS
         /// <param name="dwProcessId"></param>
         /// <returns></returns>
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
-        static extern bool AttachConsole(int dwProcessId);
-
+        private static extern bool AttachConsole(int dwProcessId);
 
         /// <summary>
         /// Call into kernel32.dll for FreeConsole()
@@ -137,7 +128,6 @@ namespace CloudFlareDDNS
         /// <returns></returns>
         [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
         internal static extern int FreeConsole();
-
 
         /// <summary>
         /// Call into dbghelp.dll for MiniDumpWriteDump()
@@ -152,7 +142,6 @@ namespace CloudFlareDDNS
         /// <returns></returns>
         [System.Runtime.InteropServices.DllImport("dbghelp.dll")]
         public static extern bool MiniDumpWriteDump(IntPtr hProcess, Int32 ProcessId, IntPtr hFile, int DumpType, IntPtr ExceptionParam, IntPtr UserStreamParam, IntPtr CallackParam);
-
 
         /// <summary>
         /// Create a dump file when crashing
@@ -175,7 +164,6 @@ namespace CloudFlareDDNS
             }
         }//end unhandledException()
 
-
         /// <summary>
         /// Check if he program is running as Administrator
         /// </summary>
@@ -190,26 +178,21 @@ namespace CloudFlareDDNS
         /// <summary>
         /// Run the application with the GUI
         /// </summary>
-        static void runGUI()
+        private static void runGUI()
         {
             Logger.log(Properties.Resources.Logger_RunGUI, Logger.Level.Info);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmMain());
-
         }//end runGUI()
-
 
         /// <summary>
         /// Run the application silently as a service
         /// </summary>
-        static void runService()
+        private static void runService()
         {
             Logger.log(Properties.Resources.Logger_RunService, Logger.Level.Info);
             ServiceBase.Run(new Service());
-
         }//end runService()
-
-
     }//end class
 }//end namespace

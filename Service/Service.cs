@@ -21,10 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.ServiceProcess;
-using System.Windows.Forms;
+using CloudFlareDDNS.Classes.JsonObjects.Cloudflare;
 
 namespace CloudFlareDDNS
 {
@@ -33,13 +34,10 @@ namespace CloudFlareDDNS
     /// </summary>
     public partial class Service : ServiceBase
     {
-
-
         /// <summary>
         /// Used for auto updating
         /// </summary>
         private System.Timers.Timer autoUpdateTimer = null;
-
 
         /// <summary>
         /// Constructor
@@ -48,9 +46,7 @@ namespace CloudFlareDDNS
         {
             this.CanPauseAndContinue = true;
             this.ServiceName = "CloudFlareDDNS";
-
         }//end Service()
-
 
         /// <summary>
         /// Service startup
@@ -63,9 +59,7 @@ namespace CloudFlareDDNS
             autoUpdateTimer.Enabled = true;
 
             Logger.log(Properties.Resources.Logger_Start + " " + Program.settingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " " + Program.settingsManager.getSetting("Domain").ToString(), Logger.Level.Info);
-        
         }//end OnStart()
-
 
         /// <summary>
         /// Service stop
@@ -74,9 +68,7 @@ namespace CloudFlareDDNS
         {
             autoUpdateTimer.Enabled = false;
             Logger.log(Properties.Resources.Logger_ServiceStop, Logger.Level.Info);
-
         }//end OnStop()
-
 
         /// <summary>
         /// Pause the service
@@ -84,9 +76,7 @@ namespace CloudFlareDDNS
         protected override void OnPause()
         {
             autoUpdateTimer.Enabled = false;
-
         }//end OnPause()
-
 
         /// <summary>
         /// Resume the service
@@ -94,9 +84,7 @@ namespace CloudFlareDDNS
         protected override void OnContinue()
         {
             autoUpdateTimer.Enabled = true;
-
         }//end OnContinue()
-
 
         /// <summary>
         /// Auto update every x minutes, creates a new timerUpdateThread() thread
@@ -117,7 +105,5 @@ namespace CloudFlareDDNS
                 }
             }
         }//end autoUpdateTimer_Tick()
-
-
     }//end class
 }//end namespace

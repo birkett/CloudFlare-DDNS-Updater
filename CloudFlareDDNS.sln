@@ -16,8 +16,8 @@ Global
 		{97A891A0-1839-492B-B851-819AC4277B16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97A891A0-1839-492B-B851-819AC4277B16}.DebugenTest|Any CPU.ActiveCfg = Debug|Any CPU
 		{97A891A0-1839-492B-B851-819AC4277B16}.DebugenTest|Any CPU.Build.0 = Debug|Any CPU
-		{97A891A0-1839-492B-B851-819AC4277B16}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{97A891A0-1839-492B-B851-819AC4277B16}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{97A891A0-1839-492B-B851-819AC4277B16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97A891A0-1839-492B-B851-819AC4277B16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -79,6 +79,7 @@ namespace CloudFlareDDNS
             this.labeltxtExternalAddressIPV4 = new System.Windows.Forms.Label();
             this.button_close = new System.Windows.Forms.Button();
             this.button_minimize = new System.Windows.Forms.Button();
+            this.LastChange = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -92,7 +93,8 @@ namespace CloudFlareDDNS
             this.columnHeader6,
             this.columnHeader1,
             this.columnHeader2,
-            this.columnHeader3});
+            this.columnHeader3,
+            this.LastChange});
             this.listViewRecords.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listViewRecords.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
             this.listViewRecords.Location = new System.Drawing.Point(12, 90);
@@ -334,6 +336,11 @@ namespace CloudFlareDDNS
             this.button_minimize.UseVisualStyleBackColor = false;
             this.button_minimize.Click += new System.EventHandler(this.button_minimize_Click);
             // 
+            // LastChange
+            // 
+            this.LastChange.Text = "Last Change";
+            this.LastChange.Width = 135;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -393,6 +400,7 @@ namespace CloudFlareDDNS
         private System.Windows.Forms.Label labeltxtExternalAddressIPV4;
         private System.Windows.Forms.Button button_close;
         private System.Windows.Forms.Button button_minimize;
+        private System.Windows.Forms.ColumnHeader LastChange;
     }//end class
 }//end namespace
 
