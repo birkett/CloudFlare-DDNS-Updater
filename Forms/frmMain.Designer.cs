@@ -105,6 +105,7 @@ namespace CloudFlareDDNS
             this.listViewRecords.View = System.Windows.Forms.View.Details;
             this.listViewRecords.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewRecords_DrawColumnHeader);
             this.listViewRecords.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listHostsCheck);
+            this.listViewRecords.SelectedIndexChanged += new System.EventHandler(this.listViewRecords_SelectedIndexChanged);
             // 
             // columnHeader6
             // 
@@ -173,7 +174,7 @@ namespace CloudFlareDDNS
             this.IPv4_text.Name = "IPv4_text";
             this.IPv4_text.Size = new System.Drawing.Size(182, 13);
             this.IPv4_text.TabIndex = 5;
-            this.IPv4_text.Text = "Current External IPV4 Address:";
+            this.IPv4_text.Text = Properties.Resources.Main_ExterrnalIPv4Address;
             // 
             // menuStrip1
             // 
@@ -282,7 +283,7 @@ namespace CloudFlareDDNS
             this.IPv6_text.Name = "IPv6_text";
             this.IPv6_text.Size = new System.Drawing.Size(182, 13);
             this.IPv6_text.TabIndex = 8;
-            this.IPv6_text.Text = "Current External IPV6 Address:";
+            this.IPv6_text.Text = Properties.Resources.Main_ExterrnalIPv6Address;
             // 
             // labeltxtExternalAddressIPV6
             // 
@@ -293,7 +294,7 @@ namespace CloudFlareDDNS
             this.labeltxtExternalAddressIPV6.Name = "labeltxtExternalAddressIPV6";
             this.labeltxtExternalAddressIPV6.Size = new System.Drawing.Size(27, 14);
             this.labeltxtExternalAddressIPV6.TabIndex = 9;
-            this.labeltxtExternalAddressIPV6.Text = "IPv6";
+            this.labeltxtExternalAddressIPV6.Text = "IPv6"; //Need this rly a translation ? btw its just a placeholder
             // 
             // labeltxtExternalAddressIPV4
             // 
@@ -304,7 +305,7 @@ namespace CloudFlareDDNS
             this.labeltxtExternalAddressIPV4.Name = "labeltxtExternalAddressIPV4";
             this.labeltxtExternalAddressIPV4.Size = new System.Drawing.Size(27, 14);
             this.labeltxtExternalAddressIPV4.TabIndex = 11;
-            this.labeltxtExternalAddressIPV4.Text = "IPv4";
+            this.labeltxtExternalAddressIPV4.Text = "IPv4"; //Need this rly a translation ? btw its just a placeholder
             // 
             // button_close
             // 
@@ -317,7 +318,7 @@ namespace CloudFlareDDNS
             this.button_close.Name = "button_close";
             this.button_close.Size = new System.Drawing.Size(75, 23);
             this.button_close.TabIndex = 12;
-            this.button_close.Text = "CLOSE";
+            this.button_close.Text = Properties.Resources.Main_Close;
             this.button_close.UseVisualStyleBackColor = false;
             this.button_close.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -338,8 +339,8 @@ namespace CloudFlareDDNS
             // 
             // LastChange
             // 
-            this.LastChange.Text = "Last Change";
-            this.LastChange.Width = 135;
+            this.LastChange.Text = Properties.Resources.Main_List_LastChange;
+            this.LastChange.Width = 130;
             // 
             // frmMain
             // 
@@ -360,7 +361,7 @@ namespace CloudFlareDDNS
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmMain";
-            this.Text = "CloudFlare DDNS Updater";
+            this.Text = "CloudFlare DDNS Updater v2.0";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_Closing);
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseDown);

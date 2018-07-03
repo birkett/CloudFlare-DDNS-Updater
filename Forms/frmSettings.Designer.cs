@@ -59,10 +59,10 @@ namespace CloudFlareDDNS
             this.lblAPIKey = new System.Windows.Forms.Label();
             this.txtFetchTime = new System.Windows.Forms.TextBox();
             this.lblFetchTime = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblWindowsEventLog = new System.Windows.Forms.Label();
             this.cbEventLog = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lblIPv6UpdateURL = new System.Windows.Forms.Label();
+            this.lblIPv4UpdateURL = new System.Windows.Forms.Label();
             this.IPV6UpdateURL = new System.Windows.Forms.TextBox();
             this.IPV4UpdateURL = new System.Windows.Forms.TextBox();
             this.IPV6RESET = new System.Windows.Forms.Button();
@@ -71,15 +71,15 @@ namespace CloudFlareDDNS
             this.label4 = new System.Windows.Forms.Label();
             this.cloudflare_api_url_default_button = new System.Windows.Forms.Button();
             this.cloudflare_api_url_input = new System.Windows.Forms.TextBox();
-            this.cloudflare_api_url_label = new System.Windows.Forms.Label();
+            this.lblICloudflareAPIUrl = new System.Windows.Forms.Label();
             this.Update = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.DomainNames = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ZoneUpdateList = new System.Windows.Forms.ListView();
             this.ZoneID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.UseInternalIP_input = new System.Windows.Forms.CheckBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.lblUseInternalIP = new System.Windows.Forms.Label();
             this.HideSRV_input = new System.Windows.Forms.CheckBox();
-            this.label6 = new System.Windows.Forms.Label();
+            this.lblHideSRV = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnClose
@@ -116,7 +116,7 @@ namespace CloudFlareDDNS
             this.lblEmailAddress.Name = "lblEmailAddress";
             this.lblEmailAddress.Size = new System.Drawing.Size(76, 13);
             this.lblEmailAddress.TabIndex = 4;
-            this.lblEmailAddress.Text = "Email Address:";
+            this.lblEmailAddress.Text = global::CloudFlareDDNS.Properties.Resources.Settings_EmailAddress;
             // 
             // txtAPIKey
             // 
@@ -124,6 +124,7 @@ namespace CloudFlareDDNS
             this.txtAPIKey.Name = "txtAPIKey";
             this.txtAPIKey.Size = new System.Drawing.Size(350, 20);
             this.txtAPIKey.TabIndex = 7;
+            this.txtAPIKey.TextChanged += new System.EventHandler(this.txtAPIKey_TextChanged);
             // 
             // lblAPIKey
             // 
@@ -132,7 +133,7 @@ namespace CloudFlareDDNS
             this.lblAPIKey.Name = "lblAPIKey";
             this.lblAPIKey.Size = new System.Drawing.Size(48, 13);
             this.lblAPIKey.TabIndex = 6;
-            this.lblAPIKey.Text = "API Key:";
+            this.lblAPIKey.Text = global::CloudFlareDDNS.Properties.Resources.Settings_APIKey;
             // 
             // txtFetchTime
             // 
@@ -148,16 +149,16 @@ namespace CloudFlareDDNS
             this.lblFetchTime.Name = "lblFetchTime";
             this.lblFetchTime.Size = new System.Drawing.Size(134, 13);
             this.lblFetchTime.TabIndex = 8;
-            this.lblFetchTime.Text = "Auto Fetch Time (Minutes):";
+            this.lblFetchTime.Text = global::CloudFlareDDNS.Properties.Resources.Settings_AutoFetchTime;
             // 
-            // label1
+            // lblWindowsEventLog
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 92);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(128, 13);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "Use Windows Event Log:";
+            this.lblWindowsEventLog.AutoSize = true;
+            this.lblWindowsEventLog.Location = new System.Drawing.Point(12, 92);
+            this.lblWindowsEventLog.Name = "lblWindowsEventLog";
+            this.lblWindowsEventLog.Size = new System.Drawing.Size(128, 13);
+            this.lblWindowsEventLog.TabIndex = 10;
+            this.lblWindowsEventLog.Text = global::CloudFlareDDNS.Properties.Resources.Settings_UseWindowsEventLog;
             // 
             // cbEventLog
             // 
@@ -168,23 +169,23 @@ namespace CloudFlareDDNS
             this.cbEventLog.TabIndex = 11;
             this.cbEventLog.UseVisualStyleBackColor = true;
             // 
-            // label2
+            // lblIPv6UpdateURL
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 193);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(93, 13);
-            this.label2.TabIndex = 12;
-            this.label2.Text = "IPV6 Update URL";
+            this.lblIPv6UpdateURL.AutoSize = true;
+            this.lblIPv6UpdateURL.Location = new System.Drawing.Point(12, 193);
+            this.lblIPv6UpdateURL.Name = "lblIPv6UpdateURL";
+            this.lblIPv6UpdateURL.Size = new System.Drawing.Size(93, 13);
+            this.lblIPv6UpdateURL.TabIndex = 12;
+            this.lblIPv6UpdateURL.Text = global::CloudFlareDDNS.Properties.Resources.Settings_IPv6URL;
             // 
-            // label3
+            // lblIPv4UpdateURL
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 167);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(93, 13);
-            this.label3.TabIndex = 13;
-            this.label3.Text = "IPV4 Update URL";
+            this.lblIPv4UpdateURL.AutoSize = true;
+            this.lblIPv4UpdateURL.Location = new System.Drawing.Point(12, 167);
+            this.lblIPv4UpdateURL.Name = "lblIPv4UpdateURL";
+            this.lblIPv4UpdateURL.Size = new System.Drawing.Size(93, 13);
+            this.lblIPv4UpdateURL.TabIndex = 13;
+            this.lblIPv4UpdateURL.Text = global::CloudFlareDDNS.Properties.Resources.Settings_IPv4URL;
             // 
             // IPV6UpdateURL
             // 
@@ -206,7 +207,7 @@ namespace CloudFlareDDNS
             this.IPV6RESET.Name = "IPV6RESET";
             this.IPV6RESET.Size = new System.Drawing.Size(61, 20);
             this.IPV6RESET.TabIndex = 20;
-            this.IPV6RESET.Text = "Default";
+            this.IPV6RESET.Text = global::CloudFlareDDNS.Properties.Resources.Settings_Default;
             this.IPV6RESET.UseVisualStyleBackColor = true;
             this.IPV6RESET.Click += new System.EventHandler(this.IPV6RESET_Click);
             // 
@@ -216,7 +217,7 @@ namespace CloudFlareDDNS
             this.IPV4RESET.Name = "IPV4RESET";
             this.IPV4RESET.Size = new System.Drawing.Size(61, 20);
             this.IPV4RESET.TabIndex = 21;
-            this.IPV4RESET.Text = "Default";
+            this.IPV4RESET.Text = global::CloudFlareDDNS.Properties.Resources.Settings_Default;
             this.IPV4RESET.UseVisualStyleBackColor = true;
             this.IPV4RESET.Click += new System.EventHandler(this.IPV4RESET_Click);
             // 
@@ -236,7 +237,7 @@ namespace CloudFlareDDNS
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(81, 13);
             this.label4.TabIndex = 23;
-            this.label4.Text = "Start Minimized:";
+            this.label4.Text = global::CloudFlareDDNS.Properties.Resources.Settings_StartMinimized;
             // 
             // cloudflare_api_url_default_button
             // 
@@ -244,7 +245,7 @@ namespace CloudFlareDDNS
             this.cloudflare_api_url_default_button.Name = "cloudflare_api_url_default_button";
             this.cloudflare_api_url_default_button.Size = new System.Drawing.Size(61, 20);
             this.cloudflare_api_url_default_button.TabIndex = 26;
-            this.cloudflare_api_url_default_button.Text = "Default";
+            this.cloudflare_api_url_default_button.Text = global::CloudFlareDDNS.Properties.Resources.Settings_Default;
             this.cloudflare_api_url_default_button.UseVisualStyleBackColor = true;
             this.cloudflare_api_url_default_button.Click += new System.EventHandler(this.cloudflare_api_url_default_button_Click);
             // 
@@ -255,14 +256,14 @@ namespace CloudFlareDDNS
             this.cloudflare_api_url_input.Size = new System.Drawing.Size(225, 20);
             this.cloudflare_api_url_input.TabIndex = 25;
             // 
-            // cloudflare_api_url_label
+            // lblICloudflareAPIUrl
             // 
-            this.cloudflare_api_url_label.AutoSize = true;
-            this.cloudflare_api_url_label.Location = new System.Drawing.Point(12, 219);
-            this.cloudflare_api_url_label.Name = "cloudflare_api_url_label";
-            this.cloudflare_api_url_label.Size = new System.Drawing.Size(90, 13);
-            this.cloudflare_api_url_label.TabIndex = 24;
-            this.cloudflare_api_url_label.Text = "Cloudflare API Url";
+            this.lblICloudflareAPIUrl.AutoSize = true;
+            this.lblICloudflareAPIUrl.Location = new System.Drawing.Point(12, 219);
+            this.lblICloudflareAPIUrl.Name = "lblICloudflareAPIUrl";
+            this.lblICloudflareAPIUrl.Size = new System.Drawing.Size(99, 13);
+            this.lblICloudflareAPIUrl.TabIndex = 24;
+            this.lblICloudflareAPIUrl.Text = global::CloudFlareDDNS.Properties.Resources.Settings_CloudflareAPIURL;
             // 
             // Update
             // 
@@ -307,14 +308,14 @@ namespace CloudFlareDDNS
             this.UseInternalIP_input.TabIndex = 29;
             this.UseInternalIP_input.UseVisualStyleBackColor = true;
             // 
-            // label5
+            // lblUseInternalIP
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 142);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(80, 13);
-            this.label5.TabIndex = 28;
-            this.label5.Text = "Use Internal IP:";
+            this.lblUseInternalIP.AutoSize = true;
+            this.lblUseInternalIP.Location = new System.Drawing.Point(12, 142);
+            this.lblUseInternalIP.Name = "lblUseInternalIP";
+            this.lblUseInternalIP.Size = new System.Drawing.Size(80, 13);
+            this.lblUseInternalIP.TabIndex = 28;
+            this.lblUseInternalIP.Text = global::CloudFlareDDNS.Properties.Resources.Settings_UseInternalIP;
             // 
             // HideSRV_input
             // 
@@ -325,14 +326,14 @@ namespace CloudFlareDDNS
             this.HideSRV_input.TabIndex = 31;
             this.HideSRV_input.UseVisualStyleBackColor = true;
             // 
-            // label6
+            // lblHideSRV
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 117);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(57, 13);
-            this.label6.TabIndex = 30;
-            this.label6.Text = "Hide SRV:";
+            this.lblHideSRV.AutoSize = true;
+            this.lblHideSRV.Location = new System.Drawing.Point(12, 117);
+            this.lblHideSRV.Name = "lblHideSRV";
+            this.lblHideSRV.Size = new System.Drawing.Size(57, 13);
+            this.lblHideSRV.TabIndex = 30;
+            this.lblHideSRV.Text = "Hide SRV:";
             // 
             // frmSettings
             // 
@@ -340,23 +341,23 @@ namespace CloudFlareDDNS
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(457, 556);
             this.Controls.Add(this.HideSRV_input);
-            this.Controls.Add(this.label6);
+            this.Controls.Add(this.lblHideSRV);
             this.Controls.Add(this.UseInternalIP_input);
-            this.Controls.Add(this.label5);
+            this.Controls.Add(this.lblUseInternalIP);
             this.Controls.Add(this.ZoneUpdateList);
             this.Controls.Add(this.cloudflare_api_url_default_button);
             this.Controls.Add(this.cloudflare_api_url_input);
-            this.Controls.Add(this.cloudflare_api_url_label);
+            this.Controls.Add(this.lblICloudflareAPIUrl);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.StartMinimized);
             this.Controls.Add(this.IPV4RESET);
             this.Controls.Add(this.IPV6RESET);
             this.Controls.Add(this.IPV4UpdateURL);
             this.Controls.Add(this.IPV6UpdateURL);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.lblIPv4UpdateURL);
+            this.Controls.Add(this.lblIPv6UpdateURL);
             this.Controls.Add(this.cbEventLog);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblWindowsEventLog);
             this.Controls.Add(this.txtFetchTime);
             this.Controls.Add(this.lblFetchTime);
             this.Controls.Add(this.txtAPIKey);
@@ -366,7 +367,7 @@ namespace CloudFlareDDNS
             this.Controls.Add(this.btnApply);
             this.Controls.Add(this.btnClose);
             this.Name = "frmSettings";
-            this.Text = "Settings";
+            this.Text = global::CloudFlareDDNS.Properties.Resources.Settings;
             this.Load += new System.EventHandler(this.frmSettings_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -383,10 +384,10 @@ namespace CloudFlareDDNS
         private System.Windows.Forms.Label lblAPIKey;
         private System.Windows.Forms.TextBox txtFetchTime;
         private System.Windows.Forms.Label lblFetchTime;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblWindowsEventLog;
         private System.Windows.Forms.CheckBox cbEventLog;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblIPv6UpdateURL;
+        private System.Windows.Forms.Label lblIPv4UpdateURL;
         private System.Windows.Forms.TextBox IPV6UpdateURL;
         private System.Windows.Forms.TextBox IPV4UpdateURL;
         private System.Windows.Forms.Button IPV6RESET;
@@ -395,14 +396,14 @@ namespace CloudFlareDDNS
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button cloudflare_api_url_default_button;
         private System.Windows.Forms.TextBox cloudflare_api_url_input;
-        private System.Windows.Forms.Label cloudflare_api_url_label;
-        private new System.Windows.Forms.ColumnHeader Update;
+        private System.Windows.Forms.Label lblICloudflareAPIUrl;
+        private System.Windows.Forms.ColumnHeader Update;
         private System.Windows.Forms.ColumnHeader DomainNames;
         private System.Windows.Forms.ListView ZoneUpdateList;
         private System.Windows.Forms.ColumnHeader ZoneID;
         private System.Windows.Forms.CheckBox UseInternalIP_input;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblUseInternalIP;
         private System.Windows.Forms.CheckBox HideSRV_input;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label lblHideSRV;
     }//end class
 }//end namespace

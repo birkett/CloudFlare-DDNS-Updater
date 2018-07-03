@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using CloudFlareDDNS.Classes.JsonObjects.Cloudflare;
 
@@ -53,40 +54,6 @@ namespace CloudFlareDDNS
                 cloudflare_api_url_input.Text = "https://api.cloudflare.com/client/v4";
                 Program.settingsManager.setSetting("APIUrl", cloudflare_api_url_input.Text);
             }
-            try
-            {
-                Get_zone_list_response response = new Get_zone_list_response();
-                if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("EmailAddress").ToString()) && !string.IsNullOrEmpty(Program.settingsManager.getSetting("APIKey").ToString()))
-                    response = Program.cloudFlareAPI.getCloudFlareZones();
-
-                foreach (Result rs in response.result)
-                {
-                    ListViewItem row = new ListViewItem();
-                    row.SubItems.Add(rs.name.ToString());
-                    row.SubItems.Add(rs.id.ToString());
-                    ZoneUpdateList.Items.Add(row);
-                }
-                if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
-                {
-                    string[] selectedZone = Program.settingsManager.getSetting("SelectedZones").ToString().Split(';');
-                    foreach (ListViewItem lvt in ZoneUpdateList.Items)
-                    {
-                        int pos = Array.IndexOf(selectedZone, lvt.SubItems[2].Text);
-                        if (pos > -1)
-                        {
-                            lvt.Checked = true;
-                        }
-                        else
-                        {
-                            lvt.Checked = false;
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                Logger.log("Failed to load Zones");
-            }
 
             txtEmailAddress.Text = Program.settingsManager.getSetting("EmailAddress").ToString();
             txtAPIKey.Text = Program.settingsManager.getSetting("APIKey").ToString();
@@ -100,6 +67,48 @@ namespace CloudFlareDDNS
             HideSRV_input.Checked = Program.settingsManager.getSetting("HideSRV").ToBool();
         }//end frmSettings_Load()
 
+        async private void load_Zones(bool error =true)
+        {
+            try
+            {
+                GetZoneListResponse response = new GetZoneListResponse();
+                if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("EmailAddress").ToString()) && !string.IsNullOrEmpty(Program.settingsManager.getSetting("APIKey").ToString()))
+                    response = Program.cloudFlareAPI.getCloudFlareZones();
+
+                ZoneUpdateList.BeginInvoke(new Action(delegate ()
+                {
+                    ZoneUpdateList.Items.Clear();
+                    foreach (Result rs in response.result)
+                    {
+                        ListViewItem row = new ListViewItem();
+                        row.SubItems.Add(rs.name.ToString());
+                        row.SubItems.Add(rs.id.ToString());
+                        ZoneUpdateList.Items.Add(row);
+                    }
+                    if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
+                    {
+                        string[] selectedZone = Program.settingsManager.getSetting("SelectedZones").ToString().Split(';');
+                        foreach (ListViewItem lvt in ZoneUpdateList.Items)
+                        {
+                            int pos = Array.IndexOf(selectedZone, lvt.SubItems[2].Text);
+                            if (pos > -1)
+                            {
+                                lvt.Checked = true;
+                            }
+                            else
+                            {
+                                lvt.Checked = false;
+                            }
+                        }
+                    }
+                }));
+            }
+            catch (Exception)
+            {
+                if(error)
+                    Logger.log("Failed to load Zones");
+            }
+        }
         #region Click buttons
 
         /// <summary>
@@ -137,6 +146,11 @@ namespace CloudFlareDDNS
             Program.settingsManager.setSetting("HideSRV", HideSRV_input.Checked.ToString());
             Program.settingsManager.saveSettings();
         }//end btnApply_Click()
+
+        private void txtAPIKey_TextChanged(object sender, EventArgs e)
+        {
+            load_Zones(false);
+        }
 
         /// <summary>
         /// Close this form

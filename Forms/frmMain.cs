@@ -84,7 +84,7 @@ namespace CloudFlareDDNS
         /// Populate the list hosts control with the new returned hosts
         /// </summary>
         /// <param name="fetchedRecords"></param>
-        private void updateHostsList(Get_dns_records_response fetchedRecords)
+        private void updateHostsList(GetDnsRecordsResponse fetchedRecords)
         {
             if (fetchedRecords == null)
                 return; //bail if the fetch failed
@@ -105,11 +105,11 @@ namespace CloudFlareDDNS
                 switch (r.type)
                 {
                     case "A":
-                        NeedIp = true;
-                        break;
-
                     case "AAAA":
                         NeedIp = true;
+                        break;
+                    default:
+                        NeedIp = false;
                         break;
                 }
                 if (NeedIp)
@@ -134,8 +134,9 @@ namespace CloudFlareDDNS
                         listViewRecords.Items.Add(row);
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Debug.WriteLine(e);
                     listViewRecords.Items.Add(row);
                 }
             }
@@ -147,11 +148,11 @@ namespace CloudFlareDDNS
                 switch (listViewRecords.Items[j].SubItems[1].Text)
                 {
                     case "A":
-                        NeedIp = true;
-                        break;
-
                     case "AAAA":
                         NeedIp = true;
+                        break;
+                    default:
+                        NeedIp = false;
                         break;
                 }
                 if (NeedIp == false)
@@ -165,7 +166,7 @@ namespace CloudFlareDDNS
         /// Delegate for updateHostsList()
         /// </summary>
         /// <param name="fetchedRecords"></param>
-        private delegate void updateHostsListInvoker(Get_dns_records_response fetchedRecords);
+        private delegate void updateHostsListInvoker(GetDnsRecordsResponse fetchedRecords);
 
         /// <summary>
         /// Called from another thread, adds a log entry to the list control
@@ -206,8 +207,14 @@ namespace CloudFlareDDNS
         public frmMain()
         {
             InitializeComponent();
+            int i = 10;
 
-            autoUpdateTimer = new System.Timers.Timer(Program.settingsManager.getSetting("FetchTime").ToInt() * 60000); //Minutes to milliseconds
+            try
+            {
+                i = Program.settingsManager.getSetting("FetchTime").ToInt();
+            }catch (Exception) {}
+
+            autoUpdateTimer = new System.Timers.Timer( i * 60000); //Minutes to milliseconds
             autoUpdateTimer.Elapsed += autoUpdateTimer_Tick;
             autoUpdateTimer.AutoReset = true;
             autoUpdateTimer.Enabled = true;
@@ -216,7 +223,6 @@ namespace CloudFlareDDNS
             logUpdateTimer.Elapsed += logUpdateTimer_Tick;
             logUpdateTimer.AutoReset = true;
             logUpdateTimer.Enabled = true;
-
             Logger.log(Properties.Resources.Logger_Start + " " + Program.settingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " ", Logger.Level.Info);
         }//end frmMain()
 
@@ -274,11 +280,11 @@ namespace CloudFlareDDNS
                 switch (item.SubItems[1].Text)
                 {
                     case "A":
-                        NeedIp = true;
-                        break;
-
                     case "AAAA":
                         NeedIp = true;
+                        break;
+                    default:
+                        NeedIp = false;
                         break;
                 }
                 //Do nothing for items that are not A records.
@@ -350,7 +356,7 @@ namespace CloudFlareDDNS
             {
                 foreach (string SelectedZones in Program.settingsManager.getSetting("SelectedZones").ToString().Split(';'))
                 {
-                    Get_dns_records_response records = Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones);
+                    GetDnsRecordsResponse records = Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones);
                     if (records != null)
                     {
                         this.Invoke(new updateHostsListInvoker(updateHostsList), records);
@@ -534,6 +540,11 @@ namespace CloudFlareDDNS
 
         private void listViewLog_SelectedIndexChanged(object sender, EventArgs e)
         {
+        }
+
+        private void listViewRecords_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }//end class
 }//end namespace

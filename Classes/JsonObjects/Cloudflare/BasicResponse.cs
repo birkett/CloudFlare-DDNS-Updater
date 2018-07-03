@@ -5,7 +5,7 @@ namespace CloudFlareDDNS.Classes.JsonObjects.Cloudflare
     /// <summary>
     ///
     /// </summary>
-    public class Result_Info
+    public class ResultInfo
     {
         /// <summary>
         ///

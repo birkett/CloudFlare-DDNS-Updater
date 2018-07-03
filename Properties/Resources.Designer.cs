@@ -213,11 +213,38 @@ namespace CloudFlareDDNS.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Close ähnelt.
+        /// </summary>
+        internal static string Main_Close {
+            get {
+                return ResourceManager.GetString("Main_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Current External IP Address: ähnelt.
         /// </summary>
         internal static string Main_ExterrnalAddress {
             get {
                 return ResourceManager.GetString("Main_ExterrnalAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Current External IPv4 Address: ähnelt.
+        /// </summary>
+        internal static string Main_ExterrnalIPv4Address {
+            get {
+                return ResourceManager.GetString("Main_ExterrnalIPv4Address", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Current External IPv6 Address: ähnelt.
+        /// </summary>
+        internal static string Main_ExterrnalIPv6Address {
+            get {
+                return ResourceManager.GetString("Main_ExterrnalIPv6Address", resourceCulture);
             }
         }
         
@@ -254,6 +281,15 @@ namespace CloudFlareDDNS.Properties {
         internal static string Main_HostsList_Header4 {
             get {
                 return ResourceManager.GetString("Main_HostsList_Header4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Last Change ähnelt.
+        /// </summary>
+        internal static string Main_List_LastChange {
+            get {
+                return ResourceManager.GetString("Main_List_LastChange", resourceCulture);
             }
         }
         
@@ -366,6 +402,15 @@ namespace CloudFlareDDNS.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Settings ähnelt.
+        /// </summary>
+        internal static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die API Key: ähnelt.
         /// </summary>
         internal static string Settings_APIKey {
@@ -402,6 +447,24 @@ namespace CloudFlareDDNS.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cloudflare API URL ähnelt.
+        /// </summary>
+        internal static string Settings_CloudflareAPIURL {
+            get {
+                return ResourceManager.GetString("Settings_CloudflareAPIURL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Default ähnelt.
+        /// </summary>
+        internal static string Settings_Default {
+            get {
+                return ResourceManager.GetString("Settings_Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Domain Name: ähnelt.
         /// </summary>
         internal static string Settings_Domain {
@@ -420,11 +483,56 @@ namespace CloudFlareDDNS.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Hide SRV ähnelt.
+        /// </summary>
+        internal static string Settings_HideSRV {
+            get {
+                return ResourceManager.GetString("Settings_HideSRV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die IPv4 Update URL ähnelt.
+        /// </summary>
+        internal static string Settings_IPv4URL {
+            get {
+                return ResourceManager.GetString("Settings_IPv4URL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die IPv6 Update URL ähnelt.
+        /// </summary>
+        internal static string Settings_IPv6URL {
+            get {
+                return ResourceManager.GetString("Settings_IPv6URL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Start Minimized: ähnelt.
+        /// </summary>
+        internal static string Settings_StartMinimized {
+            get {
+                return ResourceManager.GetString("Settings_StartMinimized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Settings ähnelt.
         /// </summary>
         internal static string Settings_Title {
             get {
                 return ResourceManager.GetString("Settings_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Use Internal IP ähnelt.
+        /// </summary>
+        internal static string Settings_UseInternalIP {
+            get {
+                return ResourceManager.GetString("Settings_UseInternalIP", resourceCulture);
             }
         }
         

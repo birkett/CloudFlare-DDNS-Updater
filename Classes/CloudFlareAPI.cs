@@ -43,7 +43,7 @@ namespace CloudFlareDDNS
         /// Logic to update records
         /// And return changes
         /// </summary>
-        public List<Result> updateRecords(Get_dns_records_response fetchedRecords)
+        public List<Result> updateRecords(GetDnsRecordsResponse fetchedRecords)
         {
             //List for the Updated IPs
             List<Result> return_updated_list = new List<Result>();
@@ -62,11 +62,11 @@ namespace CloudFlareDDNS
                 switch (r.type)
                 {
                     case "A":
-                        NeedIp = true;
-                        break;
-
                     case "AAAA":
-                        NeedIp = true;
+                         NeedIp = true;
+                        break;
+                    default:
+                         NeedIp = false;
                         break;
                 }
                 if (NeedIp == false)
@@ -173,7 +173,7 @@ namespace CloudFlareDDNS
         /// Get the listed records from Cloudflare using their API
         /// </summary>
         /// <returns>JSON stream of records, null on error</returns>
-        public Get_dns_records_response getCloudFlareRecords(string SelectedZone)
+        public GetDnsRecordsResponse getCloudFlareRecords(string SelectedZone)
         {
             WebHeaderCollection headerData = new WebHeaderCollection();
             string url = Program.settingsManager.getSetting("APIUrl").ToString();
@@ -198,12 +198,12 @@ namespace CloudFlareDDNS
                 if (records == null || records == "error")
                     return null;
 
-                return jss.Deserialize<Get_dns_records_response>(records);
+                return jss.Deserialize<GetDnsRecordsResponse>(records);
             }
             throw new Exception();
         }//end getCloudflareRecords()
 
-        public Get_zone_list_response getCloudFlareZones()
+        public GetZoneListResponse getCloudFlareZones()
         {
             WebHeaderCollection headerData = new WebHeaderCollection();
             string url = Program.settingsManager.getSetting("APIUrl").ToString();
@@ -227,7 +227,7 @@ namespace CloudFlareDDNS
             if (records == null || records == "error")
                 return null;
 
-            return jss.Deserialize<Get_zone_list_response>(records);
+            return jss.Deserialize<GetZoneListResponse>(records);
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace CloudFlareDDNS
 
                 try
                 {
-                    string data = Newtonsoft.Json.JsonConvert.SerializeObject(new { type = FetchedRecord.type, name = FetchedRecord.name, content = ip, proxied = FetchedRecord.proxied });
+                    string data = new JavaScriptSerializer().Serialize(new { type = FetchedRecord.type, name = FetchedRecord.name, content = ip, proxied = FetchedRecord.proxied });
                     webRequest(Method.Put, url, headerData, data);
                     return FetchedRecord.name;
                 }

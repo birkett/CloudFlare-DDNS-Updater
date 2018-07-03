@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CloudFlareDDNS</RootNamespace>
     <AssemblyName>CloudFlareDDNS</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -33,7 +33,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -79,9 +79,6 @@
     <StartupObject>CloudFlareDDNS.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
@@ -96,9 +93,9 @@
   <ItemGroup>
     <Compile Include="Classes\CloudFlareAPI.cs" />
     <Compile Include="Classes\DNSStructs.cs" />
-    <Compile Include="Classes\JsonObjects\Cloudflare\Basic_response.cs" />
-    <Compile Include="Classes\JsonObjects\Cloudflare\Get_dns_records_response.cs" />
-    <Compile Include="Classes\JsonObjects\Cloudflare\Get_zone_list_response.cs" />
+    <Compile Include="Classes\JsonObjects\Cloudflare\BasicResponse.cs" />
+    <Compile Include="Classes\JsonObjects\Cloudflare\GetDnsRecordsResponse.cs" />
+    <Compile Include="Classes\JsonObjects\Cloudflare\GetZoneListResponse.cs" />
     <Compile Include="Properties\GeneratedVersion.cs" />
     <Compile Include="Forms\frmAbout.cs">
       <SubType>Form</SubType>
@@ -155,7 +152,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
