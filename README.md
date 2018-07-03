@@ -2,22 +2,18 @@
 Dynamic DNS client for Windows, for use with CloudFlare.
 Written in C#, using Windows Forms.
 
-
-## Support Me
-[![Donate Via Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CALMNQUWLZNYL)
-<br /><br />
 ## Requirements
 ####OS Support
 * Client: Windows XP / Vista / 7 / 8 / 8.1
 * Server: 2008 / 2008R2 / 2012 / 2012R2
 
 ####.NET Framework
-.NET Framework 4.0 or above is required (already installed on Windows 8 / 8.1 / 2012 / 2012R2).
-https://www.microsoft.com/en-gb/download/details.aspx?id=17851
+.NET Framework 4.7 or above is required (already installed on Windows 8 / 8.1 / 2012 / 2012R2).
+https://www.microsoft.com/en-us/download/details.aspx?id=55170
 <br /><br />
 ## Building
 Solution is known to build with Visual Studio 2013 (Community, Pro and Ultimate tested, Express should work), no additional dependencies are needed.<br />
-The project targets the full .NET 4.0 profile (not the client profile).
+The project targets the full .NET 4.7 profile (not the client profile).
 <br /><br />
 ## Installing
 The executable can be run from anywhere, no install required.
