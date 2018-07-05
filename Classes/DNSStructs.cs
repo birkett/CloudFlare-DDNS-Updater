@@ -21,6 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+using System.Collections.Generic;
+using System;
 
 namespace CloudFlareDDNS
 {
@@ -78,11 +80,15 @@ namespace CloudFlareDDNS
         /// </summary>
         public string rec_id { get; set; }
         /// <summary>
-        /// Has of the full record
+        /// Hash of the full record
         /// </summary>
         public string rec_hash { get; set; }
         /// <summary>
         /// Zone name
+        /// </summary>
+        public string domain { get; set; }
+        /// <summary>
+        /// record domain
         /// </summary>
         public string zone_name { get; set; }
         /// <summary>
@@ -141,13 +147,22 @@ namespace CloudFlareDDNS
         /// Properties for this record
         /// </summary>
         public DnsRecordProps props { get; set; }
-    }//end DnsRecord
+        /// <summary>
+        /// Zone (domain) of the record
+        /// </summary>
+        public string zone_id { get; set; }
+        /// <summary>
+        /// Whether the record is proxied or not
+        /// </summary>
+        public bool proxied { get; set; }
+
+  }//end DnsRecord
 
 
-    /// <summary>
-    /// The JSON field "recs" contains a count and an array of actual records
-    /// </summary>
-    public struct DnsRecords
+  /// <summary>
+  /// The JSON field "recs" contains a count and an array of actual records
+  /// </summary>
+  public struct DnsRecords
     {
         /// <summary>
         /// Is this all of the records, or are more available
@@ -188,28 +203,222 @@ namespace CloudFlareDDNS
     }//end DnsRequest
 
 
+  ///// <summary>
+  ///// Main response format
+  ///// </summary>
+  public class JsonResponse
+  {
     /// <summary>
-    /// Main response format
+    /// Request information
     /// </summary>
-    public class JsonResponse
-    {
-        /// <summary>
-        /// Request information
-        /// </summary>
-        public DnsRequest request { get; set; }
-        /// <summary>
-        /// Response information
-        /// </summary>
-        public DnsResponse response { get; set; }
-        /// <summary>
-        /// success or error
-        /// </summary>
-        public string result { get; set; }
-        /// <summary>
-        /// Error message, blank on success
-        /// </summary>
-        public string msg { get; set; }
-    }//end JsonResponse
+    public DnsRequest request { get; set; }
+    /// <summary>
+    /// Response information
+    /// </summary>
+    public DnsResponse response { get; set; }
+    /// <summary>
+    /// success or error
+    /// </summary>
+    public string result { get; set; }
+    /// <summary>
+    /// Error message, blank on success
+    /// </summary>
+    public string msg { get; set; }
+  }//end JsonResponse
 
+  //DNS Update response
+  //Created using http://json2csharp.com/
+  public class dnsUpdateResponseMeta
+  {
+    public bool auto_added { get; set; }
+    public bool managed_by_apps { get; set; }
+    public bool managed_by_argo_tunnel { get; set; }
+  }
+
+  public class Result
+  {
+    public string id { get; set; }
+    public string type { get; set; }
+    public string name { get; set; }
+    public string content { get; set; }
+    public bool proxiable { get; set; }
+    public bool proxied { get; set; }
+    public int ttl { get; set; }
+    public bool locked { get; set; }
+    public string zone_id { get; set; }
+    public string zone_name { get; set; }
+    public DateTime modified_on { get; set; }
+    public DateTime created_on { get; set; }
+    public dnsUpdateResponseMeta meta { get; set; }
+  }
+
+  public class dnsUpdateResponseRootObject
+  {
+    public Result result { get; set; }
+    public bool success { get; set; }
+    public List<object> errors { get; set; }
+    public List<object> messages { get; set; }
+  }
+
+  //Zone Structure
+  //Created using http://json2csharp.com/
+  public class zoneMeta
+  {
+    public int step { get; set; }
+    public bool wildcard_proxiable { get; set; }
+    public int custom_certificate_quota { get; set; }
+    public int page_rule_quota { get; set; }
+    public bool phishing_detected { get; set; }
+    public bool multiple_railguns_allowed { get; set; }
+  }
+
+  public class zoneOwner
+  {
+    public string id { get; set; }
+    public string type { get; set; }
+    public string email { get; set; }
+  }
+
+  public class zoneAccount
+  {
+    public string id { get; set; }
+    public string name { get; set; }
+  }
+
+  public class zonePlan
+  {
+    public string id { get; set; }
+    public string name { get; set; }
+    public int price { get; set; }
+    public string currency { get; set; }
+    public string frequency { get; set; }
+    public bool is_subscribed { get; set; }
+    public bool can_subscribe { get; set; }
+    public string legacy_id { get; set; }
+    public bool legacy_discount { get; set; }
+    public bool externally_managed { get; set; }
+  }
+
+  public class zoneResult
+  {
+    public string id { get; set; }
+    public string name { get; set; }
+    public string status { get; set; }
+    public bool paused { get; set; }
+    public string type { get; set; }
+    public int development_mode { get; set; }
+    public List<string> name_servers { get; set; }
+    public List<string> original_name_servers { get; set; }
+    public string original_registrar { get; set; }
+    public string original_dnshost { get; set; }
+    public DateTime modified_on { get; set; }
+    public DateTime created_on { get; set; }
+    public zoneMeta meta { get; set; }
+    public zoneOwner owner { get; set; }
+    public zoneAccount account { get; set; }
+    public List<string> permissions { get; set; }
+    public zonePlan plan { get; set; }
+  }
+
+  public class zoneResultInfo
+  {
+    public int page { get; set; }
+    public int per_page { get; set; }
+    public int total_pages { get; set; }
+    public int count { get; set; }
+    public int total_count { get; set; }
+  }
+
+  public class zoneRootObject
+  {
+    public List<zoneResult> result { get; set; }
+    public zoneResultInfo result_info { get; set; }
+    public bool success { get; set; }
+    public List<object> errors { get; set; }
+    public List<object> messages { get; set; }
+
+    public JsonResponse[] ToJsonResponse()
+    {
+      JsonResponse[] jsonResponseArray = new JsonResponse[result.Count];
+
+      for (int i = 0; i < result.Count; i++) jsonResponseArray[i] = new JsonResponse();
+
+      return jsonResponseArray;
+    }
+  }
+
+
+  //DNS record structure
+  //Created using http://json2csharp.com/
+  public class dnsMeta
+  {
+    public bool auto_added { get; set; }
+    public bool managed_by_apps { get; set; }
+    public bool managed_by_argo_tunnel { get; set; }
+  }
+
+  public class dnsResult
+  {
+    public string id { get; set; }
+    public string type { get; set; }
+    public string name { get; set; }
+    public string content { get; set; }
+    public bool proxiable { get; set; }
+    public bool proxied { get; set; }
+    public int ttl { get; set; }
+    public bool locked { get; set; }
+    public string zone_id { get; set; }
+    public string zone_name { get; set; }
+    public DateTime modified_on { get; set; }
+    public DateTime created_on { get; set; }
+    public dnsMeta meta { get; set; }
+  }
+
+  public class dnsResultInfo
+  {
+    public int page { get; set; }
+    public int per_page { get; set; }
+    public int total_pages { get; set; }
+    public int count { get; set; }
+    public int total_count { get; set; }
+  }
+
+  public class dnsRootObject
+  {
+    public List<dnsResult> result { get; set; }
+    public dnsResultInfo result_info { get; set; }
+    public bool success { get; set; }
+    public List<object> errors { get; set; }
+    public List<object> messages { get; set; }
+
+
+    public DnsResponse ToDnsResponse()
+    {
+      DnsResponse response = new DnsResponse();
+      DnsRecords dnsRecords = new DnsRecords();
+
+      dnsRecords.count = result.Count;
+
+      DnsRecord[] objs = new DnsRecord[result.Count];
+
+      for (int i = 0; i < result.Count; i++)
+      {
+        objs[i].type = result[i].type;
+        objs[i].name = result[i].name;
+        objs[i].display_name = result[i].name;
+        objs[i].ttl = result[i].ttl;
+        objs[i].zone_name = result[i].zone_name;
+        objs[i].rec_id = result[i].id;
+        objs[i].zone_id = result[i].zone_id;
+        objs[i].domain = result[i].zone_name;
+        objs[i].proxied = result[i].proxied;
+      }
+
+      dnsRecords.objs = objs;
+      response.recs = dnsRecords;
+
+      return response;
+    }
+  }
 
 }//end namespace

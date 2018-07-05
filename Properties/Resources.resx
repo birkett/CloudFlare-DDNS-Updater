@@ -155,10 +155,10 @@
     <value>minutes for domain</value>
   </data>
   <data name="Logger_RunGUI" xml:space="preserve">
-    <value>Starting CloudFlare DDNS updater GUI</value>
+    <value>Starting CloudFlare v4 DDNS updater GUI</value>
   </data>
   <data name="Logger_RunService" xml:space="preserve">
-    <value>Starting CloudFlare DDNS updater service</value>
+    <value>Starting CloudFlare v4 DDNS updater service</value>
   </data>
   <data name="Logger_ServiceStop" xml:space="preserve">
     <value>Service stopping</value>
@@ -215,7 +215,7 @@
     <value>Update Records</value>
   </data>
   <data name="Main_Title" xml:space="preserve">
-    <value>CloudFlare DDNS Updater</value>
+    <value>CloudFlare v4 DDNS Updater</value>
   </data>
   <data name="Settings_APIKey" xml:space="preserve">
     <value>API Key:</value>
@@ -230,7 +230,7 @@
     <value>Close</value>
   </data>
   <data name="Settings_Domain" xml:space="preserve">
-    <value>Domain Name:</value>
+    <value>Domains:</value>
   </data>
   <data name="Settings_EmailAddress" xml:space="preserve">
     <value>Email Address:</value>
