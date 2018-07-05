@@ -61,45 +61,50 @@ namespace CloudFlareDDNS
         private Thread updateThread = null;
 
 
-        /// <summary>
-        /// Called from another thread
-        /// Populate the list hosts control with the new returned hosts
-        /// </summary>
-        /// <param name="fetchedRecords"></param>
-        private void updateHostsList(JsonResponse fetchedRecords)
+    private void clearHostsList()
+    {
+      listViewRecords.Items.Clear();
+    }
+
+    /// <summary>
+    /// Called from another thread
+    /// Populate the list hosts control with the new returned hosts
+    /// </summary>
+    /// <param name="fetchedRecords"></param>
+    private void updateHostsList(JsonResponse fetchedRecords)
         {
-            if (fetchedRecords == null)
-                return; //bail if the fetch failed
+            //listViewRecords.Items.Clear();
 
-            listViewRecords.Items.Clear();
+            if (fetchedRecords != null) { 
 
-            string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
-            for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
-            {
-                ListViewItem row = new ListViewItem();
-                row.SubItems.Add(fetchedRecords.response.recs.objs[i].type);
-                row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_name);
-                row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_content);
+              string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
-                //Only check this if it's an A record. MX records may have the same name as the primary A record, but should never be updated with an IP.
-                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) == true && fetchedRecords.response.recs.objs[i].type == "A")
-                {
-                    row.Checked = true;
-                }
+              for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
+              {
+                  ListViewItem row = new ListViewItem();
+                  row.SubItems.Add(fetchedRecords.response.recs.objs[i].type);
+                  row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_name);
+                  row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_content);
 
-                listViewRecords.Items.Add(row);
+                  //Only check this if it's an A record. MX records may have the same name as the primary A record, but should never be updated with an IP.
+                  if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) == true && fetchedRecords.response.recs.objs[i].type == "A")
+                  {
+                      row.Checked = true;
+                  }
+
+                  listViewRecords.Items.Add(row);
+              }
+
+              //Grey out anything that isn't an A record.
+              for(int j = 0; j < listViewRecords.Items.Count; j++)
+              {
+                  if (listViewRecords.Items[j].SubItems[1].Text != "A")
+                  {
+                      listViewRecords.Items[j].ForeColor = System.Drawing.Color.LightGray;
+                  }
+              }
             }
-
-            //Grey out anything that isn't an A record.
-            for(int j = 0; j < listViewRecords.Items.Count; j++)
-            {
-                if (listViewRecords.Items[j].SubItems[1].Text != "A")
-                {
-                    listViewRecords.Items[j].ForeColor = System.Drawing.Color.LightGray;
-                }
-            }
-
         }//end updateHostsList()
 
 
@@ -109,12 +114,14 @@ namespace CloudFlareDDNS
         /// <param name="fetchedRecords"></param>
         delegate void updateHostsListInvoker(JsonResponse fetchedRecords);
 
+        delegate void clearHostsListInvoker();
 
-        /// <summary>
-        /// Called from another thread, adds a log entry to the list control
-        /// </summary>
-        /// <param name="entry"></param>
-        private void addLogEntry(ListViewItem entry)
+
+    /// <summary>
+    /// Called from another thread, adds a log entry to the list control
+    /// </summary>
+    /// <param name="entry"></param>
+    private void addLogEntry(ListViewItem entry)
         {
             listViewLog.Items.Add(entry);
 
@@ -255,19 +262,25 @@ namespace CloudFlareDDNS
         private void threadFetchOnly()
         {
             this.Invoke(new updateAddressInvoker(updateAddress), Program.cloudFlareAPI.getExternalAddress());
-            this.Invoke(new updateHostsListInvoker(updateHostsList), Program.cloudFlareAPI.getCloudFlareRecords());
+            this.Invoke(new clearHostsListInvoker(clearHostsList));
 
+            JsonResponse[] records = Program.cloudFlareAPI.getCloudFlareRecords();
+            if (records != null)
+              for (int i = 0; i < records.Length; i++) this.Invoke(new updateHostsListInvoker(updateHostsList), records[i]);
         }//end threadFetchOnly()
 
 
-        /// <summary>
-        /// Thread to run updates every x minutes
-        /// </summary>
-        private void threadFetchUpdate()
+    /// <summary>
+    /// Thread to run updates every x minutes
+    /// </summary>
+    private void threadFetchUpdate()
         {
             this.Invoke(new updateAddressInvoker(updateAddress), Program.cloudFlareAPI.getExternalAddress());
-            JsonResponse records = Program.cloudFlareAPI.getCloudFlareRecords();
-            this.Invoke(new updateHostsListInvoker(updateHostsList), records);
+            this.Invoke(new clearHostsListInvoker(clearHostsList));
+
+            JsonResponse[] records = Program.cloudFlareAPI.getCloudFlareRecords();
+
+            for (int i = 0; i < records.Length; i++) this.Invoke(new updateHostsListInvoker(updateHostsList), records[i]);
             Program.cloudFlareAPI.updateRecords(records);
 
         }//end timerUpdateThread()
