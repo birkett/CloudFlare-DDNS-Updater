@@ -29,6 +29,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Web.Script.Serialization;
+using System.Windows.Forms;
 using CloudFlareDDNS.Classes.JsonObjects.Cloudflare;
 
 namespace CloudFlareDDNS
@@ -43,7 +44,7 @@ namespace CloudFlareDDNS
         /// Logic to update records
         /// And return changes
         /// </summary>
-        public List<Result> updateRecords(GetDnsRecordsResponse fetchedRecords)
+        public List<Result> updateRecords(ListView lv,GetDnsRecordsResponse fetchedRecords)
         {
             //List for the Updated IPs
             List<Result> return_updated_list = new List<Result>();
@@ -58,21 +59,14 @@ namespace CloudFlareDDNS
             {
                 //Skip over MX and CNAME records
                 //TODO: Dont skip them :)
-                bool NeedIp = false;
                 switch (r.type)
                 {
                     case "A":
                     case "AAAA":
-                         NeedIp = true;
                         break;
                     default:
-                         NeedIp = false;
-                        break;
-                }
-                if (NeedIp == false)
-                {
-                    skipped++;
-                    continue;
+                         skipped++;
+                         continue;
                 }
 
                 //Ignore anything that is not checked
@@ -91,11 +85,22 @@ namespace CloudFlareDDNS
                 string strResponse = "";
                 try
                 {
+
+                    if (lv != null)
+                        UpdateLastChange(lv, r, Properties.Resources.Main_Change_IP);
+
                     strResponse = this.updateCloudflareRecords(r);
+
                     System.Threading.Thread.Sleep(1000); //DontNeedTooSpamCloudflareServer
+
+                    if (lv != null)
+                        UpdateLastChange(lv, r, DateTime.UtcNow.ToShortDateString()+" "+ DateTime.UtcNow.ToShortTimeString());
                 }
                 catch (Exception)
                 {
+                    if (lv != null)
+                        UpdateLastChange(lv, r, Properties.Resources.Main_Change_IP_Failed);
+
                     Logger.log("Failed to Update " + r.name, Logger.Level.Error);
                 }
             }
@@ -236,7 +241,7 @@ namespace CloudFlareDDNS
         /// </summary>
         /// <param name="FetchedRecord"></param>
         /// <returns></returns>
-        private string updateCloudflareRecords(Result FetchedRecord)
+        public string updateCloudflareRecords(Result FetchedRecord)
         {
             WebHeaderCollection headerData = new WebHeaderCollection();
             string url = Program.settingsManager.getSetting("APIUrl").ToString();
@@ -373,6 +378,34 @@ namespace CloudFlareDDNS
             }
             Logger.log("No network adapters with an IPv4 address in the system!", Logger.Level.Error);
             throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
+        /// <summary>
+        /// Change the LastChange section in listview or set a loading text.
+        /// </summary>
+        /// <param name="lv"></param>
+        /// <param name="r"></param>
+        /// <param name="text"></param>
+        public void UpdateLastChange(ListView lv,Result r, string text = null)
+        {
+            lv.Invoke((MethodInvoker)delegate {
+                foreach (ListViewItem item in lv.Items)
+                {
+                    if ((item.Tag as Result).id == r.id)
+                    {
+                        if (text == null)
+                            text = r.modified_on.ToShortDateString() + " " + r.modified_on.ToShortTimeString();
+
+                        if (lv.InvokeRequired)
+                        {
+
+                        }
+                        else
+                        {
+                            item.SubItems[4].Text = text;
+                        }
+                    }
+                }
+            });
         }
     }//end class
 }//end namespace

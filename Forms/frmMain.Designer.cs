@@ -58,6 +58,7 @@ namespace CloudFlareDDNS
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.LastChange = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.listViewLog = new System.Windows.Forms.ListView();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -79,8 +80,12 @@ namespace CloudFlareDDNS
             this.labeltxtExternalAddressIPV4 = new System.Windows.Forms.Label();
             this.button_close = new System.Windows.Forms.Button();
             this.button_minimize = new System.Windows.Forms.Button();
-            this.LastChange = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listViewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ItemUpdateIp = new System.Windows.Forms.ToolStripMenuItem();
+            this.ItemDisable = new System.Windows.Forms.ToolStripMenuItem();
+            this.ItemEnable = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
+            this.listViewContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // listViewRecords
@@ -95,9 +100,12 @@ namespace CloudFlareDDNS
             this.columnHeader2,
             this.columnHeader3,
             this.LastChange});
+            this.listViewRecords.ContextMenuStrip = this.listViewContextMenu;
             this.listViewRecords.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listViewRecords.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
+            this.listViewRecords.FullRowSelect = true;
             this.listViewRecords.Location = new System.Drawing.Point(12, 90);
+            this.listViewRecords.MultiSelect = false;
             this.listViewRecords.Name = "listViewRecords";
             this.listViewRecords.Size = new System.Drawing.Size(702, 342);
             this.listViewRecords.TabIndex = 0;
@@ -105,7 +113,7 @@ namespace CloudFlareDDNS
             this.listViewRecords.View = System.Windows.Forms.View.Details;
             this.listViewRecords.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewRecords_DrawColumnHeader);
             this.listViewRecords.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listHostsCheck);
-            this.listViewRecords.SelectedIndexChanged += new System.EventHandler(this.listViewRecords_SelectedIndexChanged);
+            this.listViewRecords.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listViewRecords_MouseDown);
             // 
             // columnHeader6
             // 
@@ -127,6 +135,11 @@ namespace CloudFlareDDNS
             this.columnHeader3.Text = global::CloudFlareDDNS.Properties.Resources.Main_HostsList_Header4;
             this.columnHeader3.Width = 309;
             // 
+            // LastChange
+            // 
+            this.LastChange.Text = global::CloudFlareDDNS.Properties.Resources.Main_List_LastChange;
+            this.LastChange.Width = 127;
+            // 
             // listViewLog
             // 
             this.listViewLog.Alignment = System.Windows.Forms.ListViewAlignment.Default;
@@ -145,7 +158,6 @@ namespace CloudFlareDDNS
             this.listViewLog.UseCompatibleStateImageBehavior = false;
             this.listViewLog.View = System.Windows.Forms.View.Details;
             this.listViewLog.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewLog_DrawColumnHeader);
-            this.listViewLog.SelectedIndexChanged += new System.EventHandler(this.listViewLog_SelectedIndexChanged);
             // 
             // columnHeader4
             // 
@@ -172,9 +184,9 @@ namespace CloudFlareDDNS
             this.IPv4_text.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(174)))), ((int)(((byte)(96)))));
             this.IPv4_text.Location = new System.Drawing.Point(12, 64);
             this.IPv4_text.Name = "IPv4_text";
-            this.IPv4_text.Size = new System.Drawing.Size(182, 13);
+            this.IPv4_text.Size = new System.Drawing.Size(181, 13);
             this.IPv4_text.TabIndex = 5;
-            this.IPv4_text.Text = Properties.Resources.Main_ExterrnalIPv4Address;
+            this.IPv4_text.Text = "Current External IPv4 Address:";
             // 
             // menuStrip1
             // 
@@ -281,9 +293,9 @@ namespace CloudFlareDDNS
             this.IPv6_text.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(174)))), ((int)(((byte)(96)))));
             this.IPv6_text.Location = new System.Drawing.Point(12, 40);
             this.IPv6_text.Name = "IPv6_text";
-            this.IPv6_text.Size = new System.Drawing.Size(182, 13);
+            this.IPv6_text.Size = new System.Drawing.Size(181, 13);
             this.IPv6_text.TabIndex = 8;
-            this.IPv6_text.Text = Properties.Resources.Main_ExterrnalIPv6Address;
+            this.IPv6_text.Text = "Current External IPv6 Address:";
             // 
             // labeltxtExternalAddressIPV6
             // 
@@ -294,7 +306,7 @@ namespace CloudFlareDDNS
             this.labeltxtExternalAddressIPV6.Name = "labeltxtExternalAddressIPV6";
             this.labeltxtExternalAddressIPV6.Size = new System.Drawing.Size(27, 14);
             this.labeltxtExternalAddressIPV6.TabIndex = 9;
-            this.labeltxtExternalAddressIPV6.Text = "IPv6"; //Need this rly a translation ? btw its just a placeholder
+            this.labeltxtExternalAddressIPV6.Text = "IPv6";
             // 
             // labeltxtExternalAddressIPV4
             // 
@@ -305,7 +317,7 @@ namespace CloudFlareDDNS
             this.labeltxtExternalAddressIPV4.Name = "labeltxtExternalAddressIPV4";
             this.labeltxtExternalAddressIPV4.Size = new System.Drawing.Size(27, 14);
             this.labeltxtExternalAddressIPV4.TabIndex = 11;
-            this.labeltxtExternalAddressIPV4.Text = "IPv4"; //Need this rly a translation ? btw its just a placeholder
+            this.labeltxtExternalAddressIPV4.Text = "IPv4";
             // 
             // button_close
             // 
@@ -318,7 +330,7 @@ namespace CloudFlareDDNS
             this.button_close.Name = "button_close";
             this.button_close.Size = new System.Drawing.Size(75, 23);
             this.button_close.TabIndex = 12;
-            this.button_close.Text = Properties.Resources.Main_Close;
+            this.button_close.Text = global::CloudFlareDDNS.Properties.Resources.Main_Close;
             this.button_close.UseVisualStyleBackColor = false;
             this.button_close.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -337,10 +349,33 @@ namespace CloudFlareDDNS
             this.button_minimize.UseVisualStyleBackColor = false;
             this.button_minimize.Click += new System.EventHandler(this.button_minimize_Click);
             // 
-            // LastChange
+            // listViewContextMenu
             // 
-            this.LastChange.Text = Properties.Resources.Main_List_LastChange;
-            this.LastChange.Width = 130;
+            this.listViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ItemUpdateIp,
+            this.ItemDisable,
+            this.ItemEnable});
+            this.listViewContextMenu.Name = "listViewContextMenu";
+            this.listViewContextMenu.Size = new System.Drawing.Size(126, 70);
+            // 
+            // ItemUpdateIp
+            // 
+            this.ItemUpdateIp.Name = "ItemUpdateIp";
+            this.ItemUpdateIp.Size = new System.Drawing.Size(125, 22);
+            this.ItemUpdateIp.Text = "Update IP";
+            // 
+            // ItemDisable
+            // 
+            this.ItemDisable.Name = "ItemDisable";
+            this.ItemDisable.Size = new System.Drawing.Size(125, 22);
+            this.ItemDisable.Text = "Disable";
+            this.ItemDisable.Visible = false;
+            // 
+            // ItemEnable
+            // 
+            this.ItemEnable.Name = "ItemEnable";
+            this.ItemEnable.Size = new System.Drawing.Size(125, 22);
+            this.ItemEnable.Text = "Enable";
             // 
             // frmMain
             // 
@@ -368,6 +403,7 @@ namespace CloudFlareDDNS
             this.Resize += new System.EventHandler(this.frmMain_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.listViewContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -402,6 +438,10 @@ namespace CloudFlareDDNS
         private System.Windows.Forms.Button button_close;
         private System.Windows.Forms.Button button_minimize;
         private System.Windows.Forms.ColumnHeader LastChange;
+        private System.Windows.Forms.ContextMenuStrip listViewContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem ItemUpdateIp;
+        private System.Windows.Forms.ToolStripMenuItem ItemDisable;
+        private System.Windows.Forms.ToolStripMenuItem ItemEnable;
     }//end class
 }//end namespace
 

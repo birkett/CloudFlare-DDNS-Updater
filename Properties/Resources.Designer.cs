@@ -213,6 +213,24 @@ namespace CloudFlareDDNS.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Changing IP... ähnelt.
+        /// </summary>
+        internal static string Main_Change_IP {
+            get {
+                return ResourceManager.GetString("Main_Change_IP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die IP Change Failed ähnelt.
+        /// </summary>
+        internal static string Main_Change_IP_Failed {
+            get {
+                return ResourceManager.GetString("Main_Change_IP_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Close ähnelt.
         /// </summary>
         internal static string Main_Close {

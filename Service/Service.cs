@@ -101,7 +101,7 @@ namespace CloudFlareDDNS
             {
                 foreach (string SelectedZones in Program.settingsManager.getSetting("SelectedZones").ToString().Split(';'))
                 {
-                    List<Result> Ldns = Program.cloudFlareAPI.updateRecords(Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones));
+                    List<Result> Ldns = Program.cloudFlareAPI.updateRecords(null,Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones));
                 }
             }
         }//end autoUpdateTimer_Tick()

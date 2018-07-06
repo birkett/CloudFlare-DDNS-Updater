@@ -89,17 +89,43 @@ namespace CloudFlareDDNS
             if (fetchedRecords == null)
                 return; //bail if the fetch failed
 
-            listViewRecords.Items.Clear();
-
             string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
+
+            if(listViewRecords.Items.Count != fetchedRecords.result.Length)
+            {
+                if (listViewRecords.Items.Count != 0)
+                {
+                    listViewRecords.Clear();
+                }
+            }
+
 
             foreach (Result r in fetchedRecords.result)
             {
+                bool exist = false;
+                ListViewItem listViewItem = null;
+                foreach (ListViewItem lvItem in listViewRecords.Items){
+                    if((lvItem.Tag as Result).id == r.id)
+                    {
+                        exist = true;
+                        listViewItem = lvItem;
+                        break;
+                    }
+                }
+                if (exist)
+                {
+                    listViewItem.SubItems[1].Text = r.type.ToString();
+                    listViewItem.SubItems[2].Text = r.name;
+                    listViewItem.SubItems[3].Text = r.content;
+                    listViewItem.SubItems[4].Text = r.modified_on.ToShortDateString() + " " + r.modified_on.ToShortTimeString();
+                    continue;
+                }
                 ListViewItem row = new ListViewItem();
                 row.SubItems.Add(r.type);
                 row.SubItems.Add(r.name);
                 row.SubItems.Add(r.content);
                 row.SubItems.Add(r.modified_on.ToShortDateString() + " " + r.modified_on.ToShortTimeString());
+                row.Tag = r;
                 //Only check this if it's an A record. MX records may have the same name as the primary A record, but should never be updated with an IP.
                 bool NeedIp = false;
                 switch (r.type)
@@ -107,9 +133,6 @@ namespace CloudFlareDDNS
                     case "A":
                     case "AAAA":
                         NeedIp = true;
-                        break;
-                    default:
-                        NeedIp = false;
                         break;
                 }
                 if (NeedIp)
@@ -122,17 +145,19 @@ namespace CloudFlareDDNS
                 }
                 try
                 {
-                    if (Program.settingsManager.getSetting("HideSRV").ToBool())
+                    if (string.IsNullOrEmpty(Program.settingsManager.getSetting("HideSRV").ToString()))
                     {
-                        if(r.type != "SRV")
+                        if (Program.settingsManager.getSetting("HideSRV").ToBool())
                         {
-                            listViewRecords.Items.Add(row);
+                            if (r.type != "SRV")
+                            {
+                                listViewRecords.Items.Add(row);
+                                continue;
+                            }
                         }
                     }
-                    else
-                    {
-                        listViewRecords.Items.Add(row);
-                    }
+                    listViewRecords.Items.Add(row);
+                    continue;
                 }
                 catch (Exception e)
                 {
@@ -150,9 +175,6 @@ namespace CloudFlareDDNS
                     case "A":
                     case "AAAA":
                         NeedIp = true;
-                        break;
-                    default:
-                        NeedIp = false;
                         break;
                 }
                 if (NeedIp == false)
@@ -207,12 +229,10 @@ namespace CloudFlareDDNS
         public frmMain()
         {
             InitializeComponent();
-            int i = 10;
 
-            try
-            {
+            int i = 10;        
+            if(!string.IsNullOrEmpty(Program.settingsManager.getSetting("FetchTime").ToString()))
                 i = Program.settingsManager.getSetting("FetchTime").ToInt();
-            }catch (Exception) {}
 
             autoUpdateTimer = new System.Timers.Timer( i * 60000); //Minutes to milliseconds
             autoUpdateTimer.Elapsed += autoUpdateTimer_Tick;
@@ -224,7 +244,67 @@ namespace CloudFlareDDNS
             logUpdateTimer.AutoReset = true;
             logUpdateTimer.Enabled = true;
             Logger.log(Properties.Resources.Logger_Start + " " + Program.settingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " ", Logger.Level.Info);
+
+            listViewContextMenu.Opened += ListViewContextMenu_Opened;
         }//end frmMain()
+
+        private void ListViewContextMenu_Opened(object sender, EventArgs e)
+        {
+            if(listViewRecords.SelectedItems[0] != null){
+                if (listViewRecords.SelectedItems[0].Checked)
+                {
+                    listViewContextMenu.Items[1].Visible = true;
+                    listViewContextMenu.Items[2].Visible = false;
+                }
+                else
+                {
+                    listViewContextMenu.Items[1].Visible = false;
+                    listViewContextMenu.Items[2].Visible = true;
+                }
+                listViewContextMenu.Items[0].Click += FrmMain_ForceUpdateEntry;
+                listViewContextMenu.Items[1].Click += FrmMain_DisableClick;
+                listViewContextMenu.Items[2].Click += FrmMain_EnableClick;
+            }
+        }
+        private void FrmMain_ForceUpdateEntry(object sender, EventArgs e)
+        {
+            fetchThread = new Thread(new ThreadStart(start_ForceUpdateEntry));
+            fetchThread.Start();
+        }
+
+        private void start_ForceUpdateEntry()
+        {
+            ListViewItem item=null;
+            this.Invoke((MethodInvoker)delegate
+            {
+                item = listViewRecords.SelectedItems[0];
+            });
+            if (item != null){
+                    Result r = (item.Tag as Result);
+                    Program.cloudFlareAPI.UpdateLastChange(listViewRecords, r, Properties.Resources.Main_Change_IP);
+
+                    string strResponse = Program.cloudFlareAPI.updateCloudflareRecords(r);
+
+                    Thread.Sleep(1000); //DontNeedTooSpamCloudflareServer
+
+                    Program.cloudFlareAPI.UpdateLastChange(listViewRecords, r, DateTime.UtcNow.ToShortDateString() + " " + DateTime.UtcNow.ToShortTimeString());
+            }
+        }
+
+        private void FrmMain_DisableClick(object sender, EventArgs e)
+        {
+            if (listViewRecords.SelectedItems[0] != null)
+            {
+                listViewRecords.SelectedItems[0].Checked = false;
+            }
+        }
+        private void FrmMain_EnableClick(object sender, EventArgs e)
+        {
+            if (listViewRecords.SelectedItems[0] != null)
+            {
+                listViewRecords.SelectedItems[0].Checked = true;
+            }
+        }
 
         /// <summary>
         /// Clean up the tray icon when closing
@@ -266,70 +346,6 @@ namespace CloudFlareDDNS
         }//end frmMain_Resize()
 
         /// <summary>
-        /// A host in the list contol has been checked or unchecked
-        /// Update the config to reflect the change
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void listHostsCheck(object sender, ItemCheckEventArgs e)
-        {
-            try
-            {
-                ListViewItem item = listViewRecords.Items[e.Index];
-                bool NeedIp = false;
-                switch (item.SubItems[1].Text)
-                {
-                    case "A":
-                    case "AAAA":
-                        NeedIp = true;
-                        break;
-                    default:
-                        NeedIp = false;
-                        break;
-                }
-                //Do nothing for items that are not A records.
-                if (NeedIp == false)
-                {
-                    e.NewValue = CheckState.Unchecked;
-                    return;
-                }
-                string selectedHosts = "";
-                if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedHosts").ToString()))
-                {
-                    selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString();
-                }
-                //Add Item if checked delete item if unchecked
-                string[] selectedHostsArray = selectedHosts.Split(';');
-                if (item.Checked)
-                {
-                    int pos = Array.IndexOf(selectedHostsArray, item.SubItems[2].Text);
-                    if (pos < -1)
-                    {
-                        if (!string.IsNullOrEmpty(selectedHosts.Trim()))
-                            selectedHosts += ";";
-
-                        selectedHosts += item.SubItems[2].Text.Trim();
-                    }
-                }
-                else
-                {
-                    foreach (ListViewItem lvt in listViewRecords.Items)
-                    {
-                        if (!string.IsNullOrEmpty(selectedHosts.Trim()))
-                            selectedHosts += ";";
-
-                        selectedHosts += lvt.SubItems[2].Text.Trim();
-                    }
-                }
-
-                Debug.WriteLine(selectedHosts);
-                Program.settingsManager.setSetting("SelectedHosts", selectedHosts);
-                Program.settingsManager.saveSettings(); //Save the selected host list accross sessions
-            }
-            catch (Exception) { }
-        }//end listHostsCheck()
-
-        /// <summary>
         /// Thread to fetch records, nothing else
         /// </summary>
         private void threadFetchOnly()
@@ -360,7 +376,7 @@ namespace CloudFlareDDNS
                     if (records != null)
                     {
                         this.Invoke(new updateHostsListInvoker(updateHostsList), records);
-                        List<Result> Ldns = Program.cloudFlareAPI.updateRecords(records);
+                        List<Result> Ldns = Program.cloudFlareAPI.updateRecords(listViewRecords,records);
                     }
                 }
                 start_fetchThread();
@@ -538,13 +554,75 @@ namespace CloudFlareDDNS
             }
         }
 
-        private void listViewLog_SelectedIndexChanged(object sender, EventArgs e)
+        private void listViewRecords_MouseDown(object sender, MouseEventArgs e)
         {
         }
+        /// <summary>
+        /// A host in the list contol has been checked or unchecked
+        /// Update the config to reflect the change
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 
-        private void listViewRecords_SelectedIndexChanged(object sender, EventArgs e)
+        private void listHostsCheck(object sender, ItemCheckEventArgs e)
         {
+            try
+            {
+                ListViewItem item = listViewRecords.Items[e.Index];
+                bool NeedIp = false;
+                switch (item.SubItems[1].Text)
+                {
+                    case "A":
+                    case "AAAA":
+                        NeedIp = true;
+                        break;
+                    default:
+                        NeedIp = false;
+                        break;
+                }
+                //Do nothing for items that are not A records.
+                if (NeedIp == false)
+                {
+                    e.NewValue = CheckState.Unchecked;
+                    return;
+                }
+                string selectedHosts = "";
+                if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedHosts").ToString()))
+                {
+                    selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString();
+                }
+                //Add Item if checked delete item if unchecked
+                string[] selectedHostsArray = selectedHosts.Split(';');
+                if (item.Checked)
+                {
+                    int pos = Array.IndexOf(selectedHostsArray, item.SubItems[2].Text);
+                    if (pos < -1)
+                    {
+                        if (!string.IsNullOrEmpty(selectedHosts.Trim()))
+                            selectedHosts += ";";
 
+                        selectedHosts += item.SubItems[2].Text.Trim();
+                    }
+                }
+                else
+                {
+                    foreach (ListViewItem lvt in listViewRecords.Items)
+                    {
+                        if (!string.IsNullOrEmpty(selectedHosts.Trim()))
+                            selectedHosts += ";";
+
+                        selectedHosts += lvt.SubItems[2].Text.Trim();
+                    }
+                }
+
+                Debug.WriteLine(selectedHosts);
+                Program.settingsManager.setSetting("SelectedHosts", selectedHosts);
+                Program.settingsManager.saveSettings(); //Save the selected host list accross sessions
+            }
+            catch (Exception) { }
         }
+        /// <summary>
+        /// Set/Read the Item Tag from listView
+        /// </summary>
     }//end class
 }//end namespace

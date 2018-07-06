@@ -283,4 +283,10 @@
   <data name="Settings_StartMinimized" xml:space="preserve">
     <value>Start Minimized:</value>
   </data>
+  <data name="Main_Change_IP" xml:space="preserve">
+    <value>Changing IP...</value>
+  </data>
+  <data name="Main_Change_IP_Failed" xml:space="preserve">
+    <value>IP Change Failed</value>
+  </data>
 </root>
