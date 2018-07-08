@@ -86,102 +86,126 @@ namespace CloudFlareDDNS
         /// <param name="fetchedRecords"></param>
         private void updateHostsList(GetDnsRecordsResponse fetchedRecords)
         {
-            if (fetchedRecords == null)
-                return; //bail if the fetch failed
-
-            string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
-
-            if(listViewRecords.Items.Count != fetchedRecords.result.Length)
-            {
-                if (listViewRecords.Items.Count != 0)
+                if (fetchedRecords == null)
                 {
-                    listViewRecords.Clear();
+                    Debug.WriteLine("fetchrecords failed");
+                    return; //bail if the fetch failed
                 }
-            }
+                string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
-
-            foreach (Result r in fetchedRecords.result)
-            {
-                bool exist = false;
-                ListViewItem listViewItem = null;
-                foreach (ListViewItem lvItem in listViewRecords.Items){
-                    if((lvItem.Tag as Result).id == r.id)
+                if (listViewRecords.Items.Count != selectedHosts.Length)
+                {
+                    if (listViewRecords.Items.Count != 0)
                     {
-                        exist = true;
-                        listViewItem = lvItem;
-                        break;
-                    }
-                }
-                if (exist)
-                {
-                    listViewItem.SubItems[1].Text = r.type.ToString();
-                    listViewItem.SubItems[2].Text = r.name;
-                    listViewItem.SubItems[3].Text = r.content;
-                    listViewItem.SubItems[4].Text = r.modified_on.ToShortDateString() + " " + r.modified_on.ToShortTimeString();
-                    continue;
-                }
-                ListViewItem row = new ListViewItem();
-                row.SubItems.Add(r.type);
-                row.SubItems.Add(r.name);
-                row.SubItems.Add(r.content);
-                row.SubItems.Add(r.modified_on.ToShortDateString() + " " + r.modified_on.ToShortTimeString());
-                row.Tag = r;
-                //Only check this if it's an A record. MX records may have the same name as the primary A record, but should never be updated with an IP.
-                bool NeedIp = false;
-                switch (r.type)
-                {
-                    case "A":
-                    case "AAAA":
-                        NeedIp = true;
-                        break;
-                }
-                if (NeedIp)
-                {
-                    int pos = Array.IndexOf(selectedHosts, row.SubItems[2].Text);
-                    if (pos > -1)
-                    {
-                        row.Checked = true;
-                    }
-                }
-                try
-                {
-                    if (string.IsNullOrEmpty(Program.settingsManager.getSetting("HideSRV").ToString()))
-                    {
-                        if (Program.settingsManager.getSetting("HideSRV").ToBool())
+                        //listViewRecords.Clear(); -- Cant use Clear() it crashes the ListView i dont know why
+                        foreach (ListViewItem item in listViewRecords.Items)
                         {
-                            if (r.type != "SRV")
+                            bool id_exist = false;
+                            foreach (Result r in fetchedRecords.result)
                             {
-                                listViewRecords.Items.Add(row);
-                                continue;
+                                if ((item.Tag as Result).id == r.id)
+                                {
+                                    id_exist = true;
+                                    break;
+                                }
                             }
+                            if (!id_exist)
+                                item.Remove();
                         }
                     }
-                    listViewRecords.Items.Add(row);
-                    continue;
                 }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e);
-                    listViewRecords.Items.Add(row);
-                }
-            }
 
-            //Grey out anything that isn't an A record.
-            for (int j = 0; j < listViewRecords.Items.Count; j++)
-            {
-                bool NeedIp = false;
-                switch (listViewRecords.Items[j].SubItems[1].Text)
+                foreach (Result r in fetchedRecords.result)
                 {
-                    case "A":
-                    case "AAAA":
-                        NeedIp = true;
-                        break;
+                    bool exist = false;
+                    ListViewItem listViewItem = null;
+                    ListView.ListViewItemCollection items = null;
+                    this.Invoke((MethodInvoker)delegate
+                    {
+                        items = listViewRecords.Items;
+                    });
+                    foreach (ListViewItem lvItem in items)
+                    {
+                        if ((lvItem.Tag as Result).id == r.id)
+                        {
+                            exist = true;
+                            listViewItem = lvItem;
+                            break;
+                        }
+                    }
+                    if (exist)
+                    {
+                        this.Invoke((MethodInvoker)delegate
+                        {
+                            listViewItem.SubItems[1].Text = r.type.ToString();
+                            listViewItem.SubItems[2].Text = r.name;
+                            listViewItem.SubItems[3].Text = r.content;
+                            listViewItem.SubItems[4].Text = r.modified_on.ToShortDateString() + " " + r.modified_on.ToShortTimeString();
+                        });
+                        continue;
+                    }
+                    ListViewItem row = new ListViewItem();
+                    row.SubItems.Add(r.type);
+                    row.SubItems.Add(r.name);
+                    row.SubItems.Add(r.content);
+                    row.SubItems.Add(r.modified_on.ToShortDateString() + " " + r.modified_on.ToShortTimeString());
+                    row.Tag = r;
+                    //Only check this if it's an A record. MX records may have the same name as the primary A record, but should never be updated with an IP.
+                    bool NeedIp = false;
+                    switch (r.type)
+                    {
+                        case "A":
+                        case "AAAA":
+                            NeedIp = true;
+                            break;
+                    }
+                    if (NeedIp)
+                    {
+                        int pos = Array.IndexOf(selectedHosts, (row.Tag as Result).id);
+                        if (pos > -1)
+                        {
+                            row.Checked = true;
+                        }
+                    }
+                    try
+                    {
+                        if (string.IsNullOrEmpty(Program.settingsManager.getSetting("HideSRV").ToString()))
+                        {
+                            if (Program.settingsManager.getSetting("HideSRV").ToBool())
+                            {
+                                if (r.type != "SRV")
+                                {
+                                    listViewRecords.Items.Add(row);
+                                    continue;
+                                }
+                            }
+                        }
+                        listViewRecords.Items.Add(row);
+                        continue;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e);
+                        listViewRecords.Items.Add(row);
+                    }
                 }
-                if (NeedIp == false)
+
+                //Grey out anything that isn't an A record.
+                for (int j = 0; j < listViewRecords.Items.Count; j++)
                 {
-                    listViewRecords.Items[j].ForeColor = System.Drawing.Color.Gray;
+                    bool NeedIp = false;
+                    switch (listViewRecords.Items[j].SubItems[1].Text)
+                    {
+                        case "A":
+                        case "AAAA":
+                            NeedIp = true;
+                            break;
+                    }
+                    if (NeedIp == false)
+                    {
+                        listViewRecords.Items[j].ForeColor = System.Drawing.Color.Gray;
+                    }
                 }
-            }
         }//end updateHostsList()
 
         /// <summary>
@@ -593,30 +617,38 @@ namespace CloudFlareDDNS
                 }
                 //Add Item if checked delete item if unchecked
                 string[] selectedHostsArray = selectedHosts.Split(';');
-                if (item.Checked)
+                if (!item.Checked)
                 {
-                    int pos = Array.IndexOf(selectedHostsArray, item.SubItems[2].Text);
-                    if (pos < -1)
+                    int pos = Array.IndexOf(selectedHostsArray, (item.Tag as Result).id);
+                    if (!(pos > -1))
                     {
                         if (!string.IsNullOrEmpty(selectedHosts.Trim()))
                             selectedHosts += ";";
 
-                        selectedHosts += item.SubItems[2].Text.Trim();
+                        selectedHosts += (item.Tag as Result).id;
                     }
                 }
                 else
                 {
-                    foreach (ListViewItem lvt in listViewRecords.Items)
-                    {
-                        if (!string.IsNullOrEmpty(selectedHosts.Trim()))
-                            selectedHosts += ";";
-
-                        selectedHosts += lvt.SubItems[2].Text.Trim();
-                    }
+                    selectedHosts= selectedHosts.Replace(";" + (item.Tag as Result).id, "");
+                    selectedHosts = selectedHosts.Replace((item.Tag as Result).id+";", "");
+                    selectedHosts = selectedHosts.Replace(";" + item.SubItems[2].Text, "");
                 }
 
-                Debug.WriteLine(selectedHosts);
-                Program.settingsManager.setSetting("SelectedHosts", selectedHosts);
+                    List<String> myStringList = new List<string>();
+                    string clearedSelectedHosts = "";
+                    foreach (string s in selectedHosts.Split(';'))
+                    {
+                        if (!myStringList.Contains(s))
+                        {
+                            myStringList.Add(s);
+                            clearedSelectedHosts += ";" + s;
+                        }
+                    }
+                clearedSelectedHosts=clearedSelectedHosts.TrimStart(';');
+                     
+                Debug.WriteLine(clearedSelectedHosts);
+                Program.settingsManager.setSetting("SelectedHosts", clearedSelectedHosts);
                 Program.settingsManager.saveSettings(); //Save the selected host list accross sessions
             }
             catch (Exception) { }

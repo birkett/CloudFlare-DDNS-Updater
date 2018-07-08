@@ -70,11 +70,12 @@ namespace CloudFlareDDNS
                 }
 
                 //Ignore anything that is not checked
-                if ((Array.IndexOf(selectedHosts, r.name) >= 0) != true)
+                if ((Array.IndexOf(selectedHosts, r.id) >= 0) != true)
                 {
                     ignored++;
                     continue;
                 }
+                
 
                 //Skip over anything that doesnt need an update
                 if (r.content == Program.settingsManager.getSetting("ExternalAddressIPV4").ToString() || r.content == Program.settingsManager.getSetting("ExternalAddressIPV6").ToString())
@@ -101,7 +102,7 @@ namespace CloudFlareDDNS
                     if (lv != null)
                         UpdateLastChange(lv, r, Properties.Resources.Main_Change_IP_Failed);
 
-                    Logger.log("Failed to Update " + r.name, Logger.Level.Error);
+                    Logger.log(Properties.Resources.Error_FailedRecordUpdate + r.name, Logger.Level.Error);
                 }
             }
 
@@ -171,7 +172,7 @@ namespace CloudFlareDDNS
                 }
             }catch(Exception e)
             {
-                Logger.log("Cant find new IP |" + e, Logger.Level.Error);
+                Logger.log(Properties.Resources.Error_CantFindNewIp + " |" + e, Logger.Level.Error);
             }
         }//end getExternalAddress()
 
@@ -198,7 +199,7 @@ namespace CloudFlareDDNS
                 }
                 catch (Exception)
                 {
-                    Logger.log("Cant reach" + url, Logger.Level.Error);
+                    Logger.log(Properties.Resources.Error_CantReach + url, Logger.Level.Error);
                     return null;
                 }
                 if (records == null || records == "error")
@@ -227,7 +228,7 @@ namespace CloudFlareDDNS
             }
             catch (Exception)
             {
-                Logger.log("Cant reach" + url, Logger.Level.Error);
+                Logger.log(Properties.Resources.Error_CantReach + url, Logger.Level.Error);
                 return null;
             }
             if (records == null || records == "error")
@@ -258,7 +259,8 @@ namespace CloudFlareDDNS
                 {
                     if (string.IsNullOrEmpty(Program.settingsManager.getSetting("ExternalAddressIPV4").ToString()))
                     {
-                        throw new Exception();
+                        Logger.log(Properties.Resources.Error_CantGet + "IPv4", Logger.Level.Error);
+                        return null;
                     }
                     ip = Program.settingsManager.getSetting("ExternalAddressIPV4").ToString();
                 }
@@ -266,7 +268,8 @@ namespace CloudFlareDDNS
                 {
                     if (string.IsNullOrEmpty(Program.settingsManager.getSetting("ExternalAddressIPV6").ToString()))
                     {
-                        throw new Exception();
+                        Logger.log(Properties.Resources.Error_CantGet + "IPv6", Logger.Level.Error);
+                        return null;
                     }
                     ip = Program.settingsManager.getSetting("ExternalAddressIPV6").ToString();
                 }
@@ -279,7 +282,7 @@ namespace CloudFlareDDNS
                 }
                 catch (Exception)
                 {
-                    Logger.log("Cant reach " + url, Logger.Level.Error);
+                    Logger.log(Properties.Resources.Error_CantReach + url, Logger.Level.Error);
                     return null;
                 }
             }
@@ -346,7 +349,7 @@ namespace CloudFlareDDNS
                     }
                     catch (Exception e)
                     {
-                        Logger.log("[Exception info below]IP Updated failed:" + szUrl, Logger.Level.Error);
+                        Logger.log(Properties.Resources.Error_FailedIPUpdate + szUrl, Logger.Level.Error);
                         Logger.log(e.ToString(), Logger.Level.Error);
                         throw new Exception();
                     }
@@ -354,7 +357,7 @@ namespace CloudFlareDDNS
             }
             catch (Exception e)
             {
-                Logger.log("[Exception info below]Exception on request:" + szUrl, Logger.Level.Error);
+                Logger.log(Properties.Resources.Error_ExceptionOnRequest + szUrl, Logger.Level.Error);
                 Logger.log(e.ToString(), Logger.Level.Error);
                 return "error";
             }
@@ -376,8 +379,8 @@ namespace CloudFlareDDNS
                     return ip.ToString();
                 }
             }
-            Logger.log("No network adapters with an IPv4 address in the system!", Logger.Level.Error);
-            throw new Exception("No network adapters with an IPv4 address in the system!");
+            Logger.log(Properties.Resources.Error_ExceptionNoNetworkAdapterFound, Logger.Level.Error);
+            throw new Exception(Properties.Resources.Error_ExceptionNoNetworkAdapterFound);
         }
         /// <summary>
         /// Change the LastChange section in listview or set a loading text.

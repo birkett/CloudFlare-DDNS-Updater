@@ -289,4 +289,25 @@
   <data name="Main_Change_IP_Failed" xml:space="preserve">
     <value>IP Change Failed</value>
   </data>
+  <data name="Error_CantFindNewIp" xml:space="preserve">
+    <value>Cant find new IP</value>
+  </data>
+  <data name="Error_CantGet" xml:space="preserve">
+    <value>Cant get </value>
+  </data>
+  <data name="Error_CantReach" xml:space="preserve">
+    <value>Cant reach: </value>
+  </data>
+  <data name="Error_ExceptionNoNetworkAdapterFound" xml:space="preserve">
+    <value>No network adapters with an IPv4 address in the system!</value>
+  </data>
+  <data name="Error_ExceptionOnRequest" xml:space="preserve">
+    <value>[Exception info below]Exception on request:</value>
+  </data>
+  <data name="Error_FailedIPUpdate" xml:space="preserve">
+    <value>[Exception info below]IP Updated failed:</value>
+  </data>
+  <data name="Error_FailedRecordUpdate" xml:space="preserve">
+    <value>Failed Updateing: </value>
+  </data>
 </root>

@@ -139,6 +139,69 @@ namespace CloudFlareDDNS.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cant find new IP ähnelt.
+        /// </summary>
+        internal static string Error_CantFindNewIp {
+            get {
+                return ResourceManager.GetString("Error_CantFindNewIp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cant get  ähnelt.
+        /// </summary>
+        internal static string Error_CantGet {
+            get {
+                return ResourceManager.GetString("Error_CantGet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Cant reach:  ähnelt.
+        /// </summary>
+        internal static string Error_CantReach {
+            get {
+                return ResourceManager.GetString("Error_CantReach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die No network adapters with an IPv4 address in the system! ähnelt.
+        /// </summary>
+        internal static string Error_ExceptionNoNetworkAdapterFound {
+            get {
+                return ResourceManager.GetString("Error_ExceptionNoNetworkAdapterFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die [Exception info below]Exception on request: ähnelt.
+        /// </summary>
+        internal static string Error_ExceptionOnRequest {
+            get {
+                return ResourceManager.GetString("Error_ExceptionOnRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die [Exception info below]IP Updated failed: ähnelt.
+        /// </summary>
+        internal static string Error_FailedIPUpdate {
+            get {
+                return ResourceManager.GetString("Error_FailedIPUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Failed Updateing:  ähnelt.
+        /// </summary>
+        internal static string Error_FailedRecordUpdate {
+            get {
+                return ResourceManager.GetString("Error_FailedRecordUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap exit {
