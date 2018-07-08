@@ -311,7 +311,7 @@ namespace CloudFlareDDNS
 
                     Thread.Sleep(1000); //DontNeedTooSpamCloudflareServer
 
-                    Program.cloudFlareAPI.UpdateLastChange(listViewRecords, r, DateTime.UtcNow.ToShortDateString() + " " + DateTime.UtcNow.ToShortTimeString());
+                    Program.cloudFlareAPI.UpdateLastChange(listViewRecords, r, DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString());
             }
         }
 

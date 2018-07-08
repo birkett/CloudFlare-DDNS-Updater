@@ -95,7 +95,7 @@ namespace CloudFlareDDNS
                     System.Threading.Thread.Sleep(1000); //DontNeedTooSpamCloudflareServer
 
                     if (lv != null)
-                        UpdateLastChange(lv, r, DateTime.UtcNow.ToShortDateString()+" "+ DateTime.UtcNow.ToShortTimeString());
+                        UpdateLastChange(lv, r, DateTime.Now.ToShortDateString()+" "+ DateTime.Now.ToShortTimeString());
                 }
                 catch (Exception)
                 {
