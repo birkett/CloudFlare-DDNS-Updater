@@ -59,6 +59,10 @@ namespace CloudFlareDDNS
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.LastChange = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listViewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ItemUpdateIp = new System.Windows.Forms.ToolStripMenuItem();
+            this.ItemDisable = new System.Windows.Forms.ToolStripMenuItem();
+            this.ItemEnable = new System.Windows.Forms.ToolStripMenuItem();
             this.listViewLog = new System.Windows.Forms.ListView();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -80,12 +84,8 @@ namespace CloudFlareDDNS
             this.labeltxtExternalAddressIPV4 = new System.Windows.Forms.Label();
             this.button_close = new System.Windows.Forms.Button();
             this.button_minimize = new System.Windows.Forms.Button();
-            this.listViewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ItemUpdateIp = new System.Windows.Forms.ToolStripMenuItem();
-            this.ItemDisable = new System.Windows.Forms.ToolStripMenuItem();
-            this.ItemEnable = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuStrip1.SuspendLayout();
             this.listViewContextMenu.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // listViewRecords
@@ -139,6 +139,34 @@ namespace CloudFlareDDNS
             // 
             this.LastChange.Text = global::CloudFlareDDNS.Properties.Resources.Main_List_LastChange;
             this.LastChange.Width = 127;
+            // 
+            // listViewContextMenu
+            // 
+            this.listViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ItemUpdateIp,
+            this.ItemDisable,
+            this.ItemEnable});
+            this.listViewContextMenu.Name = "listViewContextMenu";
+            this.listViewContextMenu.Size = new System.Drawing.Size(126, 70);
+            // 
+            // ItemUpdateIp
+            // 
+            this.ItemUpdateIp.Name = "ItemUpdateIp";
+            this.ItemUpdateIp.Size = new System.Drawing.Size(125, 22);
+            this.ItemUpdateIp.Text = "Update IP";
+            // 
+            // ItemDisable
+            // 
+            this.ItemDisable.Name = "ItemDisable";
+            this.ItemDisable.Size = new System.Drawing.Size(125, 22);
+            this.ItemDisable.Text = "Disable";
+            this.ItemDisable.Visible = false;
+            // 
+            // ItemEnable
+            // 
+            this.ItemEnable.Name = "ItemEnable";
+            this.ItemEnable.Size = new System.Drawing.Size(125, 22);
+            this.ItemEnable.Text = "Enable";
             // 
             // listViewLog
             // 
@@ -349,34 +377,6 @@ namespace CloudFlareDDNS
             this.button_minimize.UseVisualStyleBackColor = false;
             this.button_minimize.Click += new System.EventHandler(this.button_minimize_Click);
             // 
-            // listViewContextMenu
-            // 
-            this.listViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ItemUpdateIp,
-            this.ItemDisable,
-            this.ItemEnable});
-            this.listViewContextMenu.Name = "listViewContextMenu";
-            this.listViewContextMenu.Size = new System.Drawing.Size(126, 70);
-            // 
-            // ItemUpdateIp
-            // 
-            this.ItemUpdateIp.Name = "ItemUpdateIp";
-            this.ItemUpdateIp.Size = new System.Drawing.Size(125, 22);
-            this.ItemUpdateIp.Text = "Update IP";
-            // 
-            // ItemDisable
-            // 
-            this.ItemDisable.Name = "ItemDisable";
-            this.ItemDisable.Size = new System.Drawing.Size(125, 22);
-            this.ItemDisable.Text = "Disable";
-            this.ItemDisable.Visible = false;
-            // 
-            // ItemEnable
-            // 
-            this.ItemEnable.Name = "ItemEnable";
-            this.ItemEnable.Size = new System.Drawing.Size(125, 22);
-            this.ItemEnable.Text = "Enable";
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -399,11 +399,12 @@ namespace CloudFlareDDNS
             this.Text = "CloudFlare DDNS Updater v2.0";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_Closing);
             this.Load += new System.EventHandler(this.frmMain_Load);
+            this.Shown += new System.EventHandler(this.frmMain_Shown);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseDown);
             this.Resize += new System.EventHandler(this.frmMain_Resize);
+            this.listViewContextMenu.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.listViewContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

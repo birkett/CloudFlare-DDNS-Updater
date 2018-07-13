@@ -269,7 +269,6 @@ namespace CloudFlareDDNS
             logUpdateTimer.Enabled = true;
             Logger.log(Properties.Resources.Logger_Start + " " + Program.settingsManager.getSetting("FetchTime").ToString() + " " + Properties.Resources.Logger_Interval + " ", Logger.Level.Info);
 
-            listViewContextMenu.Opened += ListViewContextMenu_Opened;
         }//end frmMain()
 
         private void ListViewContextMenu_Opened(object sender, EventArgs e)
@@ -545,6 +544,8 @@ namespace CloudFlareDDNS
                 start_fetchThread();
             }
             catch (Exception) { }
+
+                
         }
 
         private void listViewLog_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
@@ -653,6 +654,16 @@ namespace CloudFlareDDNS
             }
             catch (Exception) { }
         }
+
+        private void frmMain_Shown(object sender, EventArgs e)
+        {
+
+            if (Program.settingsManager.getSetting("StartMinimized").ToBool())
+            {
+                this.WindowState = FormWindowState.Minimized;
+            }
+        }
+
         /// <summary>
         /// Set/Read the Item Tag from listView
         /// </summary>
