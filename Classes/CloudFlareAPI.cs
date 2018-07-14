@@ -217,8 +217,8 @@ namespace CloudFlareDDNS
 
             url += "/zones?status=active&page=1&per_page=50&order=status&direction=desc&match=all";
 
-            headerData.Add("X-Auth-Key", Program.settingsManager.getSetting("APIKey").ToString());
-            headerData.Add("X-Auth-Email", Program.settingsManager.getSetting("EmailAddress").ToString());
+            headerData.Add("X-Auth-Key", Program.settingsManager.getSetting("APIKey").ToString().Trim());
+            headerData.Add("X-Auth-Email", Program.settingsManager.getSetting("EmailAddress").ToString().Trim());
 
             //Check if request still get value.
             string records = "";

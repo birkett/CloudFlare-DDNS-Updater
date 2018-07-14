@@ -293,6 +293,7 @@ namespace CloudFlareDDNS
             this.ZoneUpdateList.TabIndex = 27;
             this.ZoneUpdateList.UseCompatibleStateImageBehavior = false;
             this.ZoneUpdateList.View = System.Windows.Forms.View.Details;
+            this.ZoneUpdateList.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.ZoneUpdateList_ItemCheck);
             // 
             // ZoneID
             // 

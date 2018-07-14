@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CloudFlareDDNS.Classes.JsonObjects.Cloudflare;
@@ -34,6 +35,7 @@ namespace CloudFlareDDNS
     /// </summary>
     public partial class frmSettings : Form
     {
+        bool loading_zones = false;
         /// <summary>
         /// Form entry point
         /// </summary>
@@ -67,46 +69,60 @@ namespace CloudFlareDDNS
             HideSRV_input.Checked = Program.settingsManager.getSetting("HideSRV").ToBool();
         }//end frmSettings_Load()
 
-        async private void load_Zones(bool error =true)
+        private void load_Zones(bool error =true)
         {
             try
             {
+                
                 GetZoneListResponse response = new GetZoneListResponse();
                 if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("EmailAddress").ToString()) && !string.IsNullOrEmpty(Program.settingsManager.getSetting("APIKey").ToString()))
                     response = Program.cloudFlareAPI.getCloudFlareZones();
-
-                ZoneUpdateList.BeginInvoke(new Action(delegate ()
+                if (response != null)
                 {
-                    ZoneUpdateList.Items.Clear();
-                    foreach (Result rs in response.result)
+                    ZoneUpdateList.Invoke(new MethodInvoker(delegate ()
                     {
-                        ListViewItem row = new ListViewItem();
-                        row.SubItems.Add(rs.name.ToString());
-                        row.SubItems.Add(rs.id.ToString());
-                        ZoneUpdateList.Items.Add(row);
-                    }
-                    if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
-                    {
-                        string[] selectedZone = Program.settingsManager.getSetting("SelectedZones").ToString().Split(';');
-                        foreach (ListViewItem lvt in ZoneUpdateList.Items)
+                        ZoneUpdateList.Items.Clear();
+                        foreach (Result rs in response.result)
                         {
-                            int pos = Array.IndexOf(selectedZone, lvt.SubItems[2].Text);
-                            if (pos > -1)
-                            {
-                                lvt.Checked = true;
-                            }
-                            else
-                            {
-                                lvt.Checked = false;
-                            }
+                            ListViewItem row = new ListViewItem();
+                            row.SubItems.Add(rs.name.ToString());
+                            row.SubItems.Add(rs.id.ToString());
+                            ZoneUpdateList.Items.Add(row);
+
                         }
-                    }
-                }));
+                        if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
+                        {
+                            string[] selectedZone = Program.settingsManager.getSetting("SelectedZones").ToString().Split(';');
+                            ListView.ListViewItemCollection items;
+                            items = ZoneUpdateList.Items;
+                            loading_zones = true;
+                            foreach (ListViewItem lvt in items)
+                            {
+                                string subitemtext;
+                                subitemtext = lvt.SubItems[2].Text;
+                                int pos = Array.IndexOf(selectedZone, subitemtext);
+
+                                if (pos > -1)
+                                {
+                                    lvt.Checked = true;
+                                }
+                                else
+                                {
+                                    lvt.Checked = false;
+                                }
+                            }
+                            loading_zones = false;
+                        }
+                    }));
+                }
+
             }
             catch (Exception)
             {
-                if(error)
+                if (error)
                     Logger.log("Failed to load Zones");
+
+                loading_zones = false;
             }
         }
         #region Click buttons
@@ -149,7 +165,11 @@ namespace CloudFlareDDNS
 
         private void txtAPIKey_TextChanged(object sender, EventArgs e)
         {
-            load_Zones(false);
+            Program.settingsManager.setSetting("APIKey", txtAPIKey.Text);
+            Program.settingsManager.saveSettings();
+            ZoneUpdateList.Items.Clear();
+            Thread t = new Thread(() => load_Zones(false));
+            t.Start();
         }
 
         /// <summary>
@@ -178,5 +198,43 @@ namespace CloudFlareDDNS
         }
 
         #endregion Click buttons
+
+        private void ZoneUpdateList_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (!loading_zones)
+            {
+                string selectedZone = "";
+                foreach (ListViewItem ListViewItem in ZoneUpdateList.Items)
+                {
+
+                    if (!string.IsNullOrEmpty(ListViewItem.SubItems[2].Text.Trim()))
+                    {
+                        if ((ListViewItem.SubItems[2].Text.Trim() == ZoneUpdateList.Items[e.Index].SubItems[2].Text.Trim()))
+                        {
+                            if (e.NewValue == CheckState.Checked)
+                            {
+                                if (!string.IsNullOrEmpty(selectedZone.Trim()))
+                                    selectedZone += ";";
+
+                                selectedZone += ListViewItem.SubItems[2].Text;
+                            }
+                        }
+                        else
+                        {
+                            if (ListViewItem.Checked)
+                            {
+                                if (!string.IsNullOrEmpty(selectedZone.Trim()))
+                                    selectedZone += ";";
+
+                                selectedZone += ListViewItem.SubItems[2].Text;
+                            }
+                        }
+                    }
+                }
+
+                Program.settingsManager.setSetting("SelectedZones", selectedZone);
+                Program.settingsManager.saveSettings();
+            }
+        }
     }//end class
 }//end namespace
