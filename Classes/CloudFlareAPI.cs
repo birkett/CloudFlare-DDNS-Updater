@@ -23,9 +23,10 @@
  */
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
-
+using System.Text;
 using System.Web.Script.Serialization;
 
 namespace CloudFlareDDNS
@@ -74,9 +75,11 @@ namespace CloudFlareDDNS
 
         string strResponse = this.updateCloudflareRecords(fetchedRecords.result[i]);
 
-        JavaScriptSerializer serializer = new JavaScriptSerializer();
-
-        JsonResponse resp = serializer.Deserialize<JsonResponse>(strResponse);
+        JsonResponse resp = JsonConvert.DeserializeObject<JsonResponse>(strResponse, new JsonSerializerSettings
+        {
+          MissingMemberHandling = MissingMemberHandling.Ignore,
+          NullValueHandling = NullValueHandling.Ignore
+        });
 
         if (!resp.success)
         {
@@ -135,8 +138,6 @@ namespace CloudFlareDDNS
       if (records == null)
         return null;
 
-      //JavaScriptSerializer serializer = new JavaScriptSerializer();
-
       fetchedRecords = JsonConvert.DeserializeObject<JsonResponse>(records, new JsonSerializerSettings
       {
         MissingMemberHandling = MissingMemberHandling.Ignore,
@@ -162,13 +163,21 @@ namespace CloudFlareDDNS
     private string updateCloudflareRecords(DnsRecord FetchedRecord)
     {
 
-      return webRequest(Method.POST, "https://api.cloudflare.com/client/v4/");
+      string zoneId = Program.settingsManager.getSetting("ZoneID").ToString();
+      string url = "https://api.cloudflare.com/client/v4/zones/" + zoneId + "/dns_records/" + FetchedRecord.id.ToString();
+
+      var data = new Dictionary<string, string>();
+      data.Add("type", FetchedRecord.type);
+      data.Add("name", FetchedRecord.name);
+      data.Add("content", Program.settingsManager.getSetting("ExternalAddress").ToString());
+
+      return webRequest(Method.PUT, url, JsonConvert.SerializeObject(data));
 
     }//end updateCloudflareRecords()
 
 
     /// <summary>
-    /// Enum to contain web request types (GET or POST)
+    /// Enum to contain web request types
     /// </summary>
     private enum Method
     {
@@ -180,15 +189,21 @@ namespace CloudFlareDDNS
 
 
     /// <summary>
-    /// Make a web request via GET or POST
+    /// Make a web request via GET, POST or PUT
     /// </summary>
     /// <param name="MethodType"></param>
     /// <param name="szUrl"></param>
+    /// <param name="szData"></param>
     /// <returns></returns>
-    private string webRequest(Method MethodType, string szUrl)
+    private string webRequest(Method MethodType, string szUrl, string szData = "")
     {
       ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
       WebRequest webrequest = WebRequest.Create(szUrl);
+
+      byte[] data = null;
+
+      if (szData != "")
+        data = Encoding.ASCII.GetBytes(szData);
 
       string email = Program.settingsManager.getSetting("EmailAddress").ToString();
       string key = Program.settingsManager.getSetting("APIKey").ToString();
@@ -203,6 +218,13 @@ namespace CloudFlareDDNS
       string strResponse = null;
       try
       {
+        if (data != null)
+        {
+          using (Stream stream = webrequest.GetRequestStream())
+          {
+            stream.Write(data, 0, data.Length);
+          }
+        }
         using (WebResponse webresponse = webrequest.GetResponse())
         {
           using (StreamReader readStream = new StreamReader(webresponse.GetResponseStream(), System.Text.Encoding.GetEncoding("utf-8")))
