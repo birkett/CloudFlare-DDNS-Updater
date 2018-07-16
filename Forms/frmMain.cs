@@ -274,7 +274,7 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
-        /// Get current external address and CloudFlare records
+        /// GET current external address and CloudFlare records
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

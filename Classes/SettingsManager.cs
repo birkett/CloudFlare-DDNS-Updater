@@ -116,7 +116,7 @@ namespace CloudFlareDDNS
 
 
         /// <summary>
-        /// Get a setting from the config file by a given name
+        /// GET a setting from the config file by a given name
         /// </summary>
         /// <param name="szName"></param>
         /// <returns>String value</returns>

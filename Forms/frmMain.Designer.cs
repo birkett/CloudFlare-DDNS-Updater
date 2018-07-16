@@ -145,11 +145,11 @@ namespace CloudFlareDDNS
             this.imageList1.Images.SetKeyName(1, "warning.png");
             this.imageList1.Images.SetKeyName(2, "error.png");
             // 
-            // label1
+            // lblEventlog
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 51);
-            this.label1.Name = "label1";
+            this.label1.Name = "lblEventlog";
             this.label1.Size = new System.Drawing.Size(139, 13);
             this.label1.TabIndex = 5;
             this.label1.Text = Properties.Resources.Main_ExterrnalAddress;
