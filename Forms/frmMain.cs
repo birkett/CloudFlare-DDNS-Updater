@@ -75,15 +75,15 @@ namespace CloudFlareDDNS
 
             string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
-            for (int i = 0; i < Convert.ToInt32(fetchedRecords.response.recs.count); i++)
+            for (int i = 0; i < Convert.ToInt32(fetchedRecords.result.Count); i++)
             {
                 ListViewItem row = new ListViewItem();
-                row.SubItems.Add(fetchedRecords.response.recs.objs[i].type);
-                row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_name);
-                row.SubItems.Add(fetchedRecords.response.recs.objs[i].display_content);
+                row.SubItems.Add(fetchedRecords.result[i].type);
+                row.SubItems.Add(fetchedRecords.result[i].name);
+                row.SubItems.Add(fetchedRecords.result[i].content);
 
                 //Only check this if it's an A record. MX records may have the same name as the primary A record, but should never be updated with an IP.
-                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) == true && fetchedRecords.response.recs.objs[i].type == "A")
+                if ((Array.IndexOf(selectedHosts, fetchedRecords.result[i].name) >= 0) == true && fetchedRecords.result[i].type == "A")
                 {
                     row.Checked = true;
                 }

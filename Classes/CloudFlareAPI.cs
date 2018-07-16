@@ -21,9 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net;
+
 using System.Web.Script.Serialization;
 
 namespace CloudFlareDDNS
@@ -46,41 +48,40 @@ namespace CloudFlareDDNS
       int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
       string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
-      for (int i = 0; i < fetchedRecords.response.recs.count; i++)
+      for (int i = 0; i < fetchedRecords.result.Count; i++)
       {
         //Skip over MX and CNAME records
         //TODO: Dont skip them :)
-        if (fetchedRecords.response.recs.objs[i].type != "A")
+        if (fetchedRecords.result[i].type != "A")
         {
           skipped++;
           continue;
         }
 
-
         //Ignore anything that is not checked
-        if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) != true)
+        if ((Array.IndexOf(selectedHosts, fetchedRecords.result[i].name) >= 0) != true)
         {
           ignored++;
           continue;
         }
 
         //Skip over anything that doesnt need an update
-        if (fetchedRecords.response.recs.objs[i].content == Program.settingsManager.getSetting("ExternalAddress").ToString())
+        if (fetchedRecords.result[i].content == Program.settingsManager.getSetting("ExternalAddress").ToString())
         {
           up_to_date++;
           continue;
         }
 
-        string strResponse = this.updateCloudflareRecords(fetchedRecords.response.recs.objs[i]);
+        string strResponse = this.updateCloudflareRecords(fetchedRecords.result[i]);
 
         JavaScriptSerializer serializer = new JavaScriptSerializer();
 
         JsonResponse resp = serializer.Deserialize<JsonResponse>(strResponse);
 
-        if (resp.result != "success")
+        if (!resp.success)
         {
           failed++;
-          Logger.log(Properties.Resources.Logger_Failed + " " + fetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
+          Logger.log(Properties.Resources.Logger_Failed + " " + fetchedRecords.result[i].name + " " + resp.errors.ToString(), Logger.Level.Error);
         }
         else
         {
@@ -134,13 +135,17 @@ namespace CloudFlareDDNS
       if (records == null)
         return null;
 
-      JavaScriptSerializer serializer = new JavaScriptSerializer();
+      //JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-      fetchedRecords = serializer.Deserialize<JsonResponse>(records);
-
-      if (fetchedRecords.result != "success")
+      fetchedRecords = JsonConvert.DeserializeObject<JsonResponse>(records, new JsonSerializerSettings
       {
-        Logger.log(fetchedRecords.msg, Logger.Level.Error);
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        NullValueHandling = NullValueHandling.Ignore
+      });
+
+      if (!fetchedRecords.success)
+      {
+        Logger.log(fetchedRecords.errors.ToString(), Logger.Level.Error);
         return null;
       }
 
@@ -156,7 +161,7 @@ namespace CloudFlareDDNS
     /// <returns></returns>
     private string updateCloudflareRecords(DnsRecord FetchedRecord)
     {
-      
+
       return webRequest(Method.POST, "https://api.cloudflare.com/client/v4/");
 
     }//end updateCloudflareRecords()
@@ -184,7 +189,7 @@ namespace CloudFlareDDNS
     {
       ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
       WebRequest webrequest = WebRequest.Create(szUrl);
-      
+
       string email = Program.settingsManager.getSetting("EmailAddress").ToString();
       string key = Program.settingsManager.getSetting("APIKey").ToString();
 
