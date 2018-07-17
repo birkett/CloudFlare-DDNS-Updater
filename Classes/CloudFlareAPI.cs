@@ -58,9 +58,14 @@ namespace CloudFlareDDNS
           skipped++;
           continue;
         }
-
         //Ignore anything that is not checked
-        if ((Array.IndexOf(selectedHosts, fetchedRecords.result[i].name) >= 0) != true)
+        if ((Array.IndexOf(selectedHosts, fetchedRecords.result[i].name.ToString()) >= 0) != true)
+        {
+          ignored++;
+          continue;
+        }
+        //Ignore anything that has the same record
+        if (fetchedRecords.result[i - 1].name.ToString() == fetchedRecords.result[i].name.ToString())
         {
           ignored++;
           continue;
@@ -73,14 +78,19 @@ namespace CloudFlareDDNS
           continue;
         }
 
-        string strResponse = this.updateCloudflareRecords(fetchedRecords.result[i]);
+        string strResponse = this.updateCloudflareRecords(fetchedRecords.result[i].ToObject<DnsRecord>());
+
+        if (strResponse == null)
+        {
+          failed++;
+          continue;
+        }
 
         JsonResponse resp = JsonConvert.DeserializeObject<JsonResponse>(strResponse, new JsonSerializerSettings
         {
           MissingMemberHandling = MissingMemberHandling.Ignore,
           NullValueHandling = NullValueHandling.Ignore
         });
-
         if (!resp.success)
         {
           failed++;
@@ -90,6 +100,7 @@ namespace CloudFlareDDNS
         {
           updated++;
         }
+
       }
 
       Logger.log("Update at " + DateTime.Now + " - " + updated.ToString(Program.cultureInfo) + " updated, " + up_to_date.ToString(Program.cultureInfo) + " up to date, " + skipped.ToString(Program.cultureInfo) + " skipped, " + ignored.ToString(Program.cultureInfo) + " ignored, " + failed.ToString(Program.cultureInfo) + " failed", Logger.Level.Info);
@@ -162,7 +173,6 @@ namespace CloudFlareDDNS
     /// <returns></returns>
     private string updateCloudflareRecords(DnsRecord FetchedRecord)
     {
-
       string zoneId = Program.settingsManager.getSetting("ZoneID").ToString();
       string url = "https://api.cloudflare.com/client/v4/zones/" + zoneId + "/dns_records/" + FetchedRecord.id.ToString();
 
@@ -170,7 +180,6 @@ namespace CloudFlareDDNS
       data.Add("type", FetchedRecord.type);
       data.Add("name", FetchedRecord.name);
       data.Add("content", Program.settingsManager.getSetting("ExternalAddress").ToString());
-
       return webRequest(Method.PUT, url, JsonConvert.SerializeObject(data));
 
     }//end updateCloudflareRecords()
@@ -200,11 +209,6 @@ namespace CloudFlareDDNS
       ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
       WebRequest webrequest = WebRequest.Create(szUrl);
 
-      byte[] data = null;
-
-      if (szData != "")
-        data = Encoding.ASCII.GetBytes(szData);
-
       string email = Program.settingsManager.getSetting("EmailAddress").ToString();
       string key = Program.settingsManager.getSetting("APIKey").ToString();
 
@@ -218,11 +222,12 @@ namespace CloudFlareDDNS
       string strResponse = null;
       try
       {
-        if (data != null)
+        if (szData != "")
         {
-          using (Stream stream = webrequest.GetRequestStream())
+          using (var streamWriter = new StreamWriter(webrequest.GetRequestStream()))
           {
-            stream.Write(data, 0, data.Length);
+            streamWriter.Write(szData);
+            streamWriter.Flush();
           }
         }
         using (WebResponse webresponse = webrequest.GetResponse())

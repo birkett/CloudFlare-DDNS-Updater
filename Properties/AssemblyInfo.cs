@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("CloudFlare DDNS")]
-[assembly: AssemblyCopyright("Copyright © Anthony Birkett 2014")]
+[assembly: AssemblyCopyright("Copyright © Anthony Birkett 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

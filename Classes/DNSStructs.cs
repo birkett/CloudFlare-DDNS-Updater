@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace CloudFlareDDNS
@@ -179,7 +180,9 @@ namespace CloudFlareDDNS
     /// <summary>
     /// Result information
     /// </summary>
-    public List<DnsRecord> result { get; set; }
+    [JsonProperty("result")]
+    public dynamic result { get; set; }
+
     /// <summary>
     /// success or error
     /// </summary>
