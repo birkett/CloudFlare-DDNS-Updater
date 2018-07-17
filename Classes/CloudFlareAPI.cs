@@ -21,221 +21,233 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+using Newtonsoft.Json;
 using System;
-using System.Text;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Web.Script.Serialization;
 
 namespace CloudFlareDDNS
 {
+  /// <summary>
+  /// Provides functions for interfacing with the CloudFlare REST API
+  /// </summary>
+  class CloudFlareAPI
+  {
+
+
     /// <summary>
-    /// Provides functions for interfacing with the CloudFlare REST API
+    /// Logic to update records
     /// </summary>
-    class CloudFlareAPI
+    public void updateRecords(JsonResponse fetchedRecords)
     {
+      if (fetchedRecords == null) //Dont attempt updates if the fetch failed
+        return;
 
+      int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
+      string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
-        /// <summary>
-        /// Logic to update records
-        /// </summary>
-        public void updateRecords(JsonResponse fetchedRecords)
+      for (int i = 0; i < fetchedRecords.result.Count; i++)
+      {
+        //Skip over MX and CNAME records
+        //TODO: Dont skip them :)
+        if (fetchedRecords.result[i].type != "A")
         {
-            if (fetchedRecords == null) //Dont attempt updates if the fetch failed
-                return;
-
-            int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
-            string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
-
-            for (int i = 0; i < fetchedRecords.response.recs.count; i++)
-            {
-                //Skip over MX and CNAME records
-                //TODO: Dont skip them :)
-                if (fetchedRecords.response.recs.objs[i].type != "A")
-                {
-                    skipped++;
-                    continue;
-                }
-
-
-                //Ignore anything that is not checked
-                if ((Array.IndexOf(selectedHosts, fetchedRecords.response.recs.objs[i].display_name) >= 0) != true)
-                {
-                    ignored++;
-                    continue;
-                }
-
-                //Skip over anything that doesnt need an update
-                if (fetchedRecords.response.recs.objs[i].content == Program.settingsManager.getSetting("ExternalAddress").ToString())
-                {
-                    up_to_date++;
-                    continue;
-                }
-
-                string strResponse = this.updateCloudflareRecords(fetchedRecords.response.recs.objs[i]);
-
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-
-                JsonResponse resp = serializer.Deserialize<JsonResponse>(strResponse);
-
-                if (resp.result != "success")
-                {
-                    failed++;
-                    Logger.log(Properties.Resources.Logger_Failed + " " + fetchedRecords.response.recs.objs[i].name + " " + resp.msg, Logger.Level.Error);
-                }
-                else
-                {
-                    updated++;
-                }
-            }
-
-            Logger.log("Update at " + DateTime.Now + " - " + updated.ToString(Program.cultureInfo) + " updated, " + up_to_date.ToString(Program.cultureInfo) + " up to date, " + skipped.ToString(Program.cultureInfo) + " skipped, " + ignored.ToString(Program.cultureInfo) + " ignored, " + failed.ToString(Program.cultureInfo) + " failed", Logger.Level.Info);
-
-        }//end updateRecords()
-
-
-        /// <summary>
-        /// Return the current external network address, using the default gateway
-        /// </summary>
-        /// <returns>IP address as a string, null on error</returns>
-        public string getExternalAddress()
+          skipped++;
+          continue;
+        }
+        //Ignore anything that is not checked
+        if ((Array.IndexOf(selectedHosts, fetchedRecords.result[i].name.ToString()) >= 0) != true)
         {
-            string strResponse = webRequest(Method.Get, "http://checkip.dyndns.org", null);
-            string[] strResponse2 = strResponse.Split(':');
-            string strResponse3 = strResponse2[1].Substring(1);
-            string new_external_address = strResponse3.Split('<')[0];
-
-            if (new_external_address == null)
-                return null; //Bail if failied, keeping the current address in settings
-
-            if (new_external_address != Program.settingsManager.getSetting("ExternalAddress").ToString())
-            {
-                Program.settingsManager.setSetting("ExternalAddress", new_external_address);
-                Program.settingsManager.saveSettings();
-            }
-
-            return new_external_address;
-
-        }//end getExternalAddress()
-
-
-        /// <summary>
-        /// Get the listed records from Cloudflare using their API
-        /// </summary>
-        /// <returns>JSON stream of records, null on error</returns>
-        public JsonResponse getCloudFlareRecords()
+          ignored++;
+          continue;
+        }
+        //Ignore anything that has the same record
+        if (fetchedRecords.result[i - 1].name.ToString() == fetchedRecords.result[i].name.ToString())
         {
-            JsonResponse fetchedRecords = null;
+          ignored++;
+          continue;
+        }
 
-            string postData = "a=rec_load_all";
-            postData += "&tkn=" + Program.settingsManager.getSetting("APIKey").ToString();
-            postData += "&email=" + Program.settingsManager.getSetting("EmailAddress").ToString();
-            postData += "&z=" + Program.settingsManager.getSetting("Domain").ToString();
-
-            string records = webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
-            if (records == null)
-                return null;
-
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-
-            fetchedRecords = serializer.Deserialize<JsonResponse>(records);
-
-            if (fetchedRecords.result != "success")
-            {
-                Logger.log(fetchedRecords.msg, Logger.Level.Error);
-                return null;
-            }
-
-            return fetchedRecords;
-
-        }//end getCloudflareRecords()
-
-
-        /// <summary>
-        /// Run an update on the given record
-        /// </summary>
-        /// <param name="FetchedRecord"></param>
-        /// <returns></returns>
-        private string updateCloudflareRecords(DnsRecord FetchedRecord)
+        //Skip over anything that doesnt need an update
+        if (fetchedRecords.result[i].content == Program.settingsManager.getSetting("ExternalAddress").ToString())
         {
-            string postData = "a=rec_edit";
-            postData += "&tkn=" + Program.settingsManager.getSetting("APIKey").ToString();
-            postData += "&id=" + FetchedRecord.rec_id;
-            postData += "&email=" + Program.settingsManager.getSetting("EmailAddress").ToString();
-            postData += "&z=" + Program.settingsManager.getSetting("Domain").ToString();
-            postData += "&type=" + FetchedRecord.type;
-            postData += "&name=" + FetchedRecord.name;
-            postData += "&content=" + Program.settingsManager.getSetting("ExternalAddress").ToString();
-            postData += "&service_mode=" + FetchedRecord.service_mode;
-            postData += "&ttl=" + FetchedRecord.ttl;
+          up_to_date++;
+          continue;
+        }
 
-            return webRequest(Method.Post, "https://www.cloudflare.com/api_json.html", postData);
+        string strResponse = this.updateCloudflareRecords(fetchedRecords.result[i].ToObject<DnsRecord>());
 
-        }//end updateCloudflareRecords()
-
-
-        /// <summary>
-        /// Enum to contain web request types (GET or POST)
-        /// </summary>
-        private enum Method
+        if (strResponse == null)
         {
-            Get = 0,
-            Post,
+          failed++;
+          continue;
+        }
 
-        } //end enum
-
-
-        /// <summary>
-        /// Make a web request via GET or POST
-        /// </summary>
-        /// <param name="MethodType"></param>
-        /// <param name="szUrl"></param>
-        /// <param name="szData"></param>
-        /// <returns></returns>
-        private string webRequest(Method MethodType, string szUrl, string szData)
+        JsonResponse resp = JsonConvert.DeserializeObject<JsonResponse>(strResponse, new JsonSerializerSettings
         {
-            WebRequest webrequest = WebRequest.Create(szUrl);
-            byte[] data = null;
+          MissingMemberHandling = MissingMemberHandling.Ignore,
+          NullValueHandling = NullValueHandling.Ignore
+        });
+        if (!resp.success)
+        {
+          failed++;
+          Logger.log(Properties.Resources.Logger_Failed + " " + fetchedRecords.result[i].name + " " + resp.errors.ToString(), Logger.Level.Error);
+        }
+        else
+        {
+          updated++;
+        }
 
-            if(szData != null)
-                data = Encoding.ASCII.GetBytes(szData);
+      }
 
-            if(MethodType == Method.Post)
-            {
-                webrequest.Method = "POST";
-                webrequest.ContentType = "application/x-www-form-urlencoded";
-                webrequest.ContentLength = data.Length;
-            }
+      Logger.log("Update at " + DateTime.Now + " - " + updated.ToString(Program.cultureInfo) + " updated, " + up_to_date.ToString(Program.cultureInfo) + " up to date, " + skipped.ToString(Program.cultureInfo) + " skipped, " + ignored.ToString(Program.cultureInfo) + " ignored, " + failed.ToString(Program.cultureInfo) + " failed", Logger.Level.Info);
 
-            string strResponse = null;
-            try
-            {
-                if (MethodType == Method.Post)
-                {
-                    using (Stream stream = webrequest.GetRequestStream())
-                    {
-                        stream.Write(data, 0, data.Length);
-                    }
-                }
-
-                using (WebResponse webresponse = webrequest.GetResponse())
-                {
-                    using (StreamReader readStream = new StreamReader(webresponse.GetResponseStream(), System.Text.Encoding.GetEncoding("utf-8")))
-                    {
-                        strResponse = readStream.ReadToEnd();
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.log(e.ToString(), Logger.Level.Error);
-                return null;
-            }
-
-            return strResponse;
-
-        }//end webRequest()
+    }//end updateRecords()
 
 
-    }//end class
+    /// <summary>
+    /// Return the current external network address, using the default gateway
+    /// </summary>
+    /// <returns>IP address as a string, null on error</returns>
+    public string getExternalAddress()
+    {
+      string strResponse = webRequest(Method.GET, "http://checkip.dyndns.org");
+      string[] strResponse2 = strResponse.Split(':');
+      string strResponse3 = strResponse2[1].Substring(1);
+      string new_external_address = strResponse3.Split('<')[0];
+
+      if (new_external_address == null)
+        return null; //Bail if failied, keeping the current address in settings
+
+      if (new_external_address != Program.settingsManager.getSetting("ExternalAddress").ToString())
+      {
+        Program.settingsManager.setSetting("ExternalAddress", new_external_address);
+        Program.settingsManager.saveSettings();
+      }
+
+      return new_external_address;
+
+    }//end getExternalAddress()
+
+
+    /// <summary>
+    /// GET the listed records from Cloudflare using their API
+    /// </summary>
+    /// <returns>JSON stream of records, null on error</returns>
+    public JsonResponse getCloudFlareRecords()
+    {
+      JsonResponse fetchedRecords = null;
+
+      string zoneId = Program.settingsManager.getSetting("ZoneID").ToString();
+      string url = "https://api.cloudflare.com/client/v4/zones/" + zoneId + "/dns_records";
+      url += "?type=A&per_page=100";
+
+      string records = webRequest(Method.GET, url);
+      if (records == null)
+        return null;
+
+      fetchedRecords = JsonConvert.DeserializeObject<JsonResponse>(records, new JsonSerializerSettings
+      {
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        NullValueHandling = NullValueHandling.Ignore
+      });
+
+      if (!fetchedRecords.success)
+      {
+        Logger.log(fetchedRecords.errors.ToString(), Logger.Level.Error);
+        return null;
+      }
+
+      return fetchedRecords;
+
+    }//end getCloudflareRecords()
+
+
+    /// <summary>
+    /// Run an update on the given record
+    /// </summary>
+    /// <param name="FetchedRecord"></param>
+    /// <returns></returns>
+    private string updateCloudflareRecords(DnsRecord FetchedRecord)
+    {
+      string zoneId = Program.settingsManager.getSetting("ZoneID").ToString();
+      string url = "https://api.cloudflare.com/client/v4/zones/" + zoneId + "/dns_records/" + FetchedRecord.id.ToString();
+
+      var data = new Dictionary<string, string>();
+      data.Add("type", FetchedRecord.type);
+      data.Add("name", FetchedRecord.name);
+      data.Add("content", Program.settingsManager.getSetting("ExternalAddress").ToString());
+      return webRequest(Method.PUT, url, JsonConvert.SerializeObject(data));
+
+    }//end updateCloudflareRecords()
+
+
+    /// <summary>
+    /// Enum to contain web request types
+    /// </summary>
+    private enum Method
+    {
+      GET,
+      POST,
+      PUT,
+      DELETE
+    } //end enum
+
+
+    /// <summary>
+    /// Make a web request via GET, POST or PUT
+    /// </summary>
+    /// <param name="MethodType"></param>
+    /// <param name="szUrl"></param>
+    /// <param name="szData"></param>
+    /// <returns></returns>
+    private string webRequest(Method MethodType, string szUrl, string szData = "")
+    {
+      ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+      WebRequest webrequest = WebRequest.Create(szUrl);
+
+      string email = Program.settingsManager.getSetting("EmailAddress").ToString();
+      string key = Program.settingsManager.getSetting("APIKey").ToString();
+
+      webrequest.ContentType = "application/json";
+
+      webrequest.Headers.Add("X-Auth-Email", email);
+      webrequest.Headers.Add("X-Auth-Key", key);
+
+      webrequest.Method = MethodType.ToString();
+
+      string strResponse = null;
+      try
+      {
+        if (szData != "")
+        {
+          using (var streamWriter = new StreamWriter(webrequest.GetRequestStream()))
+          {
+            streamWriter.Write(szData);
+            streamWriter.Flush();
+          }
+        }
+        using (WebResponse webresponse = webrequest.GetResponse())
+        {
+          using (StreamReader readStream = new StreamReader(webresponse.GetResponseStream(), System.Text.Encoding.GetEncoding("utf-8")))
+          {
+            strResponse = readStream.ReadToEnd();
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        Logger.log(e.ToString(), Logger.Level.Error);
+        return null;
+      }
+
+      return strResponse;
+
+    }//end webRequest()
+
+
+  }//end class
 }//end namespace

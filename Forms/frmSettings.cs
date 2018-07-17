@@ -26,67 +26,69 @@ using System.Windows.Forms;
 
 namespace CloudFlareDDNS
 {
+  /// <summary>
+  /// Settings form - basic configuration 
+  /// </summary>
+  public partial class frmSettings : Form
+  {
+
+
     /// <summary>
-    /// Settings form - basic configuration 
+    /// Form entry point
     /// </summary>
-    public partial class frmSettings : Form
+    public frmSettings()
     {
+      InitializeComponent();
+
+    }//end frmSettings()
 
 
-        /// <summary>
-        /// Form entry point
-        /// </summary>
-        public frmSettings()
-        {
-            InitializeComponent();
+    /// <summary>
+    /// Load the saved values on open
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void frmSettings_Load(object sender, EventArgs e)
+    {
+      txtDomainName.Text = Program.settingsManager.getSetting("Domain").ToString();
+      txtZoneID.Text = Program.settingsManager.getSetting("ZoneID").ToString();
+      txtEmailAddress.Text = Program.settingsManager.getSetting("EmailAddress").ToString();
+      txtAPIKey.Text = Program.settingsManager.getSetting("APIKey").ToString();
+      txtFetchTime.Text = Program.settingsManager.getSetting("FetchTime").ToString();
+      cbEventLog.Checked = Program.settingsManager.getSetting("UseEventLog").ToBool();
 
-        }//end frmSettings()
-
-
-        /// <summary>
-        /// Load the saved values on open
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void frmSettings_Load(object sender, EventArgs e)
-        {
-            txtDomainName.Text = Program.settingsManager.getSetting("Domain").ToString();
-            txtEmailAddress.Text = Program.settingsManager.getSetting("EmailAddress").ToString();
-            txtAPIKey.Text = Program.settingsManager.getSetting("APIKey").ToString();
-            txtFetchTime.Text = Program.settingsManager.getSetting("FetchTime").ToString();
-            cbEventLog.Checked = Program.settingsManager.getSetting("UseEventLog").ToBool();
-
-        }//end frmSettings_Load()
+    }//end frmSettings_Load()
 
 
-        /// <summary>
-        /// Save the new settings
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnApply_Click(object sender, EventArgs e)
-        {
-            Program.settingsManager.setSetting("Domain", txtDomainName.Text);
-            Program.settingsManager.setSetting("EmailAddress", txtEmailAddress.Text);
-            Program.settingsManager.setSetting("APIKey", txtAPIKey.Text);
-            Program.settingsManager.setSetting("FetchTime", txtFetchTime.Text);
-            Program.settingsManager.setSetting("UseEventLog", cbEventLog.Checked.ToString());
-            Program.settingsManager.saveSettings();
+    /// <summary>
+    /// Save the new settings
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void btnApply_Click(object sender, EventArgs e)
+    {
+      Program.settingsManager.setSetting("Domain", txtDomainName.Text);
+      Program.settingsManager.setSetting("ZoneID", txtZoneID.Text);
+      Program.settingsManager.setSetting("EmailAddress", txtEmailAddress.Text);
+      Program.settingsManager.setSetting("APIKey", txtAPIKey.Text);
+      Program.settingsManager.setSetting("FetchTime", txtFetchTime.Text);
+      Program.settingsManager.setSetting("UseEventLog", cbEventLog.Checked.ToString());
+      Program.settingsManager.saveSettings();
 
-        }//end btnApply_Click()
-
-
-        /// <summary>
-        /// Close this form
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            this.Close();
-
-        }//end btnClose_Click()
+    }//end btnApply_Click()
 
 
-    }//end class
+    /// <summary>
+    /// Close this form
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void btnClose_Click(object sender, EventArgs e)
+    {
+      this.Close();
+
+    }//end btnClose_Click()
+
+
+  }//end class
 }//end namespace
