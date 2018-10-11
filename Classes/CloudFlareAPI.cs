@@ -119,7 +119,7 @@ namespace CloudFlareDDNS
             try
             {
                 //UPDATE IPV4
-                string new_external_addressIPV4;
+                string new_external_addressIPV4 = null;
                 if (!Program.settingsManager.getSetting("UseInternalIP").ToBool())
                 {
                     if (string.IsNullOrEmpty(Program.settingsManager.getSetting("IPV4UpdateURL").ToString()))
@@ -127,23 +127,27 @@ namespace CloudFlareDDNS
                         Program.settingsManager.setSetting("IPV4UpdateURL", "http://checkip.dyndns.org");
                         Program.settingsManager.saveSettings();
                     }
+
                     string strResponseIPV4 = webRequest(Method.Get, Program.settingsManager.getSetting("IPV4UpdateURL").ToString(), null);
-                    if (Program.settingsManager.getSetting("IPV4UpdateURL").ToString().Contains("checkip.dyndns.org"))
+                    if (strResponseIPV4 != null)
                     {
-                        string[] strResponse2 = strResponseIPV4.Split(':');
-                        string strResponse3 = strResponse2[1].Substring(1);
-                        new_external_addressIPV4 = strResponse3.Split('<')[0];
-                    }
-                    else
-                    {
-                        new_external_addressIPV4 = System.Text.RegularExpressions.Regex.Replace(strResponseIPV4, "<.*?>", String.Empty).Trim();
-                    }
-                    if (new_external_addressIPV4 != null)
-                    {
-                        if (new_external_addressIPV4 != Program.settingsManager.getSetting("ExternalAddressIPV4").ToString())
+                        if (Program.settingsManager.getSetting("IPV4UpdateURL").ToString().Contains("checkip.dyndns.org"))
                         {
-                            Program.settingsManager.setSetting("ExternalAddressIPV4", new_external_addressIPV4);
-                            Program.settingsManager.saveSettings();
+                            string[] strResponse2 = strResponseIPV4.Split(':');
+                            string strResponse3 = strResponse2[1].Substring(1);
+                            new_external_addressIPV4 = strResponse3.Split('<')[0];
+                        }
+                        else
+                        {
+                            new_external_addressIPV4 = System.Text.RegularExpressions.Regex.Replace(strResponseIPV4, "<.*?>", String.Empty).Trim();
+                        }
+                        if (new_external_addressIPV4 != null)
+                        {
+                            if (new_external_addressIPV4 != Program.settingsManager.getSetting("ExternalAddressIPV4").ToString())
+                            {
+                                Program.settingsManager.setSetting("ExternalAddressIPV4", new_external_addressIPV4);
+                                Program.settingsManager.saveSettings();
+                            }
                         }
                     }
                 }
@@ -160,14 +164,17 @@ namespace CloudFlareDDNS
                     Program.settingsManager.saveSettings();
                 }
                 string strResponseIPV6 = webRequest(Method.Get, Program.settingsManager.getSetting("IPV6UpdateURL").ToString(), null);
-                new_external_addressIPV6 = System.Text.RegularExpressions.Regex.Replace(strResponseIPV6, "<.*?>", String.Empty).Trim();
-
-                if (new_external_addressIPV6 != null)
+                if (strResponseIPV6 != null)
                 {
-                    if (new_external_addressIPV6 != Program.settingsManager.getSetting("ExternalAddressIPV6").ToString())
+                    new_external_addressIPV6 = System.Text.RegularExpressions.Regex.Replace(strResponseIPV6, "<.*?>", String.Empty).Trim();
+
+                    if (new_external_addressIPV6 != null)
                     {
-                        Program.settingsManager.setSetting("ExternalAddressIPV6", new_external_addressIPV6);
-                        Program.settingsManager.saveSettings();
+                        if (new_external_addressIPV6 != Program.settingsManager.getSetting("ExternalAddressIPV6").ToString())
+                        {
+                            Program.settingsManager.setSetting("ExternalAddressIPV6", new_external_addressIPV6);
+                            Program.settingsManager.saveSettings();
+                        }
                     }
                 }
             }catch(Exception e)
