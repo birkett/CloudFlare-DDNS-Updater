@@ -79,43 +79,46 @@ namespace CloudFlareDDNS
                     response = Program.cloudFlareAPI.getCloudFlareZones();
                 if (response != null)
                 {
-                    ZoneUpdateList.Invoke(new MethodInvoker(delegate ()
+                    if (response.result != null)
                     {
-                        ZoneUpdateList.Items.Clear();
-                        foreach (Result rs in response.result)
+                        ZoneUpdateList.Invoke(new MethodInvoker(delegate ()
                         {
-                            ListViewItem row = new ListViewItem();
-                            row.SubItems.Add(rs.name.ToString());
-                            row.SubItems.Add(rs.id.ToString());
-                            ZoneUpdateList.Items.Add(row);
+                            ZoneUpdateList.Items.Clear();
 
-                        }
-                        if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
-                        {
-                            string[] selectedZone = Program.settingsManager.getSetting("SelectedZones").ToString().Split(';');
-                            ListView.ListViewItemCollection items;
-                            items = ZoneUpdateList.Items;
-                            loading_zones = true;
-                            foreach (ListViewItem lvt in items)
+                            foreach (Result rs in response.result)
                             {
-                                string subitemtext;
-                                subitemtext = lvt.SubItems[2].Text;
-                                int pos = Array.IndexOf(selectedZone, subitemtext);
+                                ListViewItem row = new ListViewItem();
+                                row.SubItems.Add(rs.name.ToString());
+                                row.SubItems.Add(rs.id.ToString());
+                                ZoneUpdateList.Items.Add(row);
 
-                                if (pos > -1)
-                                {
-                                    lvt.Checked = true;
-                                }
-                                else
-                                {
-                                    lvt.Checked = false;
-                                }
                             }
-                            loading_zones = false;
-                        }
-                    }));
-                }
+                            if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
+                            {
+                                string[] selectedZone = Program.settingsManager.getSetting("SelectedZones").ToString().Split(';');
+                                ListView.ListViewItemCollection items;
+                                items = ZoneUpdateList.Items;
+                                loading_zones = true;
+                                foreach (ListViewItem lvt in items)
+                                {
+                                    string subitemtext;
+                                    subitemtext = lvt.SubItems[2].Text;
+                                    int pos = Array.IndexOf(selectedZone, subitemtext);
 
+                                    if (pos > -1)
+                                    {
+                                        lvt.Checked = true;
+                                    }
+                                    else
+                                    {
+                                        lvt.Checked = false;
+                                    }
+                                }
+                                loading_zones = false;
+                            }
+                        }));
+                    }
+                }
             }
             catch (Exception)
             {
