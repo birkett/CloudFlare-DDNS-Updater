@@ -338,7 +338,6 @@ namespace CloudFlareDDNS
                         using (System.IO.StreamReader sr = new System.IO.StreamReader(s))
                         {
                             strResponse = sr.ReadToEnd();
-                            Console.WriteLine(String.Format("Response: {0}", strResponse));
                         }
                     }
                 }

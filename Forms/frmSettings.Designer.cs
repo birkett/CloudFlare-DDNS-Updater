@@ -80,6 +80,8 @@ namespace CloudFlareDDNS
             this.lblUseInternalIP = new System.Windows.Forms.Label();
             this.HideSRV_input = new System.Windows.Forms.CheckBox();
             this.lblHideSRV = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.AutoStart = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnClose
@@ -336,11 +338,32 @@ namespace CloudFlareDDNS
             this.lblHideSRV.TabIndex = 30;
             this.lblHideSRV.Text = "Hide SRV:";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(367, 492);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(52, 13);
+            this.label1.TabIndex = 33;
+            this.label1.Text = "Autostart:";
+            // 
+            // AutoStart
+            // 
+            this.AutoStart.AutoSize = true;
+            this.AutoStart.Location = new System.Drawing.Point(430, 492);
+            this.AutoStart.Name = "AutoStart";
+            this.AutoStart.Size = new System.Drawing.Size(15, 14);
+            this.AutoStart.TabIndex = 32;
+            this.AutoStart.UseVisualStyleBackColor = true;
+            this.AutoStart.CheckedChanged += new System.EventHandler(this.AutoStart_CheckedChanged);
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(457, 556);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.AutoStart);
             this.Controls.Add(this.HideSRV_input);
             this.Controls.Add(this.lblHideSRV);
             this.Controls.Add(this.UseInternalIP_input);
@@ -406,5 +429,7 @@ namespace CloudFlareDDNS
         private System.Windows.Forms.Label lblUseInternalIP;
         private System.Windows.Forms.CheckBox HideSRV_input;
         private System.Windows.Forms.Label lblHideSRV;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox AutoStart;
     }//end class
 }//end namespace

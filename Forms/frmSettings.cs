@@ -27,6 +27,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CloudFlareDDNS.Classes.JsonObjects.Cloudflare;
+using Microsoft.Win32;
 
 namespace CloudFlareDDNS
 {
@@ -67,6 +68,7 @@ namespace CloudFlareDDNS
             cloudflare_api_url_input.Text = Program.settingsManager.getSetting("APIUrl").ToString();
             UseInternalIP_input.Checked = Program.settingsManager.getSetting("UseInternalIP").ToBool();
             HideSRV_input.Checked = Program.settingsManager.getSetting("HideSRV").ToBool();
+            AutoStart.Checked = Program.settingsManager.getSetting("AutoStart").ToBool();
         }//end frmSettings_Load()
 
         private void load_Zones(bool error =true)
@@ -163,6 +165,7 @@ namespace CloudFlareDDNS
             Program.settingsManager.setSetting("APIUrl", cloudflare_api_url_input.Text);
             Program.settingsManager.setSetting("UseInternalIP", UseInternalIP_input.Checked.ToString());
             Program.settingsManager.setSetting("HideSRV", HideSRV_input.Checked.ToString());
+            Program.settingsManager.setSetting("AutoStart", AutoStart.Checked.ToString());
             Program.settingsManager.saveSettings();
         }//end btnApply_Click()
 
@@ -238,6 +241,23 @@ namespace CloudFlareDDNS
                 Program.settingsManager.setSetting("SelectedZones", selectedZone);
                 Program.settingsManager.saveSettings();
             }
+        }
+
+        private void AutoStart_CheckedChanged(object sender, EventArgs e)
+        {
+            RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+            if (AutoStart.Checked)
+            {
+                rk.SetValue("CloudflareDDNS", Application.ExecutablePath);
+            }
+            else
+            {
+                rk.DeleteValue("CloudflareDDNS", false);
+            }
+
+            Program.settingsManager.setSetting("AutoStart", AutoStart.Checked.ToString());
+            Program.settingsManager.saveSettings();
         }
     }//end class
 }//end namespace
