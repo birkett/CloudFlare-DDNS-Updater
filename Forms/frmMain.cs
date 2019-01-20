@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -83,10 +84,10 @@ namespace CloudFlareDDNS
         /// Called from another thread
         /// Populate the list hosts control with the new returned hosts
         /// </summary>
-        /// <param name="fetchedRecords"></param>
-        private void updateHostsList(GetDnsRecordsResponse fetchedRecords)
+        /// <param name="resultList"></param>
+        private void updateHostsList(List<Result> resultList)
         {
-                if (fetchedRecords == null)
+                if (resultList == null)
                 {
                     Debug.WriteLine("fetchrecords failed");
                     return; //bail if the fetch failed
@@ -101,7 +102,7 @@ namespace CloudFlareDDNS
                         foreach (ListViewItem item in listViewRecords.Items)
                         {
                             bool id_exist = false;
-                            foreach (Result r in fetchedRecords.result)
+                            foreach (Result r in resultList)
                             {
                                 if ((item.Tag as Result).id == r.id)
                                 {
@@ -115,7 +116,7 @@ namespace CloudFlareDDNS
                     }
                 }
 
-                foreach (Result r in fetchedRecords.result)
+                foreach (Result r in resultList)
                 {
                     bool exist = false;
                     ListViewItem listViewItem = null;
@@ -212,7 +213,7 @@ namespace CloudFlareDDNS
         /// Delegate for updateHostsList()
         /// </summary>
         /// <param name="fetchedRecords"></param>
-        private delegate void updateHostsListInvoker(GetDnsRecordsResponse fetchedRecords);
+        private delegate void updateHostsListInvoker(List<Result> fetchedRecords);
 
         /// <summary>
         /// Called from another thread, adds a log entry to the list control
@@ -377,9 +378,16 @@ namespace CloudFlareDDNS
             this.Invoke(new updateAddressInvoker(updateAddress), Program.settingsManager.getSetting("ExternalAddressIPV4").ToString(), Program.settingsManager.getSetting("ExternalAddressIPV6").ToString());
             if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
             {
+                List<Result> resultList = new List<Result>();
                 foreach (string SelectedZones in Program.settingsManager.getSetting("SelectedZones").ToString().Split(';'))
                 {
-                    this.Invoke(new updateHostsListInvoker(updateHostsList), Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones));
+
+                    GetDnsRecordsResponse records = Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones);
+                    records.result.All(x => { resultList.Add(x); return true; });
+                }
+                if (resultList != null)
+                {
+                    this.Invoke(new updateHostsListInvoker(updateHostsList), resultList);
                 }
             }
         }//end threadFetchOnly()
@@ -393,14 +401,17 @@ namespace CloudFlareDDNS
             this.Invoke(new updateAddressInvoker(updateAddress), Program.settingsManager.getSetting("ExternalAddressIPV4").ToString(), Program.settingsManager.getSetting("ExternalAddressIPV6").ToString());
             if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
             {
+                List<Result> resultList = new List<Result>();
                 foreach (string SelectedZones in Program.settingsManager.getSetting("SelectedZones").ToString().Split(';'))
                 {
+                    
                     GetDnsRecordsResponse records = Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones);
-                    if (records != null)
-                    {
-                        this.Invoke(new updateHostsListInvoker(updateHostsList), records);
-                        List<Result> Ldns = Program.cloudFlareAPI.updateRecords(listViewRecords,records);
-                    }
+                    records.result.All(x => { resultList.Add(x); return true; });
+                }
+                if (resultList != null)
+                {
+                    this.Invoke(new updateHostsListInvoker(updateHostsList), resultList);
+                    List<Result> Ldns = Program.cloudFlareAPI.updateRecords(listViewRecords, resultList);
                 }
                 start_fetchThread();
             }

@@ -44,7 +44,7 @@ namespace CloudFlareDDNS
         /// Logic to update records
         /// And return changes
         /// </summary>
-        public List<Result> updateRecords(ListView lv,GetDnsRecordsResponse fetchedRecords)
+        public List<Result> updateRecords(ListView lv,List<Result> fetchedRecords)
         {
             //List for the Updated IPs
             List<Result> return_updated_list = new List<Result>();
@@ -55,7 +55,7 @@ namespace CloudFlareDDNS
             int up_to_date = 0, skipped = 0, failed = 0, updated = 0, ignored = 0;
             string[] selectedHosts = Program.settingsManager.getSetting("SelectedHosts").ToString().Split(';');
 
-            foreach (Result r in fetchedRecords.result)
+            foreach (Result r in fetchedRecords)
             {
                 //Skip over MX and CNAME records
                 //TODO: Dont skip them :)
