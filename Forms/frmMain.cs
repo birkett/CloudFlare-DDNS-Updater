@@ -364,6 +364,7 @@ namespace CloudFlareDDNS
             if (WindowState == FormWindowState.Minimized)
             {
                 ShowInTaskbar = false;
+                FormBorderStyle = FormBorderStyle.SizableToolWindow;
                 trayIcon.Visible = true;
                 trayIcon.ShowBalloonTip(1000);
             }
@@ -673,6 +674,7 @@ namespace CloudFlareDDNS
             {
                 this.WindowState = FormWindowState.Minimized;
             }
+            FormBorderStyle = FormBorderStyle.Sizable;
         }
 
         /// <summary>
