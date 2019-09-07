@@ -96,6 +96,7 @@
     <Compile Include="Classes\JsonObjects\Cloudflare\BasicResponse.cs" />
     <Compile Include="Classes\JsonObjects\Cloudflare\GetDnsRecordsResponse.cs" />
     <Compile Include="Classes\JsonObjects\Cloudflare\GetZoneListResponse.cs" />
+    <Compile Include="Classes\NetworkInterfaceManager.cs" />
     <Compile Include="Properties\GeneratedVersion.cs" />
     <Compile Include="Forms\frmAbout.cs">
       <SubType>Form</SubType>

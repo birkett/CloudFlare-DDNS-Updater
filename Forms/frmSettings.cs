@@ -67,7 +67,23 @@ namespace CloudFlareDDNS
             cloudflare_api_url_input.Text = Program.settingsManager.getSetting("APIUrl").ToString();
             UseInternalIP_input.Checked = Program.settingsManager.getSetting("UseInternalIP").ToBool();
             HideSRV_input.Checked = Program.settingsManager.getSetting("HideSRV").ToBool();
+
+            load_network_interfaces();
         }//end frmSettings_Load()
+
+        private void load_network_interfaces()
+        {
+            string selectedInterface = NetworkInterfaceManager.GetCurrentDefaultInterface().Name;
+            foreach (var item in NetworkInterfaceManager.GetAllNetworkInterfaces())
+            {
+                network_interface_selector.Items.Add(item.Name);
+                if(selectedInterface != "" && selectedInterface == item.Name)
+                {
+                    network_interface_selector.SelectedItem = item.Name;
+                }
+            }
+           
+        }
 
         private void load_Zones(bool error =true)
         {
@@ -235,6 +251,23 @@ namespace CloudFlareDDNS
                 Program.settingsManager.setSetting("SelectedZones", selectedZone);
                 Program.settingsManager.saveSettings();
             }
+        }
+
+        private void network_interface_selector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string value = (string)network_interface_selector.SelectedItem;
+            Console.WriteLine("New Interface selected: " + value);
+            Program.settingsManager.setSetting("DefaultInterface", value);
+            Program.settingsManager.saveSettings();
+        }
+
+        private void network_interface_selector_reset_btn_Click(object sender, EventArgs e)
+        {
+            var value = NetworkInterfaceManager.GetDeviceDefaultInterface().Name;
+            network_interface_selector.SelectedItem = value;
+            Console.WriteLine("New Interface selected: " + value);
+            Program.settingsManager.setSetting("DefaultInterface", value);
+            Program.settingsManager.saveSettings();
         }
     }//end class
 }//end namespace

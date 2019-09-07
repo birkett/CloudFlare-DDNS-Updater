@@ -80,13 +80,16 @@ namespace CloudFlareDDNS
             this.lblUseInternalIP = new System.Windows.Forms.Label();
             this.HideSRV_input = new System.Windows.Forms.CheckBox();
             this.lblHideSRV = new System.Windows.Forms.Label();
+            this.network_interface_selector_reset_btn = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.network_interface_selector = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(370, 521);
+            this.btnClose.Location = new System.Drawing.Point(370, 553);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(75, 23);
+            this.btnClose.Size = new System.Drawing.Size(75, 24);
             this.btnClose.TabIndex = 0;
             this.btnClose.Text = global::CloudFlareDDNS.Properties.Resources.Settings_Close;
             this.btnClose.UseVisualStyleBackColor = true;
@@ -94,9 +97,9 @@ namespace CloudFlareDDNS
             // 
             // btnApply
             // 
-            this.btnApply.Location = new System.Drawing.Point(12, 521);
+            this.btnApply.Location = new System.Drawing.Point(12, 553);
             this.btnApply.Name = "btnApply";
-            this.btnApply.Size = new System.Drawing.Size(75, 23);
+            this.btnApply.Size = new System.Drawing.Size(75, 24);
             this.btnApply.TabIndex = 1;
             this.btnApply.Text = global::CloudFlareDDNS.Properties.Resources.Settings_Apply;
             this.btnApply.UseVisualStyleBackColor = true;
@@ -224,7 +227,7 @@ namespace CloudFlareDDNS
             // StartMinimized
             // 
             this.StartMinimized.AutoSize = true;
-            this.StartMinimized.Location = new System.Drawing.Point(99, 495);
+            this.StartMinimized.Location = new System.Drawing.Point(99, 527);
             this.StartMinimized.Name = "StartMinimized";
             this.StartMinimized.Size = new System.Drawing.Size(15, 14);
             this.StartMinimized.TabIndex = 22;
@@ -233,7 +236,7 @@ namespace CloudFlareDDNS
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 495);
+            this.label4.Location = new System.Drawing.Point(12, 527);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(81, 13);
             this.label4.TabIndex = 23;
@@ -287,7 +290,8 @@ namespace CloudFlareDDNS
             this.ZoneID});
             this.ZoneUpdateList.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ZoneUpdateList.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
-            this.ZoneUpdateList.Location = new System.Drawing.Point(12, 242);
+            this.ZoneUpdateList.HideSelection = false;
+            this.ZoneUpdateList.Location = new System.Drawing.Point(12, 268);
             this.ZoneUpdateList.Name = "ZoneUpdateList";
             this.ZoneUpdateList.Size = new System.Drawing.Size(433, 247);
             this.ZoneUpdateList.TabIndex = 27;
@@ -336,11 +340,42 @@ namespace CloudFlareDDNS
             this.lblHideSRV.TabIndex = 30;
             this.lblHideSRV.Text = "Hide SRV:";
             // 
+            // network_interface_selector_reset_btn
+            // 
+            this.network_interface_selector_reset_btn.Location = new System.Drawing.Point(384, 242);
+            this.network_interface_selector_reset_btn.Name = "network_interface_selector_reset_btn";
+            this.network_interface_selector_reset_btn.Size = new System.Drawing.Size(61, 20);
+            this.network_interface_selector_reset_btn.TabIndex = 34;
+            this.network_interface_selector_reset_btn.Text = global::CloudFlareDDNS.Properties.Resources.Settings_Default;
+            this.network_interface_selector_reset_btn.UseVisualStyleBackColor = true;
+            this.network_interface_selector_reset_btn.Click += new System.EventHandler(this.network_interface_selector_reset_btn_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 245);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(92, 13);
+            this.label1.TabIndex = 32;
+            this.label1.Text = "Network Interface";
+            // 
+            // network_interface_selector
+            // 
+            this.network_interface_selector.FormattingEnabled = true;
+            this.network_interface_selector.Location = new System.Drawing.Point(152, 241);
+            this.network_interface_selector.Name = "network_interface_selector";
+            this.network_interface_selector.Size = new System.Drawing.Size(225, 21);
+            this.network_interface_selector.TabIndex = 35;
+            this.network_interface_selector.SelectedIndexChanged += new System.EventHandler(this.network_interface_selector_SelectedIndexChanged);
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(457, 556);
+            this.ClientSize = new System.Drawing.Size(457, 586);
+            this.Controls.Add(this.network_interface_selector);
+            this.Controls.Add(this.network_interface_selector_reset_btn);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.HideSRV_input);
             this.Controls.Add(this.lblHideSRV);
             this.Controls.Add(this.UseInternalIP_input);
@@ -406,5 +441,8 @@ namespace CloudFlareDDNS
         private System.Windows.Forms.Label lblUseInternalIP;
         private System.Windows.Forms.CheckBox HideSRV_input;
         private System.Windows.Forms.Label lblHideSRV;
+        private System.Windows.Forms.Button network_interface_selector_reset_btn;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox network_interface_selector;
     }//end class
 }//end namespace

@@ -28,6 +28,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using CloudFlareDDNS.Classes.JsonObjects.Cloudflare;
@@ -332,14 +333,11 @@ namespace CloudFlareDDNS
             {
                 if (MethodType == Method.Get)
                 {
-                    using (System.IO.Stream s = webrequest.GetResponse().GetResponseStream())
-                    {
-                        using (System.IO.StreamReader sr = new System.IO.StreamReader(s))
-                        {
-                            strResponse = sr.ReadToEnd();
-                            Console.WriteLine(String.Format("Response: {0}", strResponse));
-                        }
-                    }
+                    var task = Task.Run(() => webRequestResponse(webrequest));
+                    if (task.Wait(TimeSpan.FromSeconds(10)))
+                        strResponse = task.Result;
+                    else
+                        return "Timed out";
                 }
                 if (MethodType == Method.Put)
                 {
@@ -370,6 +368,44 @@ namespace CloudFlareDDNS
 
             return strResponse;
         }//end webRequest()
+
+        private string webRequestResponse(WebRequest webRequest)
+        {
+            string strResponse = null;
+            HttpWebRequest httpRequest = (HttpWebRequest)webRequest;
+            httpRequest.ServicePoint.BindIPEndPointDelegate =
+                new BindIPEndPoint(BindIPEndPointCallback);
+            httpRequest.Timeout = 10000;
+            try
+            {
+                System.IO.Stream s = httpRequest.GetResponse().GetResponseStream();
+                System.IO.StreamReader sr = new System.IO.StreamReader(s);
+                    
+                strResponse = sr.ReadToEnd();
+                Console.WriteLine(String.Format("Response: {0}", strResponse));
+                    
+                
+                return strResponse;
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return "error";
+            }
+        }
+
+        private static IPEndPoint BindIPEndPointCallback(ServicePoint servicePoint,
+                                                    IPEndPoint remoteEndPoint,
+                                                    int retryCount)
+        {
+            if (remoteEndPoint.AddressFamily == AddressFamily.InterNetwork)
+            {
+                string currentIP = NetworkInterfaceManager.GetDefaultIP();
+                return new IPEndPoint(IPAddress.Parse(currentIP), 0);
+            }
+            // Just use the default endpoint.
+            return null;
+        }
+
 
         /// <summary>
         /// Get Local IP Adress
