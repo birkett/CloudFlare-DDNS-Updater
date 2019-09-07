@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.ServiceProcess;
 using CloudFlareDDNS.Classes.JsonObjects.Cloudflare;
 
@@ -99,9 +100,16 @@ namespace CloudFlareDDNS
             Program.cloudFlareAPI.getExternalAddress();
             if (!string.IsNullOrEmpty(Program.settingsManager.getSetting("SelectedZones").ToString()))
             {
+                List<Result> resultList = new List<Result>();
                 foreach (string SelectedZones in Program.settingsManager.getSetting("SelectedZones").ToString().Split(';'))
                 {
-                    List<Result> Ldns = Program.cloudFlareAPI.updateRecords(null,Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones));
+
+                    GetDnsRecordsResponse records = Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones);
+                    records.result.All(x => { resultList.Add(x); return true; });
+                }
+                if (resultList != null)
+                {
+                    Program.cloudFlareAPI.updateRecords(null, resultList);
                 }
             }
         }//end autoUpdateTimer_Tick()

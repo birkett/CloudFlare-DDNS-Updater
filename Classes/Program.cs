@@ -81,6 +81,8 @@ namespace CloudFlareDDNS
                         return;
                     }
 
+                    Console.WriteLine("The Service version is unstable!"); //Warning.
+
                     TransactedInstaller ti = new TransactedInstaller();
                     ti.Installers.Add(new ServiceInstaller());
                     ti.Context = new InstallContext("", null);
