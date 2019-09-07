@@ -200,12 +200,12 @@ namespace CloudFlareDDNS
 
         private void IPV4RESET_Click(object sender, EventArgs e)
         {
-            IPV4UpdateURL.Text = "http://checkip.dyndns.org/";
+            IPV4UpdateURL.Text = "https://api.ipify.org";
         }
 
         private void IPV6RESET_Click(object sender, EventArgs e)
         {
-            IPV6UpdateURL.Text = "http://myexternalip.com/raw";
+            IPV6UpdateURL.Text = "https://api6.ipify.org";
         }
 
         private void cloudflare_api_url_default_button_Click(object sender, EventArgs e)

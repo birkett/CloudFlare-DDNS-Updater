@@ -201,8 +201,8 @@ namespace CloudFlareDDNS
             m_Settings.Add(new Setting("ExternalAddressIPv4", ""));
             m_Settings.Add(new Setting("ExternalAddressIPv6", ""));
             m_Settings.Add(new Setting("UseEventLog", true));
-            m_Settings.Add(new Setting("IPV4UpdateURL", "http://checkip.dyndns.org"));
-            m_Settings.Add(new Setting("IPV6UpdateURL", "http://myexternalip.com/raw"));
+            m_Settings.Add(new Setting("IPV4UpdateURL", "https://api.ipify.org"));
+            m_Settings.Add(new Setting("IPV6UpdateURL", "https://api6.ipify.org/"));
             m_Settings.Add(new Setting("UseLocalInfos", false));
             m_Settings.Add(new Setting("APIUrl", "https://api.cloudflare.com/client/v4"));
             m_Settings.Add(new Setting("SelectedZone", ""));
