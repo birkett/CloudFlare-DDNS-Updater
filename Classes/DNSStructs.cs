@@ -211,5 +211,36 @@ namespace CloudFlareDDNS
         public string msg { get; set; }
     }//end JsonResponse
 
+    public class DomainJsonResponse
+    {
+        public DnsRequest request { get; set; }
+        public DomainResponse response { get; set; }
 
+        public string result { get; set; }
+        public string msg { get; set; }
+    }
+
+    public class DomainResponse
+    {
+        public DomainZones zones;
+    }
+
+    public class DomainZones
+    {
+        public bool has_more { get; set; }
+        public int count { get; set; }
+        public DomainZone[] objs { get; set; }
+    }
+
+    public class DomainZone
+    {
+        public string zone_name { get; set; }
+        public string display_name { get; set; }
+    }
+
+    public class DomainDnsJsonResponse
+    {
+        public string Domain { get; set; }
+        public JsonResponse Response { get; set; }
+    }
 }//end namespace
