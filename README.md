@@ -1,4 +1,4 @@
-#CloudFlareDDNS Updater Client
+# CloudFlareDDNS Updater Client
 Dynamic DNS client for Windows, for use with CloudFlare.
 Written in C#, using Windows Forms.
 
@@ -9,11 +9,11 @@ Written in C#, using Windows Forms.
 The code is licensed under the MIT license. See opensource.org for more details.
 <br /><br />
 ## Requirements
-####OS Support
+#### OS Support
 * Client: Windows XP / Vista / 7 / 8 / 8.1
 * Server: 2008 / 2008R2 / 2012 / 2012R2
 
-####.NET Framework
+#### .NET Framework
 .NET Framework 4.0 or above is required (already installed on Windows 8 / 8.1 / 2012 / 2012R2).
 https://www.microsoft.com/en-gb/download/details.aspx?id=17851
 <br /><br />
@@ -28,15 +28,15 @@ Settings will be saved in %userprofile%\AppData\Roaming\CloudFlareDDNS
 The application makes use of the Windows Event Log to save messages.
 Run the application as an Administrator at least once (Right Click->Run as Administrator), this will automatically create the required registry keys for Event Log access.
 <br /><br />
-##Configuration
+## Configuration
 On first launch, enter your details in Tools->Options.
-######Domain: The root domain name you wish to update (example.com)
-######Email: The email address associated with your CloudFlare account
-######API Key: The API key given by CloudFlare at the bottom of your "My Account" page
-######Auto Fetch Time: The time in minutes an update will automatically occur
-######Use Windows Event Log: Enable / Disable writing logs to the Windows Event Log
+###### Domain: The root domain name you wish to update (example.com)
+###### Email: The email address associated with your CloudFlare account
+###### API Key: The API key given by CloudFlare at the bottom of your "My Account" page
+###### Auto Fetch Time: The time in minutes an update will automatically occur
+###### Use Windows Event Log: Enable / Disable writing logs to the Windows Event Log
 <br /><br />
-##Running as a service
+## Running as a service
 Once you have verified the application is updating your records as intended, you may run it as a service.
 
 To install as a service, run from an evevated (Administrator) command prompt:<br />

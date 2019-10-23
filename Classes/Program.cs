@@ -79,6 +79,14 @@ namespace CloudFlareDDNS
             {
                 if (args[0] == "/install")
                 {
+                    if(!isAdmin)
+                    {
+                        AttachConsole( -1 /*ATTACH_PARENT_PROCESS*/ );
+                        Console.WriteLine("Need to be running from an elevated (Administrator) command prompt.");
+                        FreeConsole();
+                        return;
+                    }
+
                     TransactedInstaller ti = new TransactedInstaller();
                     ti.Installers.Add(new ServiceInstaller());
                     ti.Context = new InstallContext("", null);
@@ -90,6 +98,14 @@ namespace CloudFlareDDNS
 
                 if (args[0] == "/uninstall")
                 {
+                    if (!isAdmin)
+                    {
+                        AttachConsole(-1 /*ATTACH_PARENT_PROCESS*/ );
+                        Console.WriteLine("Need to be running from an elevated (Administrator) command prompt.");
+                        FreeConsole();
+                        return;
+                    }
+
                     TransactedInstaller ti = new TransactedInstaller();
                     ti.Installers.Add(new ServiceInstaller());
                     ti.Context = new System.Configuration.Install.InstallContext("", null);
@@ -103,6 +119,23 @@ namespace CloudFlareDDNS
             runGUI();
 
         }//end Main()
+
+
+        /// <summary>
+        /// Call into kernel32.dll for AttachConsole()
+        /// </summary>
+        /// <param name="dwProcessId"></param>
+        /// <returns></returns>
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        static extern bool AttachConsole(int dwProcessId);
+
+
+        /// <summary>
+        /// Call into kernel32.dll for FreeConsole()
+        /// </summary>
+        /// <returns></returns>
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern int FreeConsole();
 
 
         /// <summary>
@@ -141,6 +174,17 @@ namespace CloudFlareDDNS
             }
         }//end unhandledException()
 
+
+        /// <summary>
+        /// Check if he program is running as Administrator
+        /// </summary>
+        public static bool isAdmin
+        {
+            get
+            {
+                return new System.Security.Principal.WindowsPrincipal(System.Security.Principal.WindowsIdentity.GetCurrent()).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+            }
+        }
 
         /// <summary>
         /// Run the application with the GUI
