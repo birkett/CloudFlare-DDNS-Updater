@@ -194,8 +194,7 @@ namespace CloudFlareDDNS
             if (!string.IsNullOrEmpty(SelectedZone))
             {
                 url += "/zones/" + SelectedZone + "/dns_records?page=1&per_page=50&order=type&direction=asc";
-
-                headerData.Add("X-Auth-Key", Program.settingsManager.getSetting("APIKey").ToString());
+                headerData.Add("Authorization", "Bearer " + Program.settingsManager.getSetting("APIKey").ToString().Trim());
                 headerData.Add("X-Auth-Email", Program.settingsManager.getSetting("EmailAddress").ToString());
 
                 //Check if request still get value.
@@ -223,8 +222,8 @@ namespace CloudFlareDDNS
             string url = Program.settingsManager.getSetting("APIUrl").ToString();
 
             url += "/zones?status=active&page=1&per_page=50&order=status&direction=desc&match=all";
-
-            headerData.Add("X-Auth-Key", Program.settingsManager.getSetting("APIKey").ToString().Trim());
+            headerData.Add("Authorization", "Bearer " + Program.settingsManager.getSetting("APIKey").ToString().Trim());
+            headerData.Add("X-Auth-Key",  Program.settingsManager.getSetting("APIKey").ToString().Trim());
             headerData.Add("X-Auth-Email", Program.settingsManager.getSetting("EmailAddress").ToString().Trim());
 
             //Check if request still get value.
@@ -258,7 +257,7 @@ namespace CloudFlareDDNS
             {
                 url += "/zones/" + FetchedRecord.zone_id + "/dns_records/" + FetchedRecord.id;
 
-                headerData.Add("X-Auth-Key", Program.settingsManager.getSetting("APIKey").ToString());
+                headerData.Add("Authorization", "Bearer " + Program.settingsManager.getSetting("APIKey").ToString().Trim());
                 headerData.Add("X-Auth-Email", Program.settingsManager.getSetting("EmailAddress").ToString());
 
                 //Switch IPV4 and IPV6 if its A or AAAA
@@ -338,8 +337,7 @@ namespace CloudFlareDDNS
                         strResponse = task.Result;
                     else
                         return "Timed out";
-                }
-                if (MethodType == Method.Put)
+                } else if (MethodType == Method.Put)
                 {
                     try
                     {

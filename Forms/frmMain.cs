@@ -384,7 +384,8 @@ namespace CloudFlareDDNS
                 {
 
                     GetDnsRecordsResponse records = Program.cloudFlareAPI.getCloudFlareRecords(SelectedZones);
-                    records.result.All(x => { resultList.Add(x); return true; });
+                    if(records != null)
+                        records.result.All(x => { resultList.Add(x); return true; });
                 }
                 if (resultList != null)
                 {
