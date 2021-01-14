@@ -11,22 +11,21 @@ namespace CloudFlareDDNS
     {
         private static string loadedValue = null;
         private static string result = "";
-        public static string GetDefaultIP()
+        public static string GetDefaultIP(System.Net.Sockets.AddressFamily addressFamily = System.Net.Sockets.AddressFamily.InterNetwork)
         {
             string currentLoadedValue = Program.settingsManager.getSetting("DefaultInterface").ToString();
-            if (loadedValue == null && loadedValue != currentLoadedValue)
-            {
+
                 NetworkInterface netif = GetCurrentDefaultInterface();
                 IPInterfaceProperties properties = netif.GetIPProperties();
                 foreach (UnicastIPAddressInformation ip in properties.UnicastAddresses)
                 {
-                    if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    if (ip.Address.AddressFamily == addressFamily)
                     {
                         return ip.Address.ToString();
                     }
                 }
                 result = properties.UnicastAddresses[0].Address.ToString();
-            }
+            
             return result;
         }
 

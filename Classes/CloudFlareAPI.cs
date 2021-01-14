@@ -371,8 +371,11 @@ namespace CloudFlareDDNS
         {
             string strResponse = null;
             HttpWebRequest httpRequest = (HttpWebRequest)webRequest;
-            httpRequest.ServicePoint.BindIPEndPointDelegate =
-                new BindIPEndPoint(BindIPEndPointCallback);
+            if (Program.settingsManager.getSetting("EnableNetworkInterfaceChange").ToBool())
+            {
+                httpRequest.ServicePoint.BindIPEndPointDelegate =
+                    new BindIPEndPoint(BindIPEndPointCallback);
+            }
             httpRequest.Timeout = 10000;
             try
             {

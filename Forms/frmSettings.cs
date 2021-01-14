@@ -67,7 +67,12 @@ namespace CloudFlareDDNS
             cloudflare_api_url_input.Text = Program.settingsManager.getSetting("APIUrl").ToString();
             UseInternalIP_input.Checked = Program.settingsManager.getSetting("UseInternalIP").ToBool();
             HideSRV_input.Checked = Program.settingsManager.getSetting("HideSRV").ToBool();
-
+            show_local_ipv4.Text = NetworkInterfaceManager.GetDefaultIP();
+            show_local_ipv6.Text = NetworkInterfaceManager.GetDefaultIP(System.Net.Sockets.AddressFamily.InterNetworkV6);
+            enable_network_interface_change.Checked = Program.settingsManager.getSetting("EnableNetworkInterfaceChange").ToBool();
+            network_interface_selector_reset_btn.Enabled = enable_network_interface_change.Checked;
+            network_interface_selector.Enabled = enable_network_interface_change.Checked;
+            
             load_network_interfaces();
         }//end frmSettings_Load()
 
@@ -176,6 +181,8 @@ namespace CloudFlareDDNS
             Program.settingsManager.setSetting("APIUrl", cloudflare_api_url_input.Text);
             Program.settingsManager.setSetting("UseInternalIP", UseInternalIP_input.Checked.ToString());
             Program.settingsManager.setSetting("HideSRV", HideSRV_input.Checked.ToString());
+            Program.settingsManager.setSetting("EnableNetworkInterfaceChange", enable_network_interface_change.Checked.ToString());
+
             Program.settingsManager.saveSettings();
         }//end btnApply_Click()
 
@@ -268,6 +275,14 @@ namespace CloudFlareDDNS
             Console.WriteLine("New Interface selected: " + value);
             Program.settingsManager.setSetting("DefaultInterface", value);
             Program.settingsManager.saveSettings();
+            show_local_ipv4.Text = NetworkInterfaceManager.GetDefaultIP();
+            show_local_ipv6.Text = NetworkInterfaceManager.GetDefaultIP(System.Net.Sockets.AddressFamily.InterNetworkV6);
+        }
+
+        private void enable_network_interface_change_CheckedChanged(object sender, EventArgs e)
+        {
+            network_interface_selector.Enabled = enable_network_interface_change.Checked;
+            network_interface_selector_reset_btn.Enabled = enable_network_interface_change.Checked;
         }
     }//end class
 }//end namespace

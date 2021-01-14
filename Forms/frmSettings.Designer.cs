@@ -83,6 +83,12 @@ namespace CloudFlareDDNS
             this.network_interface_selector_reset_btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.network_interface_selector = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.show_local_ipv4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.show_local_ipv6 = new System.Windows.Forms.Label();
+            this.enable_network_interface_change = new System.Windows.Forms.CheckBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnClose
@@ -291,9 +297,9 @@ namespace CloudFlareDDNS
             this.ZoneUpdateList.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ZoneUpdateList.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
             this.ZoneUpdateList.HideSelection = false;
-            this.ZoneUpdateList.Location = new System.Drawing.Point(12, 268);
+            this.ZoneUpdateList.Location = new System.Drawing.Point(12, 319);
             this.ZoneUpdateList.Name = "ZoneUpdateList";
-            this.ZoneUpdateList.Size = new System.Drawing.Size(433, 247);
+            this.ZoneUpdateList.Size = new System.Drawing.Size(433, 196);
             this.ZoneUpdateList.TabIndex = 27;
             this.ZoneUpdateList.UseCompatibleStateImageBehavior = false;
             this.ZoneUpdateList.View = System.Windows.Forms.View.Details;
@@ -342,7 +348,7 @@ namespace CloudFlareDDNS
             // 
             // network_interface_selector_reset_btn
             // 
-            this.network_interface_selector_reset_btn.Location = new System.Drawing.Point(384, 242);
+            this.network_interface_selector_reset_btn.Location = new System.Drawing.Point(383, 267);
             this.network_interface_selector_reset_btn.Name = "network_interface_selector_reset_btn";
             this.network_interface_selector_reset_btn.Size = new System.Drawing.Size(61, 20);
             this.network_interface_selector_reset_btn.TabIndex = 34;
@@ -353,7 +359,7 @@ namespace CloudFlareDDNS
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 245);
+            this.label1.Location = new System.Drawing.Point(12, 271);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(92, 13);
             this.label1.TabIndex = 32;
@@ -362,17 +368,79 @@ namespace CloudFlareDDNS
             // network_interface_selector
             // 
             this.network_interface_selector.FormattingEnabled = true;
-            this.network_interface_selector.Location = new System.Drawing.Point(152, 241);
+            this.network_interface_selector.Location = new System.Drawing.Point(152, 266);
             this.network_interface_selector.Name = "network_interface_selector";
             this.network_interface_selector.Size = new System.Drawing.Size(225, 21);
             this.network_interface_selector.TabIndex = 35;
             this.network_interface_selector.SelectedIndexChanged += new System.EventHandler(this.network_interface_selector_SelectedIndexChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(13, 290);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(101, 13);
+            this.label2.TabIndex = 36;
+            this.label2.Text = "Local Network IPv4";
+            // 
+            // show_local_ipv4
+            // 
+            this.show_local_ipv4.AutoSize = true;
+            this.show_local_ipv4.Location = new System.Drawing.Point(149, 290);
+            this.show_local_ipv4.Name = "show_local_ipv4";
+            this.show_local_ipv4.Size = new System.Drawing.Size(27, 13);
+            this.show_local_ipv4.TabIndex = 37;
+            this.show_local_ipv4.Text = "ipv4";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(13, 303);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(101, 13);
+            this.label3.TabIndex = 38;
+            this.label3.Text = "Local Network IPv6";
+            // 
+            // show_local_ipv6
+            // 
+            this.show_local_ipv6.AutoSize = true;
+            this.show_local_ipv6.Location = new System.Drawing.Point(149, 303);
+            this.show_local_ipv6.Name = "show_local_ipv6";
+            this.show_local_ipv6.Size = new System.Drawing.Size(27, 13);
+            this.show_local_ipv6.TabIndex = 39;
+            this.show_local_ipv6.Text = "ipv6";
+            // 
+            // enable_network_interface_change
+            // 
+            this.enable_network_interface_change.AutoSize = true;
+            this.enable_network_interface_change.Location = new System.Drawing.Point(152, 243);
+            this.enable_network_interface_change.Name = "enable_network_interface_change";
+            this.enable_network_interface_change.Size = new System.Drawing.Size(162, 17);
+            this.enable_network_interface_change.TabIndex = 40;
+            this.enable_network_interface_change.Text = "Use Other Network Interface";
+            this.enable_network_interface_change.UseVisualStyleBackColor = true;
+            this.enable_network_interface_change.CheckedChanged += new System.EventHandler(this.enable_network_interface_change_CheckedChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(13, 244);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(128, 13);
+            this.label5.TabIndex = 41;
+            this.label5.Text = "Enable Network Interface";
             // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(457, 586);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.enable_network_interface_change);
+            this.Controls.Add(this.show_local_ipv6);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.show_local_ipv4);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.network_interface_selector);
             this.Controls.Add(this.network_interface_selector_reset_btn);
             this.Controls.Add(this.label1);
@@ -444,5 +512,11 @@ namespace CloudFlareDDNS
         private System.Windows.Forms.Button network_interface_selector_reset_btn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox network_interface_selector;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label show_local_ipv4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label show_local_ipv6;
+        private System.Windows.Forms.CheckBox enable_network_interface_change;
+        private System.Windows.Forms.Label label5;
     }//end class
 }//end namespace
