@@ -97,6 +97,8 @@ namespace CloudFlareDDNS
 
                     if (lv != null)
                         UpdateLastChange(lv, r, DateTime.Now.ToShortDateString()+" "+ DateTime.Now.ToShortTimeString());
+
+                    updated++;
                 }
                 catch (Exception)
                 {
@@ -104,6 +106,7 @@ namespace CloudFlareDDNS
                         UpdateLastChange(lv, r, Properties.Resources.Main_Change_IP_Failed);
 
                     Logger.log(Properties.Resources.Error_FailedRecordUpdate + r.name, Logger.Level.Error);
+                    failed++;
                 }
             }
 
